@@ -10,4 +10,4 @@ class SearchPage extends StatelessWidget {
       child: Text('Pantalla Search'),
     );
   }
-}
+} 
