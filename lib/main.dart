@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:livria_user/common/theme/app_theme.dart';
+import 'package:livria_user/common/theme/app_colors.dart';
 
 void main() => runApp(const MyApp());
 
@@ -35,7 +36,8 @@ class MyHomePage extends StatelessWidget {
             Text(
               'Hola (Texto 1)',
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                fontSize: 70
+                fontSize: 70,
+                color: AppColors.primaryOrange
               ),
             ),
 
