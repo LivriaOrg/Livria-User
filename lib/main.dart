@@ -26,7 +26,7 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Custom Fonts',
-          style: Theme.of(context).textTheme.headlineLarge,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
       body: Center(

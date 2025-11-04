@@ -20,7 +20,7 @@ ThemeData getAppTheme() {
       ),
       headlineMedium: TextStyle(
         fontFamily: 'AsapCondensed',
-        fontWeight: FontWeight.w700, // .bold
+        fontWeight: FontWeight.w400, // .regular
         fontSize: 28,
       ),
 
