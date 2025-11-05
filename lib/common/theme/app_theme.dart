@@ -1,13 +1,34 @@
 // lib/common/theme/app_theme.dart
 
 import 'package:flutter/material.dart';
+import 'package:livria_user/common/theme/app_colors.dart';
 
 
 ThemeData getAppTheme() {
   return ThemeData(
 
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: AppColors.white,
+      selectedItemColor: AppColors.primaryOrange,
+      unselectedItemColor: AppColors.black,
+      elevation: 0,
+
+      type: BottomNavigationBarType.fixed,
+      showUnselectedLabels: false,
+      showSelectedLabels: true,
+      selectedLabelStyle: const TextStyle(
+        fontFamily: 'Alexandria',
+        fontWeight: FontWeight.w700,
+        fontSize: 12,
+      ),
+    ),
+
+
+
     // Default Font
     fontFamily: 'Alexandria',
+
+
 
     // Text Theme
     textTheme: const TextTheme(
