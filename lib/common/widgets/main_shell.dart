@@ -17,44 +17,7 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'LIVRIA',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            fontSize: 24,
-            color: AppColors.primaryOrange
-          ),
-        ),
-        centerTitle: false, // alinea el título a la izquierda
-
-        // Acciones a la derecha
-        actions: [
-          IconButton(
-            icon: const FaIcon(AppIcons.search),
-            onPressed: () {
-              context.push('/search');
-            },
-          ),
-          IconButton(
-            icon: const FaIcon(AppIcons.recommendations),
-            onPressed: () {
-              context.push('/recommendations');
-            },
-          ),
-          IconButton(
-            icon: const FaIcon(AppIcons.location),
-            onPressed: () {
-              context.push('/location');
-            },
-          ),
-          IconButton(
-            icon: const FaIcon(AppIcons.cart),
-            onPressed: () {
-              context.push('/cart');
-            },
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(context),
 
       // el body es la página que el go_router nos pasa
       body: child,
@@ -143,6 +106,78 @@ int _calculateCurrentIndex(BuildContext context) {
     }
     return 0;
 }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    // obtener ruta raiz
+    final String location = GoRouterState.of(context).matchedLocation;
+
+    // lógica de color manul
+    Color getIconColor(String path) {
+      return location == path
+          ? AppColors.primaryOrange
+          : AppColors.black;
+    }
+
+    // construir appbar
+    final defaultAppBar = AppBar(
+
+      // titulo clickeable
+      title: GestureDetector(
+        onTap: () => context.go('/home'), // acción ir a /home
+        child: Image.asset(
+          'assets/images/logo.png',
+          height: 36,
+          fit: BoxFit.contain,
+        ),
+      ),
+      centerTitle: false, // Alinea el logo a la izquierda
+
+      //  acciones
+      actions: [
+        IconButton(
+          icon: const FaIcon(AppIcons.search),
+          color: getIconColor('/search'),
+          onPressed: () => context.go('/search'),
+        ),
+        const SizedBox(width: 16),
+        IconButton(
+          icon: const FaIcon(AppIcons.recommendations),
+          color: getIconColor('/recommendations'),
+          onPressed: () => context.go('/recommendations'),
+        ),
+        const SizedBox(width: 16),
+        IconButton(
+          icon: const FaIcon(AppIcons.location),
+          color: getIconColor('/location'),
+          onPressed: () => context.go('/location'),
+        ),
+        const SizedBox(width: 16),
+        IconButton(
+          icon: const FaIcon(AppIcons.cart),
+          color: getIconColor('/cart'),
+          onPressed: () => context.go('/cart'),
+        ),
+        const SizedBox(width: 8) // espacio a la derecha
+
+      ],
+    );
+
+    // usamos PreferredSize para definir un alto total
+    return PreferredSize(
+      // Alto total = AppBar (kToolbarHeight) + Línea (3)
+      preferredSize: Size.fromHeight(kToolbarHeight + 3),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end, // para alinear a la derecha de la pantalla
+        children: [
+          defaultAppBar,
+          const MultiColorLine(height: 3,)
+        ],
+      ),
+    );
+  }
+
+
+
 
 
 }

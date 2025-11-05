@@ -16,10 +16,19 @@ ThemeData getAppTheme() {
       type: BottomNavigationBarType.fixed,
       showUnselectedLabels: false,
       showSelectedLabels: true,
+      selectedLabelStyle: const TextStyle(
+        fontFamily: 'Alexandria',
+        fontWeight: FontWeight.w700,
+        fontSize: 12,
+      ),
     ),
+
+
 
     // Default Font
     fontFamily: 'Alexandria',
+
+
 
     // Text Theme
     textTheme: const TextTheme(
