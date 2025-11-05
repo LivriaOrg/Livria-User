@@ -17,7 +17,42 @@ class MainShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Livria')
+        title: Text(
+          'LIVRIA',
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+            fontSize: 24,
+            color: AppColors.primaryOrange
+          ),
+        ),
+        centerTitle: false, // alinea el título a la izquierda
+
+        // Acciones a la derecha
+        actions: [
+          IconButton(
+            icon: const FaIcon(AppIcons.search),
+            onPressed: () {
+              context.push('/search');
+            },
+          ),
+          IconButton(
+            icon: const FaIcon(AppIcons.recommendations),
+            onPressed: () {
+              context.push('/recommendations');
+            },
+          ),
+          IconButton(
+            icon: const FaIcon(AppIcons.location),
+            onPressed: () {
+              context.push('/location');
+            },
+          ),
+          IconButton(
+            icon: const FaIcon(AppIcons.cart),
+            onPressed: () {
+              context.push('/cart');
+            },
+          ),
+        ],
       ),
 
       // el body es la página que el go_router nos pasa
@@ -38,7 +73,7 @@ class MainShell extends StatelessWidget {
           items: const [
             BottomNavigationBarItem(
               icon: FaIcon(AppIcons.home),
-              label: 'Home',
+              label: 'Inicio',
             ),
             BottomNavigationBarItem(
               icon: FaIcon(AppIcons.categories),
