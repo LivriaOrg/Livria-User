@@ -7,7 +7,7 @@ import 'package:livria_user/common/theme/app_colors.dart';
 import 'package:livria_user/common/widgets/multi_color_line.dart';
 
 
-class MainShell extends StatelessWidget {
+class MainShell extends StatefulWidget {
   // este child es la página actual
   // go_router la inyectará aquí
   final Widget child;
@@ -15,57 +15,102 @@ class MainShell extends StatelessWidget {
   const MainShell({super.key, required this.child});
 
   @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
+
+  // "Memoria" para guardar el último tab principal activo
+  int _lastMainTabIndex = 0;
+
+  bool _isMainTab(String location) {
+    // (Tu función original - sin cambios)
+    return location.startsWith('/home') ||
+        location.startsWith('/categories') ||
+        location.startsWith('/communities') ||
+        location.startsWith('/notifications') ||
+        location.startsWith('/profile');
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    // usar .uri.toString() para obtener la ruta real
+    final String location = GoRouterState.of(context).uri.toString();
+    final bool isMainTab = _isMainTab(location);
+
+    int currentIndex;
+    if (isMainTab) {
+      // si es un tab principal, actualizamos el índice y la memoria
+      currentIndex = _calculateCurrentIndex(location);
+      _lastMainTabIndex = currentIndex;
+    } else {
+      // si no, usamos la memoria
+      currentIndex = _lastMainTabIndex;
+    }
+
     return Scaffold(
-      appBar: _buildAppBar(context),
+        appBar: _buildAppBar(context, location),
 
-      // el body es la página que el go_router nos pasa
-      body: child,
+        // el body es la página que el go_router nos pasa
+        body: widget.child,
 
-      // Barra inferior
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min, // para que la columna no ocupe toda la pantalla
-        children: [
+        // Barra inferior
+        bottomNavigationBar: Column(
+            mainAxisSize: MainAxisSize.min, // para que la columna no ocupe toda la pantalla
+            children: [
 
-          // linea de colores personalizada
-          const MultiColorLine(),
+              // linea de colores personalizada
+              const MultiColorLine(height: 3),
 
-          BottomNavigationBar(
-            // Estilos
-              type: BottomNavigationBarType.fixed, // Para que se vean los 5 ítems
-              currentIndex: _calculateCurrentIndex(context), // calcular el ítem activo
-              onTap: (index) => _onItemTapped(index, context), // navegar al tocar
+              BottomNavigationBar(
 
-              items: const [
-                BottomNavigationBarItem(
-                  icon: FaIcon(AppIcons.home),
-                  label: 'Inicio',
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(AppIcons.categories),
-                  label: 'Categorías',
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(AppIcons.community),
-                  label: 'Comunidad',
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(AppIcons.notifications),
-                  label: 'Alertas',
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(AppIcons.profile),
-                  label: 'Perfil',
-                ),
-              ]
-          ),
-        ]
-      )
+                // Estilos
+                  type: BottomNavigationBarType.fixed, // Para que se vean los 5 ítems
+
+                  currentIndex: currentIndex,
+
+                  selectedItemColor: isMainTab
+                      ? AppColors.primaryOrange
+                      : AppColors.black,
+
+                  unselectedItemColor: AppColors.black,
+
+                  onTap: (index) => _onItemTapped(index, context), // navegar al tocar
+
+                  showUnselectedLabels: false,
+                  showSelectedLabels: isMainTab,
+
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: FaIcon(AppIcons.home),
+                      label: 'Inicio',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: FaIcon(AppIcons.categories),
+                      label: 'Categorías',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: FaIcon(AppIcons.community),
+                      label: 'Comunidad',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: FaIcon(AppIcons.notifications),
+                      label: 'Alertas',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: FaIcon(AppIcons.profile),
+                      label: 'Perfil',
+                    ),
+                  ]
+              ),
+            ]
+        )
     );
   }
 
   // esta función usa go_router para navegar a la ruta
-void _onItemTapped(int index, BuildContext context) {
+  void _onItemTapped(int index, BuildContext context) {
     switch(index) {
       case 0:
         context.go('/home');
@@ -83,12 +128,11 @@ void _onItemTapped(int index, BuildContext context) {
         context.go('/profile');
         break;
     }
-}
+  }
 
 // esta función mira la ruta actual y devuelve el índice
 // de esta forma se ilumina el ícono correcto
-int _calculateCurrentIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).matchedLocation;
+  int _calculateCurrentIndex(String location) {
     if (location.startsWith('/home')) {
       return 0;
     }
@@ -105,17 +149,11 @@ int _calculateCurrentIndex(BuildContext context) {
       return 4;
     }
     return 0;
-}
+  }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    // obtener ruta raiz
-    final String location = GoRouterState.of(context).matchedLocation;
-
-    // lógica de color manul
+  PreferredSizeWidget _buildAppBar(BuildContext context, String location) {
     Color getIconColor(String path) {
-      return location == path
-          ? AppColors.primaryOrange
-          : AppColors.black;
+      return location.startsWith(path) ? AppColors.primaryOrange : AppColors.black;
     }
 
     // construir appbar
@@ -137,25 +175,25 @@ int _calculateCurrentIndex(BuildContext context) {
         IconButton(
           icon: const FaIcon(AppIcons.search),
           color: getIconColor('/search'),
-          onPressed: () => context.go('/search'),
+          onPressed: () => context.push('/search'),
         ),
         const SizedBox(width: 16),
         IconButton(
           icon: const FaIcon(AppIcons.recommendations),
           color: getIconColor('/recommendations'),
-          onPressed: () => context.go('/recommendations'),
+          onPressed: () => context.push('/recommendations'),
         ),
         const SizedBox(width: 16),
         IconButton(
           icon: const FaIcon(AppIcons.location),
-          color: getIconColor('/location'),
-          onPressed: () => context.go('/location'),
+          // CAMBIO: Usar .push
+          onPressed: () => context.push('/location'),
         ),
         const SizedBox(width: 16),
         IconButton(
           icon: const FaIcon(AppIcons.cart),
           color: getIconColor('/cart'),
-          onPressed: () => context.go('/cart'),
+          onPressed: () => context.push('/cart'),
         ),
         const SizedBox(width: 8) // espacio a la derecha
 
@@ -175,9 +213,4 @@ int _calculateCurrentIndex(BuildContext context) {
       ),
     );
   }
-
-
-
-
-
 }
