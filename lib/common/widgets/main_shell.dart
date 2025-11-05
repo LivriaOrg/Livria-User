@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:livria_user/common/utils/app_icons.dart';
 import 'package:livria_user/common/theme/app_colors.dart';
+import 'package:livria_user/common/widgets/multi_color_line.dart';
 
 
 class MainShell extends StatelessWidget {
@@ -59,40 +60,44 @@ class MainShell extends StatelessWidget {
       body: child,
 
       // Barra inferior
-      bottomNavigationBar: BottomNavigationBar(
-        // Estilos
-        type: BottomNavigationBarType.fixed, // Para que se vean los 5 ítems
-        backgroundColor: AppColors.darkBlue,
-        selectedItemColor: AppColors.accentGold,
-        unselectedItemColor: AppColors.softTeal,
-        showUnselectedLabels: false,
-        showSelectedLabels: true,
-          currentIndex: _calculateCurrentIndex(context), // calcular el ítem activo
-          onTap: (index) => _onItemTapped(index, context), // navegar al tocar
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min, // para que la columna no ocupe toda la pantalla
+        children: [
 
-          items: const [
-            BottomNavigationBarItem(
-              icon: FaIcon(AppIcons.home),
-              label: 'Inicio',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(AppIcons.categories),
-              label: 'Categorías',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(AppIcons.community),
-              label: 'Comunidad',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(AppIcons.notifications),
-              label: 'Alertas',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(AppIcons.profile),
-              label: 'Perfil',
-            ),
-          ]
-      ),
+          // linea de colores personalizada
+          const MultiColorLine(),
+
+          BottomNavigationBar(
+            // Estilos
+              type: BottomNavigationBarType.fixed, // Para que se vean los 5 ítems
+              currentIndex: _calculateCurrentIndex(context), // calcular el ítem activo
+              onTap: (index) => _onItemTapped(index, context), // navegar al tocar
+
+              items: const [
+                BottomNavigationBarItem(
+                  icon: FaIcon(AppIcons.home),
+                  label: 'Inicio',
+                ),
+                BottomNavigationBarItem(
+                  icon: FaIcon(AppIcons.categories),
+                  label: 'Categorías',
+                ),
+                BottomNavigationBarItem(
+                  icon: FaIcon(AppIcons.community),
+                  label: 'Comunidad',
+                ),
+                BottomNavigationBarItem(
+                  icon: FaIcon(AppIcons.notifications),
+                  label: 'Alertas',
+                ),
+                BottomNavigationBarItem(
+                  icon: FaIcon(AppIcons.profile),
+                  label: 'Perfil',
+                ),
+              ]
+          ),
+        ]
+      )
     );
   }
 
