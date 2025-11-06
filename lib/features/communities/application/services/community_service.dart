@@ -71,4 +71,15 @@ class CommunityService {
       throw Exception('Fallo al cargar los posts de la comunidad: ${response.statusCode}');
     }
   }
+
+  Future<Post> _fetchPostById(int id) async {
+    final response = await http.get(Uri.parse('$_baseUrl/posts/$id'));
+
+    if (response.statusCode == 200) {
+      return Post.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Error al cargar el post con la ID: $id');
+    }
+  }
+  
 }
