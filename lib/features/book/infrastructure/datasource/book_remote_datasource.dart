@@ -1,9 +1,8 @@
 // lib/features/book/infrastructure/datasource/book_remote_datasource.dart
 import 'package:http/http.dart' as http;
-import 'package:livria_user/common/config/env.dart'; // 👈 importa Env
+import 'package:livria_user/common/config/env.dart';
 
 class BookRemoteDataSource {
-  // 👇 reemplaza la base fija por la de Env
   static const String _base = Env.apiBase;
   static const String _booksPath = '/api/v1/books';
 
