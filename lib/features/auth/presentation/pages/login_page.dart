@@ -1,69 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:livria_user/common/theme/app_colors.dart';
+import '../../../../common/theme/app_colors.dart';
+import '../widgets/login_form.dart';
+import '../widgets/register_card.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  // clave global para identificar y validar el formulario
-  final _formKey = GlobalKey<FormState>();
-
-  void _login() {
-    // validar formulario
-    if (_formKey.currentState!.validate()) {
-      // si los campos son válidos
-
-      // context.go() para reemplazar la pila de navegación
-      context.go('/home');
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // usamos scaffold porque esta pantalla está fuera del MainShell
     return Scaffold(
-      // SingleChildScrollView para evitar que el teclado tape campos de texto
-      body: SingleChildScrollView(
-        child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch, // los hijos ocupan el ancho disponible
-                children: [
-                  Image.asset(
-                    'assets/images.logo.png',
-                    height: 60,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(height: 40),
-
-                  Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                      // FOrmulario
-                      child: Form(
-                        key: _formKey,
-                        child: Column(),
-                      ),
-                    ),
-                  )
-
-                ],
+      backgroundColor: AppColors.white,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 1. Logo
+              Image.asset(
+                'assets/images/logo.png',
+                height: 80,
               ),
-            )
+              const SizedBox(height: 48),
+
+              // Formulario de Login
+              const LoginForm(),
+
+              const SizedBox(height: 32),
+
+              // Separador "O"
+              Text(
+                'O',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: AppColors.darkBlue,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Tarjeta de Registro
+              const RegisterCard(),
+            ],
+          ),
         ),
       ),
-
     );
-
   }
-
 }
-

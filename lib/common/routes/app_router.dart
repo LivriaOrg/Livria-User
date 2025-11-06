@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:livria_user/common/widgets/main_shell.dart';
+import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
 
 import 'package:livria_user/features/book/presentation/pages/search_page.dart';
 import 'package:livria_user/features/book/presentation/pages/recommendations_page.dart';
@@ -15,7 +16,8 @@ import 'package:livria_user/features/profile/presentation/pages/profile_page.dar
 //import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
 
 final appRouter = GoRouter(
-    initialLocation: '/home', // inicia la app en la ruta /home
+    // initialLocation: '/home', // inicia la app en la ruta /home
+    initialLocation: '/login', // inicia la app en la ruta /home
     routes: [
         // rutas con barra de navegación
         ShellRoute(
@@ -25,6 +27,10 @@ final appRouter = GoRouter(
             },
             // 'routes' son las páginas que se inyectan en el child
             routes: [
+                GoRoute(
+                    path: '/login',
+                    builder: (context, state) => const LoginPage()
+                ),
                 GoRoute(
                     path: '/home',
                     builder: (context, state) => const HomePage()
