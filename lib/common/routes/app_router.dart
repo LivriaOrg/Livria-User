@@ -8,67 +8,36 @@ import 'package:livria_user/features/drawers/presentation/pages/cart_page.dart';
 
 import 'package:livria_user/features/home/presentation/pages/home_page.dart';
 import 'package:livria_user/features/book/presentation/pages/categories_page.dart';
+import 'package:livria_user/features/book/presentation/pages/category_books_page.dart'; // <-- NUEVO
 import 'package:livria_user/features/communities/presentation/pages/communities_page.dart';
 import 'package:livria_user/features/drawers/presentation/pages/notifications_page.dart';
 import 'package:livria_user/features/profile/presentation/pages/profile_page.dart';
 
-//import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
-
 final appRouter = GoRouter(
-    initialLocation: '/home', // inicia la app en la ruta /home
+    initialLocation: '/home',
     routes: [
-        // rutas con barra de navegación
         ShellRoute(
-            // mainshell
-            builder: (context, state, child) {
-                return MainShell(child: child);
-            },
-            // 'routes' son las páginas que se inyectan en el child
+            builder: (context, state, child) => MainShell(child: child),
             routes: [
+                GoRoute(path: '/home', builder: (_, __) => const HomePage()),
+                GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
+                // ---------- NUEVA RUTA DETALLE POR CATEGORÍA ----------
                 GoRoute(
-                    path: '/home',
-                    builder: (context, state) => const HomePage()
+                    path: '/categories/:genre',
+                    builder: (context, state) {
+                        final genre = state.pathParameters['genre'] ?? '';
+                        return CategoryBooksPage(genre: Uri.decodeComponent(genre));
+                    },
                 ),
-                GoRoute(
-                    path: '/categories',
-                    builder: (context, state) => const CategoriesPage()
-                ),
-                GoRoute(
-                    path: '/communities',
-                    builder: (context, state) => const CommunitiesPage()
-                ),
-                GoRoute(
-                    path: '/notifications',
-                    builder: (context, state) => const NotificationsPage()
-                ),
-                GoRoute(
-                    path: '/profile',
-                    builder: (context, state) => const ProfilePage()
-                ),
-                GoRoute(
-                    path: '/search',
-                    builder: (context, state) => const SearchPage()
-                ),
-                GoRoute(
-                    path: '/recommendations',
-                    builder: (context, state) => const RecommendationsPage()
-                ),
-                GoRoute(
-                    path: '/location',
-                    builder: (context, state) => const LocationPage()
-                ),
-                GoRoute(
-                    path: '/cart',
-                    builder: (context, state) => const CartPage()
-                )
-
-                // rutas sin barra de navegacion
-                // GoRoute(
-                //     path: '/login',
-                //     builder: (context, state) => const LoginPage()
-                // )
+                // -------------------------------------------------------
+                GoRoute(path: '/communities', builder: (_, __) => const CommunitiesPage()),
+                GoRoute(path: '/notifications', builder: (_, __) => const NotificationsPage()),
+                GoRoute(path: '/profile', builder: (_, __) => const ProfilePage()),
+                GoRoute(path: '/search', builder: (_, __) => const SearchPage()),
+                GoRoute(path: '/recommendations', builder: (_, __) => const RecommendationsPage()),
+                GoRoute(path: '/location', builder: (_, __) => const LocationPage()),
+                GoRoute(path: '/cart', builder: (_, __) => const CartPage()),
             ],
         ),
-
-    ]
+    ],
 );
