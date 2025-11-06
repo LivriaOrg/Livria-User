@@ -69,7 +69,7 @@ class _LoginFormState extends State<LoginForm> {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(vertical: 48.0, horizontal: 32.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -80,6 +80,7 @@ class _LoginFormState extends State<LoginForm> {
                 style: textTheme.headlineMedium?.copyWith(
                   color: AppColors.primaryOrange,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
                 ),
               ),
               const SizedBox(height: 24),
@@ -98,7 +99,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 validator: (v) => (v?.isEmpty ?? true) ? 'Ingrese su usuario' : null,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
 
               // Mensaje de error si existe
               if (_errorMessage != null)
@@ -110,7 +111,7 @@ class _LoginFormState extends State<LoginForm> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-
+              const SizedBox(height: 24),
               // Contraseña
               TextFormField(
                 controller: _passwordController,
@@ -127,7 +128,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 validator: (v) => (v?.isEmpty ?? true) ? 'Ingrese su contraseña' : null,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 48),
 
               SizedBox(
                 width: double.infinity,

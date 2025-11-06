@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../common/theme/app_colors.dart';
 
-class RegisterCard extends StatelessWidget {
-  const RegisterCard({super.key});
+class LoginRedirectCard extends StatelessWidget {
+  const LoginRedirectCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class RegisterCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              '¿No tienes una cuenta?',
+              '¿Ya tienes una cuenta?',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.vibrantBlue,
                 fontWeight: FontWeight.w600,
@@ -26,7 +26,8 @@ class RegisterCard extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
-                onPressed: () => context.push('/register_step1'),
+                // redirige al Login
+                onPressed: () => context.go('/login'),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.darkBlue, width: 1.5),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -35,7 +36,7 @@ class RegisterCard extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'REGISTRARSE',
+                  'INICIAR SESIÓN',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.darkBlue,

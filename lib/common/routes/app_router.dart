@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:livria_user/common/widgets/main_shell.dart';
 import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
+import 'package:livria_user/features/auth/presentation/pages/register_step1_page.dart';
+import 'package:livria_user/features/auth/presentation/pages/register_step2_page.dart';
 
 import 'package:livria_user/features/book/presentation/pages/search_page.dart';
 import 'package:livria_user/features/book/presentation/pages/recommendations_page.dart';
@@ -19,6 +21,34 @@ final appRouter = GoRouter(
     // initialLocation: '/home', // inicia la app en la ruta /home
     initialLocation: '/login', // inicia la app en la ruta /home
     routes: [
+        GoRoute(
+            path: '/login',
+            builder: (context, state) => const LoginPage()
+        ),
+        GoRoute(
+            path: '/register_step1',
+            builder: (context, state) => const RegisterStep1Page(),
+        ),
+        GoRoute(
+            path: '/register_step2',
+            builder: (context, state) {
+                // extraemos los datos enviados desde el paso 1
+                final data = state.extra as Map<String, String>?;
+
+                if (data == null) {
+                    return const RegisterStep1Page();
+                }
+
+                return RegisterStep2Page(
+                    email: data['email']!,
+                    password: data['password']!,
+                );
+            },
+        ),
+
+
+
+
         // rutas con barra de navegación
         ShellRoute(
             // mainshell
@@ -27,10 +57,6 @@ final appRouter = GoRouter(
             },
             // 'routes' son las páginas que se inyectan en el child
             routes: [
-                GoRoute(
-                    path: '/login',
-                    builder: (context, state) => const LoginPage()
-                ),
                 GoRoute(
                     path: '/home',
                     builder: (context, state) => const HomePage()
@@ -68,13 +94,7 @@ final appRouter = GoRouter(
                     builder: (context, state) => const CartPage()
                 )
 
-                // rutas sin barra de navegacion
-                // GoRoute(
-                //     path: '/login',
-                //     builder: (context, state) => const LoginPage()
-                // )
             ],
         ),
-
     ]
 );
