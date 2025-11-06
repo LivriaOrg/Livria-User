@@ -13,8 +13,8 @@ class LoginUseCase {
   // al llamarlo (call) se realiza el login
   // Recibe email y password
   // devuelve un Future<UserEntity>, porque el login puede tardar (operación asíncrona)
-  Future<UserEntity> call(String email, String password) async {
+  Future<UserEntity> call(String username, String password) async {
     // llama al método login del repositorio y espera la respuesta
-    return await repository.login(email, password);
+    return await repository.login(username, password);
   }
 }

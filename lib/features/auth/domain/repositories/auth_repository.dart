@@ -6,7 +6,7 @@ abstract class AuthRepository {
   // recibe email y password como parámetros
   // devuelve un Future que resolverá en un UserEntity
   // future indica que es una operación asíncrona
-  Future<UserEntity> login(String email, String password);
+  Future<UserEntity> login(String username, String password);
 
   // devuelve un Future que resolverá en un UserEntity
   Future<UserEntity> register ({
