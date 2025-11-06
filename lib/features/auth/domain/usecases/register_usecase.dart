@@ -9,7 +9,6 @@ class RegisterUseCase {
   // cnstructor que recibe el repositorio
   RegisterUseCase(this.repository);
 
-  // método principal para registrar un usuario
   Future<UserEntity> call({
     required String email,
     required String password,
