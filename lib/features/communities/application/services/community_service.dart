@@ -10,8 +10,7 @@ import '../../domain/entities/community.dart';
 import '../../domain/entities/post.dart';
 
 class CommunityService {
-  // crear constants porfavor :d
-  static final String _baseUrl = 'urlbaseconstante';
+  static final String _baseUrl = 'https://livriagod.azurewebsites.net/';
 
   Future<List<Community>> fetchCommunityList({
     required int offset,
@@ -21,9 +20,7 @@ class CommunityService {
         Uri.parse('$_baseUrl/communities?offset=$offset&limit=$limit'));
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseJson = jsonDecode(response.body);
-
-      final List<dynamic> communityJsonList = responseJson['items'] as List;
+      final List<dynamic> communityJsonList = jsonDecode(response.body);
 
       final communityList = communityJsonList.map((jsonItem) {
         return Community.fromJson(jsonItem as Map<String, dynamic>);
@@ -32,16 +29,6 @@ class CommunityService {
       return communityList;
     } else {
       throw Exception('Fallo al cargar la lista de comunidades');
-    }
-  }
-
-  Future<Community> _fetchCommunityById(int id) async {
-    final response = await http.get(Uri.parse('$_baseUrl/communities/$id'));
-
-    if (response.statusCode == 200) {
-      return Community.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Error al cargar la comunidad con la ID: $id');
     }
   }
 
@@ -55,12 +42,11 @@ class CommunityService {
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseJson = jsonDecode(response.body);
-
-      // verificar (0 )(0 )
-      final List<dynamic> postsJsonList = responseJson['posts'] as List;
+      // JSON es una Lista (List<dynamic>) directamente, NO un Map con clave '0'
+      final List<dynamic> postsJsonList = jsonDecode(response.body);
 
       final postsList = postsJsonList.map((jsonItem) {
+        // Mapeo a la entidad Post (ya corregida)
         return Post.fromJson(jsonItem as Map<String, dynamic>);
       }).toList();
 
@@ -74,12 +60,11 @@ class CommunityService {
 
   Future<Post> _fetchPostById(int id) async {
     final response = await http.get(Uri.parse('$_baseUrl/posts/$id'));
-
     if (response.statusCode == 200) {
       return Post.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Error al cargar el post con la ID: $id');
     }
   }
-  
+
 }

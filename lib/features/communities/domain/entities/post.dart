@@ -6,16 +6,18 @@ class Post {
   final int id;
   final int communityId;
   final int userId;
+  final String username;
   final String content;
-  final String image;
+  final String img;
   final DateTime createdAt;
 
   Post({
     required this.id,
     required this.communityId,
     required this.userId,
+    required this.username,
     required this.content,
-    required this.image,
+    required this.img,
     required this.createdAt,
   });
 
@@ -27,8 +29,9 @@ class Post {
         id: json['id'],
         communityId: json['communityId'],
         userId: json['userId'],
+        username: json['username'],
         content: json['content'],
-        image: json['img'],
+        img: json['img'],
         createdAt: parsedDate
     );
   }
