@@ -1,18 +1,22 @@
+// lib/features/book/infrastructure/datasource/book_remote_datasource.dart
 import 'package:http/http.dart' as http;
-
-import '../../../../common/config/api_config.dart';
+import 'package:livria_user/common/config/env.dart'; // 👈 importa Env
 
 class BookRemoteDataSource {
+  // 👇 reemplaza la base fija por la de Env
+  static const String _base = Env.apiBase;
+  static const String _booksPath = '/api/v1/books';
+
   final http.Client _client;
-  BookRemoteDataSource({http.Client? client})
-      : _client = client ?? http.Client();
+  BookRemoteDataSource({http.Client? client}) : _client = client ?? http.Client();
 
-  Uri _u(String path) => Uri.parse('${apiBase()}$path');
+  Future<http.Response> getAllBooks() {
+    final uri = Uri.parse('$_base$_booksPath');
+    return _client.get(uri);
+  }
 
-  Future<http.Response> getAllBooks() => _client.get(_u('/api/v1/books'));
-  Future<http.Response> getBook(int id) => _client.get(_u('/api/v1/books/$id'));
-  Future<http.Response> addStock(int id, int qty) =>
-      _client.put(_u('/api/v1/books/$id/stock'),
-          headers: {'Content-Type': 'application/json'},
-          body: '{"quantityToAdd": $qty}');
+  Future<http.Response> getBook(int id) {
+    final uri = Uri.parse('$_base$_booksPath/$id');
+    return _client.get(uri);
+  }
 }
