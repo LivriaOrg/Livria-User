@@ -59,11 +59,12 @@ class _SingleBookViewState extends State<SingleBookView> {
           Align(
             alignment: Alignment.center,
             child: Container(
-              width: 350,
+              width: MediaQuery.of(context).size.width,
               height: 300,
               alignment: Alignment.center,
               child: Stack(
                 alignment: Alignment.center,
+                clipBehavior: Clip.none,
                 children: [
                   // Imagen de la Portada
                   Image.network(
@@ -80,9 +81,9 @@ class _SingleBookViewState extends State<SingleBookView> {
                     ),
                   ),
                   // Etiquetas Rotadas
-                  _buildVerticalLabel(widget.b.genre.toUpperCase(), AppColors.primaryOrange, 0, -35, 3),
-                  _buildVerticalLabel(widget.b.language.toUpperCase(), AppColors.vibrantBlue, 100, -35, 3),
-                  _buildVerticalLabel(widget.b.author.toUpperCase(), AppColors.darkBlue, 0, 160, 1),
+                  _buildVerticalLabel(widget.b.genre.toUpperCase(), AppColors.primaryOrange, 0, -30, 3),
+                  _buildVerticalLabel(widget.b.language.toUpperCase(), AppColors.vibrantBlue, 206, -30, 3),
+                  _buildVerticalLabel(widget.b.author.toUpperCase(), AppColors.darkBlue, 0, 170, 1),
                 ],
               ),
             ),
