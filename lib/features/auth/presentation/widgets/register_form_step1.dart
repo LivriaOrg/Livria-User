@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../../../common/theme/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegisterFormStep1 extends StatefulWidget {
   const RegisterFormStep1({super.key});
@@ -51,6 +52,18 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
           'password': _passwordController.text,
         },
       );
+    }
+  }
+
+  // función helper para abrir URLs
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (!await launchUrl(url, mode: LaunchMode.platformDefault)) {
+        throw Exception('No se pudo lanzar $url');
+      }
+    } catch (e) {
+      print("Error abriendo URL: $e");
     }
   }
 
@@ -145,14 +158,21 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
                           TextSpan(
                             text: 'Política de Privacidad',
                             style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
-                            // lógica de link de google
-                            recognizer: TapGestureRecognizer()..onTap = () => print('Abrir Política de Privacidad'),
+                            // --- ENLACE 1 ---
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => _launchURL(
+                                  'https://es.wikipedia.org/wiki/Términos_y_condiciones_de_uso'
+                              ),
                           ),
                           const TextSpan(text: ' y los '),
                           TextSpan(
                             text: 'Términos y Condiciones',
                             style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
-                            recognizer: TapGestureRecognizer()..onTap = () => print('Abrir Términos'),
+                            // --- ENLACE 2 ---
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => _launchURL(
+                                  'https://es.wikipedia.org/wiki/Política_de_privacidad'
+                              ),
                           ),
                           const TextSpan(text: ' de Livria.'),
                         ],

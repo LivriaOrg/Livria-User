@@ -1,4 +1,5 @@
 import 'dart:convert';             // para convertir entre JSON y Map
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import '../model/user_model.dart';
 import '../../../../common/utils/constants.dart';
@@ -66,6 +67,11 @@ class AuthRemoteDataSource {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(registerData)
     );
+
+    debugPrint("🔵 URL: $url");
+    debugPrint("📦 BODY: ${jsonEncode(registerData)}");
+    debugPrint("🟣 RESPUESTA DEL SERVIDOR: ${response.statusCode}");
+    debugPrint("🟣 CUERPO RESPUESTA: ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return; // no devuelve nada, solo indica éxito

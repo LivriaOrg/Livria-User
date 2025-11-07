@@ -38,12 +38,26 @@ class AuthRepositoryImpl implements AuthRepository {
     String? phrase,
     String? iconPath
 }) async {
-    String iconBase64 = "";
-    if (iconPath != null && iconPath.isNotEmpty) {
-      final bytes = await File(iconPath).readAsBytes();
-      iconBase64 = base64Encode(bytes);
-    }
+    String? iconBase64;
 
+    if (iconPath != null && iconPath.isNotEmpty) {
+      try {
+        final File imageFile = File(iconPath);
+        final List<int> imageBytes = await imageFile.readAsBytes();
+
+        final String base64String = base64Encode(imageBytes);
+        iconBase64 = "data:image/jpeg;base64,$base64String";
+
+      } catch (e) {
+        print("Error convirtiendo imagen a Base64: $e");
+        iconBase64 = null;
+      }
+    }
+    if (iconBase64 != null) {
+      print("📦 Longitud del Base64 a enviar: ${iconBase64.length} caracteres");
+      // Imprime solo los primeros 100 caracteres para ver si tiene el prefijo o no
+      print("📦 Inicio del Base64: ${iconBase64.substring(0, 100)}...");
+    }
 
     final registerData = {
       "email": email,

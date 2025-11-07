@@ -3,6 +3,7 @@ import 'package:livria_user/common/widgets/main_shell.dart';
 import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
 import 'package:livria_user/features/auth/presentation/pages/register_step1_page.dart';
 import 'package:livria_user/features/auth/presentation/pages/register_step2_page.dart';
+import 'package:livria_user/features/auth/presentation/pages/splash_page.dart';
 
 import 'package:livria_user/features/book/presentation/pages/search_page.dart';
 import 'package:livria_user/features/book/presentation/pages/recommendations_page.dart';
@@ -19,8 +20,13 @@ import 'package:livria_user/features/profile/presentation/pages/profile_page.dar
 
 final appRouter = GoRouter(
     // initialLocation: '/home', // inicia la app en la ruta /home
-    initialLocation: '/login', // inicia la app en la ruta /home
+    // initialLocation: '/login', // inicia la app en la ruta /login
+    initialLocation: '/',// iniciamos en el splashpage
     routes: [
+        GoRoute(
+            path: '/',
+            builder: (context, state) => const SplashPage(),
+        ),
         GoRoute(
             path: '/login',
             builder: (context, state) => const LoginPage()

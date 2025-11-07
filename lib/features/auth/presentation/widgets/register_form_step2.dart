@@ -46,7 +46,12 @@ class _RegisterFormStep2State extends State<RegisterFormStep2> {
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
     try {
-      final XFile? pickedFile = await picker.pickImage(source: source);
+      final XFile? pickedFile = await picker.pickImage(
+          source: source,
+          maxWidth: 500,
+          maxHeight: 500,
+          imageQuality: 50
+      );
       if (pickedFile != null) {
         setState(() {
           _imageFile = pickedFile;
@@ -59,6 +64,7 @@ class _RegisterFormStep2State extends State<RegisterFormStep2> {
 
   // --- Lógica de Registro Final ---
   void _performRegister() async {
+    print("👆 BOTÓN REGISTRAR PRESIONADO");
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return; // Si el formulario no es válido, no hacer nada
 
