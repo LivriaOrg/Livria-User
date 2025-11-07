@@ -24,7 +24,6 @@ class _MainShellState extends State<MainShell> {
   int _lastMainTabIndex = 0;
 
   bool _isMainTab(String location) {
-    // (Tu función original - sin cambios)
     return location.startsWith('/home') ||
         location.startsWith('/categories') ||
         location.startsWith('/communities') ||
@@ -164,12 +163,12 @@ class _MainShellState extends State<MainShell> {
         onTap: () => context.go('/home'), // acción ir a /home
         child: Image.asset(
           'assets/images/logo.png',
-          height: 36,
+          height: 28,
           fit: BoxFit.contain,
         ),
       ),
       centerTitle: false, // Alinea el logo a la izquierda
-
+      backgroundColor: AppColors.white,
       //  acciones
       actions: [
         IconButton(
