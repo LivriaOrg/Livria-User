@@ -24,4 +24,22 @@ class BookService {
     final list = await getAllBooks();
     return list.where((b) => b.genre.toLowerCase() == genre.toLowerCase()).toList();
   }
+
+  // buscar el libro por su id
+  Future<Book?> findBookById(String bookId) async {
+    final list = await getAllBooks();
+
+    // Usamos firstWhere o singleWhere para encontrar el libro.
+    // firstWhere lanza una excepción si no lo encuentra, por lo que usamos orElse.
+    try {
+      final book = list.firstWhere(
+            (b) => b.id == bookId,
+        orElse: () => throw StateError('Book not found'),
+      );
+      return book;
+    } on StateError {
+      return null;
+    }
+  }
+
 }

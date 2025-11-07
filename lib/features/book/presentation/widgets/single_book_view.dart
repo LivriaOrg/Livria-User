@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../../../common/theme/app_colors.dart';
+import '../../domain/entities/book.dart';
 
 
 class SingleBookView extends StatefulWidget {
-  final String book;
-  const SingleBookView({super.key, required this.book});
+  final Book b;
+  const SingleBookView({super.key, required this.b});
 
   @override
   State<SingleBookView> createState() => _SingleBookViewState();
 }
 
 class _SingleBookViewState extends State<SingleBookView> {
-
-
   int _selectedQuantity = 1;
   final List<int> _quantities = [1, 2, 3];
 
