@@ -66,8 +66,8 @@ class _SingleBookViewState extends State<SingleBookView> {
                   // Imagen de la Portada
                   Image(
                     image: const AssetImage("assets/book_cover.png"),
-                    height: 200,
-                    width: 130,
+                    height: 240,
+                    width: 140,
                     fit: BoxFit.cover,
                   ),
                   // Etiquetas Rotadas
@@ -128,7 +128,7 @@ class _SingleBookViewState extends State<SingleBookView> {
               ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.softTeal,
+                  backgroundColor: AppColors.vibrantBlue,
                   foregroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
                   minimumSize: Size.zero,
@@ -203,15 +203,23 @@ class _SingleBookViewState extends State<SingleBookView> {
               ),
               const SizedBox(height: 8.0),
               // Input de Texto
-              Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.softTeal.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(4.0),
+              TextField(
+                maxLines: 5,
+                decoration: InputDecoration(
+                  hintText: '¿Cuál es tu opinión?',
+                  hintStyle: TextStyle(color: AppColors.darkBlue.withOpacity(0.7)),
+                  filled: true,
+                  fillColor: AppColors.softTeal.withOpacity(0.5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
                 ),
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text('¿Cuál es tu opinión?', style: TextStyle(color: AppColors.darkBlue.withOpacity(0.7))),
+                style: TextStyle(
+                  color: AppColors.darkBlue,
+                  fontSize: 14.0,
+                ),
               ),
               const SizedBox(height: 8.0),
               // Botón de Enviar Reseña
@@ -220,7 +228,7 @@ class _SingleBookViewState extends State<SingleBookView> {
                 child: TextButton(
                   onPressed: () {},
                   style: TextButton.styleFrom(
-                    backgroundColor: AppColors.softTeal,
+                    backgroundColor: AppColors.vibrantBlue,
                     foregroundColor: AppColors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
@@ -266,6 +274,3 @@ class _SingleBookViewState extends State<SingleBookView> {
     );
   }
 }
-
-// Nota: Asegúrate de actualizar el ReviewCard para usar AppColors también, por ejemplo,
-// el color de fondo de la tarjeta de reseña podría ser AppColors.lightGrey.
