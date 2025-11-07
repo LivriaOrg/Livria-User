@@ -257,7 +257,7 @@ class _SingleBookViewState extends State<SingleBookView> {
 
   @override
   Widget build(BuildContext context) {
-    precacheImage(const AssetImage("assets/book_cover.png"), context);
+    precacheImage(AssetImage(widget.b.cover), context);
 
     return Scaffold(
       backgroundColor: AppColors.white,
