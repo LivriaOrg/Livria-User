@@ -3,13 +3,16 @@ import '../../../../common/theme/app_colors.dart';
 
 
 class SingleBookView extends StatefulWidget {
-  const SingleBookView({super.key});
+  final String book;
+  const SingleBookView({super.key, required this.book});
 
   @override
   State<SingleBookView> createState() => _SingleBookViewState();
 }
 
 class _SingleBookViewState extends State<SingleBookView> {
+
+
   int _selectedQuantity = 1;
   final List<int> _quantities = [1, 2, 3];
 

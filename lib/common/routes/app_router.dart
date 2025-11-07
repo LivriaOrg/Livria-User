@@ -31,11 +31,18 @@ final appRouter = GoRouter(
                     },
                 ),
                 // -------------------------------------------------------
+                GoRoute(
+                    path: '/book/:book',
+                  builder: (context, state) {
+                      final book = state.pathParameters['book'] ?? '';
+                      return BookPage(book: Uri.decodeComponent(book));
+                  }
+                ),
                 GoRoute(path: '/communities', builder: (_, __) => const CommunitiesPage()),
                 GoRoute(path: '/notifications', builder: (_, __) => const NotificationsPage()),
                 GoRoute(path: '/profile', builder: (_, __) => const ProfilePage()),
                 GoRoute(path: '/search', builder: (_, __) => const SearchPage()),
-                GoRoute(path: '/recommendations', builder: (_, __) => const BookPage()),
+                GoRoute(path: '/recommendations', builder: (_, __) => const RecommendationsPage()),
                 GoRoute(path: '/location', builder: (_, __) => const LocationPage()),
                 GoRoute(path: '/cart', builder: (_, __) => const CartPage()),
             ],
