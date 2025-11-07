@@ -1,11 +1,11 @@
-// lib/features/communities/infrastructure/repositories/community_repository_impl.dart
+// lib/features/communities/domain/repositories/community_repository_impl.dart
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../domain/entities/community.dart';
-import '../../domain/entities/post.dart';
-import '../../infrastructure/repositories/community_repository.dart';
-import '../datasource/community_remote_datasource.dart';
+import '../entities/community.dart';
+import '../entities/post.dart';
+import 'community_repository.dart';
+import '../../infrastructure/datasource/community_remote_datasource.dart';
 
 class CommunityRepositoryImpl implements CommunityRepository {
   final CommunityRemoteDataSource _ds;
@@ -33,21 +33,19 @@ class CommunityRepositoryImpl implements CommunityRepository {
       return postsJsonList.map((jsonItem) =>
           Post.fromJson(jsonItem as Map<String, dynamic>)).toList();
     }
-    // Manejo de 404 para comunidades sin posts, si el servicio lo devuelve así.
     if (res.statusCode == 404) {
-      return []; // Devuelve lista vacía en lugar de un error.
+      return [];
     }
     throw Exception('HTTP ${res.statusCode}: Fallo al cargar los posts.');
   }
 
   @override
   Future<List<Community>> searchCommunities(String query) async {
-    const int maxLimit = 1000; // Asumimos el límite máximo para la búsqueda
+    const int maxLimit = 1000;
     final normalizedQuery = query.toLowerCase().trim();
 
     if (normalizedQuery.isEmpty) return [];
 
-    // Llama al listado general (cargando todo el dataset)
     final allCommunities = await fetchCommunityList(0, maxLimit);
 
     return allCommunities.where((community) {

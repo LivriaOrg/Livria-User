@@ -2,7 +2,7 @@
 
 import '../../domain/entities/community.dart';
 import '../../domain/entities/post.dart';
-import '../../infrastructure/repositories/community_repository.dart';
+import '../../domain/repositories/community_repository.dart';
 
 class CommunityService {
   final CommunityRepository _repo;

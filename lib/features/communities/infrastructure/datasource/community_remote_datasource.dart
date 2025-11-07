@@ -1,12 +1,10 @@
-// lib/features/communities/infrastructure/datasource/community_remote_datasource.dart
-
 import 'package:http/http.dart' as http;
 import 'package:livria_user/common/config/env.dart';
 
 class CommunityRemoteDataSource {
   static const String _base = Env.apiBase;
-  static const String _communitiesPath = 'communities';
-  static const String _postsPath = 'posts';
+  static const String _communitiesPath = '/communities';
+  static const String _postsPath = '/posts';
 
   final http.Client _client;
   CommunityRemoteDataSource({http.Client? client}) : _client = client ?? http.Client();
