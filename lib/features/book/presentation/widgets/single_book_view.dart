@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:livria_user/features/book/presentation/widgets/review_card.dart';
 import '../../../../common/theme/app_colors.dart';
+import '../../application/services/review_service.dart';
 import '../../domain/entities/book.dart';
+import '../../domain/entities/review.dart';
+import '../../domain/repositories/review_repository_impl.dart';
+import '../../infrastructure/datasource/review_remote_datasource.dart';
 
 
 class SingleBookView extends StatefulWidget {
@@ -14,6 +19,18 @@ class SingleBookView extends StatefulWidget {
 class _SingleBookViewState extends State<SingleBookView> {
   int _selectedQuantity = 1;
   final List<int> _quantities = [1, 2, 3];
+
+  late final ReviewService _reviewService;
+
+  @override
+  void initState() {
+    super.initState();
+    _reviewService = ReviewService(
+      ReviewRepositoryImpl(
+        ReviewRemoteDataSource(),
+      ),
+    );
+  }
 
   // --- WIDGET AUXILIAR PARA LAS ETIQUETAS LATERALES ---
   Widget _buildVerticalLabel(String text, Color color, double top, double left, int turn) {
@@ -178,6 +195,7 @@ class _SingleBookViewState extends State<SingleBookView> {
   // --- SECCIÓN 3: LISTA DE RESEÑAS DETALLADAS ---
   Widget _buildReviewsSection(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final int bookId = widget.b.id;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +255,6 @@ class _SingleBookViewState extends State<SingleBookView> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    print(widget.b.cover); //para comprobar que sí imprime la ruta url (ta bien)
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: AppColors.vibrantBlue,
@@ -255,7 +272,42 @@ class _SingleBookViewState extends State<SingleBookView> {
 
         const SizedBox(height: 16.0),
         // Lista de reseñas
-        // TODO: Entidad review y jalar de cada libro
+        FutureBuilder<List<Review>>(
+          // Llama al servicio con el ID del libro actual
+          future: _reviewService.getBookReviews(bookId),
+
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: Text('Error al cargar reseñas: ${snapshot.error}'),
+              );
+            }
+
+            final reviews = snapshot.data ?? [];
+
+            if (reviews.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32.0),
+                child: Text('Aún no hay reseñas para este libro. ¡Sé el primero!'),
+              );
+            }
+
+            // Si hay reseñas, las renderizamos usando ReviewCard
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: reviews.length,
+              itemBuilder: (context, index) {
+                return ReviewCard(review: reviews[index]);
+              },
+            );
+          },
+        ),
+
         const SizedBox(height: 20.0),
       ],
     );
