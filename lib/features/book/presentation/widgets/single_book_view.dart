@@ -46,7 +46,7 @@ class _SingleBookViewState extends State<SingleBookView> {
         children: [
           // TÍTULO PRINCIPAL
           Text(
-            'PERCY JACKSON AND THE BATTLE OF THE LABYRINTH',
+            widget.b.title.toUpperCase(),
             style: t.headlineMedium?.copyWith(
               color: AppColors.accentGold,
               letterSpacing: 1.4,
@@ -67,15 +67,15 @@ class _SingleBookViewState extends State<SingleBookView> {
                 children: [
                   // Imagen de la Portada
                   Image(
-                    image: const AssetImage("assets/book_cover.png"),
+                    image: AssetImage(widget.b.cover),
                     height: 240,
                     width: 140,
                     fit: BoxFit.cover,
                   ),
                   // Etiquetas Rotadas
-                  _buildVerticalLabel('JUVENILE', AppColors.primaryOrange, 30, -35),
-                  _buildVerticalLabel('en INGLÉS', AppColors.vibrantBlue, 100, -35),
-                  _buildVerticalLabel('RICK RIORDAN', AppColors.darkBlue, 40, 115),
+                  _buildVerticalLabel(widget.b.genre.toUpperCase(), AppColors.primaryOrange, 30, -35),
+                  _buildVerticalLabel(widget.b.language.toUpperCase(), AppColors.vibrantBlue, 100, -35),
+                  _buildVerticalLabel(widget.b.author.toUpperCase(), AppColors.darkBlue, 40, 115),
                 ],
               ),
             ),
@@ -93,7 +93,7 @@ class _SingleBookViewState extends State<SingleBookView> {
               const SizedBox(width: 16.0),
               // Precio
               Text(
-                'S/ 49.00',
+                'S/ ${widget.b.salePrice.toStringAsFixed(2)}',
                 style: t.titleLarge?.copyWith(
                     color: AppColors.primaryOrange, fontWeight: FontWeight.bold),
               ),
@@ -158,8 +158,8 @@ class _SingleBookViewState extends State<SingleBookView> {
             borderRadius: BorderRadius.circular(8.0),
             border: Border.all(color: AppColors.lightGrey.withOpacity(0.8))
         ),
-        child: const Text(
-          'In Percy Jackson and the Battle of the Labyrinth, Percy, Annabeth, Grover, and Tyson explore the ancient, magical, and constantly changing Labyrinth to prevent the Titan Lord Kronos and his army from using it to invade Camp Half-Blood. The quest takes them through the maze where they encounter mythical and dangerous traps, confront new enemies, and seek out Daedalus, the Labyrinth\'s creator, to find a way to stop the invasion.',
+        child: Text(
+          widget.b.description,
           textAlign: TextAlign.justify,
           style: TextStyle(fontSize: 14, color: AppColors.black),
         ),
