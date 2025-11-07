@@ -10,9 +10,10 @@ class SingleBookView extends StatefulWidget {
 
 class _SingleBookViewState extends State<SingleBookView> {
 
-
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Center(
+      child: Text('tamos avanzando'),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:livria_user/common/widgets/main_shell.dart';
+import 'package:livria_user/features/book/presentation/pages/book_page.dart';
 
 import 'package:livria_user/features/book/presentation/pages/search_page.dart';
 import 'package:livria_user/features/book/presentation/pages/recommendations_page.dart';
@@ -34,7 +35,7 @@ final appRouter = GoRouter(
                 GoRoute(path: '/notifications', builder: (_, __) => const NotificationsPage()),
                 GoRoute(path: '/profile', builder: (_, __) => const ProfilePage()),
                 GoRoute(path: '/search', builder: (_, __) => const SearchPage()),
-                GoRoute(path: '/recommendations', builder: (_, __) => const RecommendationsPage()),
+                GoRoute(path: '/recommendations', builder: (_, __) => const BookPage()),
                 GoRoute(path: '/location', builder: (_, __) => const LocationPage()),
                 GoRoute(path: '/cart', builder: (_, __) => const CartPage()),
             ],
