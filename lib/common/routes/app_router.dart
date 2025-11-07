@@ -1,5 +1,9 @@
 import 'package:go_router/go_router.dart';
 import 'package:livria_user/common/widgets/main_shell.dart';
+import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
+import 'package:livria_user/features/auth/presentation/pages/register_step1_page.dart';
+import 'package:livria_user/features/auth/presentation/pages/register_step2_page.dart';
+import 'package:livria_user/features/auth/presentation/pages/splash_page.dart';
 
 import 'package:livria_user/features/book/presentation/pages/search_page.dart';
 import 'package:livria_user/features/book/presentation/pages/recommendations_page.dart';
@@ -13,31 +17,99 @@ import 'package:livria_user/features/communities/presentation/pages/communities_
 import 'package:livria_user/features/drawers/presentation/pages/notifications_page.dart';
 import 'package:livria_user/features/profile/presentation/pages/profile_page.dart';
 
+//import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
+
 final appRouter = GoRouter(
-    initialLocation: '/home',
+  // initialLocation: '/home', // inicia la app en la ruta /home
+  // initialLocation: '/login', // inicia la app en la ruta /login
+    initialLocation: '/',// iniciamos en el splashpage
     routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+          path: '/login',
+          builder: (context, state) => const LoginPage()
+      ),
+      GoRoute(
+        path: '/register_step1',
+        builder: (context, state) => const RegisterStep1Page(),
+      ),
+      GoRoute(
+        path: '/register_step2',
+        builder: (context, state) {
+          // extraemos los datos enviados desde el paso 1
+          final data = state.extra as Map<String, String>?;
+
+          if (data == null) {
+            return const RegisterStep1Page();
+          }
+
+          return RegisterStep2Page(
+            email: data['email']!,
+            password: data['password']!,
+          );
+        },
+      ),
+
+      // rutas con barra de navegación
         ShellRoute(
-            builder: (context, state, child) => MainShell(child: child),
+            // mainshell
+            builder: (context, state, child) {
+                return MainShell(child: child);
+            },
+            // 'routes' son las páginas que se inyectan en el child
             routes: [
-                GoRoute(path: '/home', builder: (_, __) => const HomePage()),
-                GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
-                // ---------- NUEVA RUTA DETALLE POR CATEGORÍA ----------
+              GoRoute(path: '/home', builder: (_, __) => const HomePage()),
+              GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
+              // ---------- NUEVA RUTA DETALLE POR CATEGORÍA ----------
+              GoRoute(
+                path: '/categories/:genre',
+                builder: (context, state) {
+                  final genre = state.pathParameters['genre'] ?? '';
+                  return CategoryBooksPage(genre: Uri.decodeComponent(genre));
+                },
+              ),
                 GoRoute(
-                    path: '/categories/:genre',
-                    builder: (context, state) {
-                        final genre = state.pathParameters['genre'] ?? '';
-                        return CategoryBooksPage(genre: Uri.decodeComponent(genre));
-                    },
+                    path: '/home',
+                    builder: (context, state) => const HomePage()
                 ),
-                // -------------------------------------------------------
-                GoRoute(path: '/communities', builder: (_, __) => const CommunitiesPage()),
-                GoRoute(path: '/notifications', builder: (_, __) => const NotificationsPage()),
-                GoRoute(path: '/profile', builder: (_, __) => const ProfilePage()),
-                GoRoute(path: '/search', builder: (_, __) => const SearchPage()),
-                GoRoute(path: '/recommendations', builder: (_, __) => const RecommendationsPage()),
-                GoRoute(path: '/location', builder: (_, __) => const LocationPage()),
-                GoRoute(path: '/cart', builder: (_, __) => const CartPage()),
+                GoRoute(
+                    path: '/categories',
+                    builder: (context, state) => const CategoriesPage()
+                ),
+                GoRoute(
+                    path: '/communities',
+                    builder: (context, state) => const CommunitiesPage()
+                ),
+                GoRoute(
+                    path: '/notifications',
+                    builder: (context, state) => const NotificationsPage()
+                ),
+                GoRoute(
+                    path: '/profile',
+                    builder: (context, state) => const ProfilePage()
+                ),
+                GoRoute(
+                    path: '/search',
+                    builder: (context, state) => const SearchPage()
+                ),
+                GoRoute(
+                    path: '/recommendations',
+                    builder: (context, state) => const RecommendationsPage()
+                ),
+                GoRoute(
+                    path: '/location',
+                    builder: (context, state) => const LocationPage()
+                ),
+                GoRoute(
+                    path: '/cart',
+                    builder: (context, state) => const CartPage()
+                )
+
             ],
         ),
-    ],
+
+    ]
 );

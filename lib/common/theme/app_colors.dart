@@ -14,4 +14,7 @@ class AppColors {
   static const Color white = Colors.white;
   static const Color black = Colors.black;
   static const Color errorRed = Colors.red;
+
+  static const Color accentGold50 = Color.fromRGBO(254, 185, 19, 0.5);
+  static const Color softTeal50 = Color.fromRGBO(168, 219, 222, 0.5);
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../common/theme/app_colors.dart';
-import '../widgets/login_form.dart';
-import '../widgets/register_card.dart';
+import '../widgets/register_form_step1.dart';
+import '../widgets/login_redirect_card.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class RegisterStep1Page extends StatelessWidget {
+  const RegisterStep1Page({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +16,15 @@ class LoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 1. Logo
+              // Logo
               Image.asset(
                 'assets/images/logo.png',
                 height: 80,
               ),
               const SizedBox(height: 48),
 
-              // Formulario de Login
-              const LoginForm(),
+              // Formulario Paso 1
+              const RegisterFormStep1(),
 
               const SizedBox(height: 32),
 
@@ -40,8 +40,8 @@ class LoginPage extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              // Tarjeta de Registro
-              const RegisterCard(),
+              // Tarjeta de redirección al Login
+              const LoginRedirectCard(),
             ],
           ),
         ),
