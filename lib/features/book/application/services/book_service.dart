@@ -29,11 +29,13 @@ class BookService {
   Future<Book?> findBookById(String bookId) async {
     final list = await getAllBooks();
 
-    // Usamos firstWhere o singleWhere para encontrar el libro.
-    // firstWhere lanza una excepción si no lo encuentra, por lo que usamos orElse.
+    // 1. Convertir el String ID de la URL a INT
+    final int? targetId = int.tryParse(bookId);
+    if (targetId == null) return null;
+
     try {
       final book = list.firstWhere(
-            (b) => b.id == bookId,
+            (b) => b.id == targetId,
         orElse: () => throw StateError('Book not found'),
       );
       return book;
