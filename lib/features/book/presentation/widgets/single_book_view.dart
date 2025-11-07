@@ -16,12 +16,12 @@ class _SingleBookViewState extends State<SingleBookView> {
   final List<int> _quantities = [1, 2, 3];
 
   // --- WIDGET AUXILIAR PARA LAS ETIQUETAS LATERALES ---
-  Widget _buildVerticalLabel(String text, Color color, double top, double left) {
+  Widget _buildVerticalLabel(String text, Color color, double top, double left, int turn) {
     return Positioned(
       top: top,
       left: left,
       child: RotatedBox(
-        quarterTurns: 3,
+        quarterTurns: turn,
         child: Text(
           text,
           style: TextStyle(
@@ -59,23 +59,30 @@ class _SingleBookViewState extends State<SingleBookView> {
           Align(
             alignment: Alignment.center,
             child: Container(
-              width: 160,
-              height: 200,
+              width: 350,
+              height: 300,
               alignment: Alignment.center,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   // Imagen de la Portada
-                  Image(
-                    image: AssetImage(widget.b.cover),
-                    height: 240,
-                    width: 140,
+                  Image.network(
+                    widget.b.cover,
+                    height: 280,
+                    width: 160,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: AppColors.lightGrey,
+                      height: 280,
+                      width: 160,
+                      alignment: Alignment.center,
+                      child: const Icon(Icons.broken_image, color: AppColors.darkBlue),
+                    ),
                   ),
                   // Etiquetas Rotadas
-                  _buildVerticalLabel(widget.b.genre.toUpperCase(), AppColors.primaryOrange, 30, -35),
-                  _buildVerticalLabel(widget.b.language.toUpperCase(), AppColors.vibrantBlue, 100, -35),
-                  _buildVerticalLabel(widget.b.author.toUpperCase(), AppColors.darkBlue, 40, 115),
+                  _buildVerticalLabel(widget.b.genre.toUpperCase(), AppColors.primaryOrange, 0, -35, 3),
+                  _buildVerticalLabel(widget.b.language.toUpperCase(), AppColors.vibrantBlue, 100, -35, 3),
+                  _buildVerticalLabel(widget.b.author.toUpperCase(), AppColors.darkBlue, 0, 160, 1),
                 ],
               ),
             ),
@@ -228,7 +235,9 @@ class _SingleBookViewState extends State<SingleBookView> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    print(widget.b.cover); //para comprobar que sí imprime la ruta url (ta bien)
+                  },
                   style: TextButton.styleFrom(
                     backgroundColor: AppColors.vibrantBlue,
                     foregroundColor: AppColors.white,
@@ -244,12 +253,8 @@ class _SingleBookViewState extends State<SingleBookView> {
         const SizedBox(height: 16.0),
 
         const SizedBox(height: 16.0),
-        // Lista de reseñas (Usando los datos simulados)
-        // Nota: ReviewCard también debería usar AppColors internamente para consistencia.
-        /*...mockReviews.map((review) {
-          return ReviewCard(review: review);
-        }).toList(),*/
-
+        // Lista de reseñas
+        // TODO: Entidad review y jalar de cada libro
         const SizedBox(height: 20.0),
       ],
     );
@@ -257,8 +262,6 @@ class _SingleBookViewState extends State<SingleBookView> {
 
   @override
   Widget build(BuildContext context) {
-    precacheImage(AssetImage(widget.b.cover), context);
-
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SingleChildScrollView(
