@@ -24,4 +24,24 @@ class BookService {
     final list = await getAllBooks();
     return list.where((b) => b.genre.toLowerCase() == genre.toLowerCase()).toList();
   }
+
+  // buscar el libro por su id
+  Future<Book?> findBookById(String bookId) async {
+    final list = await getAllBooks();
+
+    // 1. Convertir el String ID de la URL a INT
+    final int? targetId = int.tryParse(bookId);
+    if (targetId == null) return null;
+
+    try {
+      final book = list.firstWhere(
+            (b) => b.id == targetId,
+        orElse: () => throw StateError('Book not found'),
+      );
+      return book;
+    } on StateError {
+      return null;
+    }
+  }
+
 }

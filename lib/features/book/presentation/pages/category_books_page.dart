@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../common/theme/app_colors.dart';
 import '../../application/services/book_service.dart';
@@ -93,7 +94,10 @@ class _HorizontalBookCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {/* TODO: navegar a detalle */},
+        onTap: () {
+          final bookId = Uri.encodeComponent(b.id.toString());
+          GoRouter.of(context).go('/book/$bookId');
+        },
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
