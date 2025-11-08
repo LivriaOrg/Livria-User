@@ -34,7 +34,7 @@ class ReviewCard extends StatelessWidget {
                     const CircleAvatar(
                       radius: 18,
                       // TODO: Conectar con el usuario loggeado para poner la img correcta
-                      backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=1'),
+                      backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3447/3447354.png'),
                       backgroundColor: AppColors.lightGrey,
                     ),
                     const SizedBox(width: 10.0),
