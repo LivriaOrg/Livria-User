@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:livria_user/features/book/presentation/widgets/review_card.dart';
 import '../../../../common/theme/app_colors.dart';
+import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
 import '../../application/services/review_service.dart';
 import '../../domain/entities/book.dart';
 import '../../domain/entities/review.dart';
@@ -27,7 +28,7 @@ class _SingleBookViewState extends State<SingleBookView> {
     super.initState();
     _reviewService = ReviewService(
       ReviewRepositoryImpl(
-        ReviewRemoteDataSource(),
+        ReviewRemoteDataSource(authDs: AuthLocalDataSource()),
       ),
     );
   }
