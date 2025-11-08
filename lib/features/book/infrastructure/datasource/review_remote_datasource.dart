@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:livria_user/common/config/env.dart';
 
@@ -32,9 +34,42 @@ class ReviewRemoteDataSource {
       uri,
       headers: {
         'Content-Type': 'application/json',
-        // El formato 'Bearer [token]' es requerido por tu Swagger/API
         'Authorization': 'Bearer $token',
       },
     );
   }
+
+  Future<http.Response> postReview({
+    required int bookId,
+    required String content,
+    required int stars,
+  }) async {
+    final uri = Uri.parse('$_base$_reviewsPath');
+
+    // Obtener Token y UserId
+    final token = await _authDs.getToken();
+    final userId = await _authDs.getUserId();
+
+    if (token == null || token.isEmpty || userId == null) {
+      throw Exception('Error 401: El usuario debe estar loggeado para publicar una reseña.');
+    }
+
+    // Cuerpo de la solicitud
+    final body = json.encode({
+      'bookId': bookId,
+      'userId': userId,
+      'content': content,
+      'stars': stars,
+    });
+
+    return _client.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: body,
+    );
+  }
+
 }

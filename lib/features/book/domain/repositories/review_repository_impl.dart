@@ -27,4 +27,21 @@ class ReviewRepositoryImpl implements ReviewRepository {
     throw Exception('HTTP ${res.statusCode}: ${res.reasonPhrase}');
   }
 
+  @override
+  Future<void> postReview({required int bookId, required String content, required int stars}) async {
+    final http.Response res = await _ds.postReview(
+      bookId: bookId,
+      content: content,
+      stars: stars,
+    );
+
+    if (res.statusCode == 201) { // 201 para un POST exitoso
+      return;
+    }
+    if (res.statusCode == 401) {
+      throw Exception('HTTP 401: Sesión expirada. Por favor, inicie sesión de nuevo.');
+    }
+
+    throw Exception('HTTP ${res.statusCode}: Error al publicar la reseña.');
+  }
 }
