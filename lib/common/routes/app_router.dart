@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:livria_user/common/widgets/main_shell.dart';
 import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
@@ -16,6 +17,12 @@ import 'package:livria_user/features/book/presentation/pages/category_books_page
 import 'package:livria_user/features/communities/presentation/pages/communities_page.dart';
 import 'package:livria_user/features/drawers/presentation/pages/notifications_page.dart';
 import 'package:livria_user/features/profile/presentation/pages/profile_page.dart';
+
+import '../../features/book/application/services/book_service.dart';
+import '../../features/book/domain/entities/book.dart';
+import '../../features/book/domain/repositories/book_repository_impl.dart';
+import '../../features/book/infrastructure/datasource/book_remote_datasource.dart';
+import '../../features/book/presentation/pages/book_page.dart';
 
 //import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
 
@@ -69,6 +76,39 @@ final appRouter = GoRouter(
                 builder: (context, state) {
                   final genre = state.pathParameters['genre'] ?? '';
                   return CategoryBooksPage(genre: Uri.decodeComponent(genre));
+                },
+              ),
+              GoRoute(
+                path: '/book/:bookId',
+                builder: (context, state) {
+                  final bookId = state.pathParameters['bookId'] ?? '';
+
+                  final service = BookService(BookRepositoryImpl(BookRemoteDataSource()));
+
+                  return FutureBuilder<Book?>(
+                    future: service.findBookById(bookId),
+
+                    builder: (context, snapshot) {
+                      // Estado de error
+                      if (snapshot.hasError) {
+                        return const Scaffold(
+                          body: Center(child: Text('Error al cargar el libro.')),
+                        );
+                      }
+                      // Estado de datos
+                      final selectedBook = snapshot.data;
+
+                      if (selectedBook == null) {
+                        // Libro no encontrado (404)
+                        return const Scaffold(
+                          body: Center(child: Text('Error: Libro no encontrado (404).')),
+                        );
+                      }
+
+                      // Pasar el objeto Book real
+                      return BookPage(b: selectedBook);
+                    },
+                  );
                 },
               ),
                 GoRoute(
