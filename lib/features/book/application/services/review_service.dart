@@ -11,4 +11,14 @@ class ReviewService {
 
   Future<List<Review>> getBookReviews(int id) => _repos.getBookReviews(id);
 
+  Future<void> postReview({
+    required int bookId,
+    required String content,
+    required int stars,
+  }) => _repos.postReview(
+    bookId: bookId,
+    content: content,
+    stars: stars,
+  );
+
 }

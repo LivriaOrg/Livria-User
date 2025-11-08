@@ -22,6 +22,8 @@ class _SingleBookViewState extends State<SingleBookView> {
   final List<int> _quantities = [1, 2, 3];
 
   late final ReviewService _reviewService;
+  final TextEditingController _reviewController = TextEditingController();
+  int _newReviewStars = 0;
 
   @override
   void initState() {
@@ -31,6 +33,47 @@ class _SingleBookViewState extends State<SingleBookView> {
         ReviewRemoteDataSource(authDs: AuthLocalDataSource()),
       ),
     );
+  }
+
+  Future<void> _handlePostReview(int bookId) async {
+    if (_reviewController.text.isEmpty || _newReviewStars == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, ingresa un comentario y selecciona una calificación.')),
+      );
+      return;
+    }
+    try {
+      await _reviewService.postReview(
+        bookId: bookId,
+        content: _reviewController.text,
+        stars: _newReviewStars,
+      );
+
+      // Limpiar el formulario
+      _reviewController.clear();
+      setState(() {
+        _newReviewStars = 0;
+      });
+
+      // Notificar éxito y actualizar la lista de reseñas
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('¡Reseña publicada con éxito!')),
+      );
+
+      // forzamos un rebuild para que el FutureBuilder recargue la lista:
+      setState(() {});
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fallo al publicar la reseña: ${e.toString()}')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    super.dispose();
   }
 
   // --- WIDGET AUXILIAR PARA LAS ETIQUETAS LATERALES ---
@@ -227,12 +270,27 @@ class _SingleBookViewState extends State<SingleBookView> {
               // Estrellas
               Row(
                 children: [
-                  ...List.generate(5, (index) => const Icon(Icons.star_border, color: AppColors.accentGold, size: 20)),
+                  ...List.generate(5, (index) {
+                    final starValue = index + 1;
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          _newReviewStars = starValue;
+                        });
+                      },
+                      child: Icon(
+                        _newReviewStars >= starValue ? Icons.star : Icons.star_border,
+                        color: AppColors.accentGold,
+                        size: 30,
+                      ),
+                    );
+                  }),
                 ],
               ),
               const SizedBox(height: 8.0),
               // Input de Texto
               TextField(
+                controller: _reviewController,
                 maxLines: 5,
                 decoration: InputDecoration(
                   hintText: '¿Cuál es tu opinión?',
@@ -255,8 +313,7 @@ class _SingleBookViewState extends State<SingleBookView> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {
-                  },
+                  onPressed: () => _handlePostReview(widget.b.id),
                   style: TextButton.styleFrom(
                     backgroundColor: AppColors.vibrantBlue,
                     foregroundColor: AppColors.white,

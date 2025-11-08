@@ -57,7 +57,7 @@ class ReviewRemoteDataSource {
     // Cuerpo de la solicitud
     final body = json.encode({
       'bookId': bookId,
-      'userId': userId,
+      'userClientId': userId,
       'content': content,
       'stars': stars,
     });
