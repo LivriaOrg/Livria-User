@@ -1,13 +1,12 @@
-// lib/features/book/presentation/widgets/book_filters_sheet.dart
 import 'package:flutter/material.dart';
 import '../../../../common/theme/app_colors.dart';
 import '../../domain/entities/book.dart';
 
-/// Opciones de filtro y orden
+
 class BookFilterOptions {
   final double? minPrice;
   final double? maxPrice;
-  final String? language; // 'english' | 'español' (respetamos backend)
+  final String? language;
   final SortBy sortBy;
 
   const BookFilterOptions({
@@ -31,7 +30,7 @@ class BookFilterOptions {
     );
   }
 
-  /// Normaliza strings: minúsculas y sin tildes para comparar
+
   static String _norm(String s) {
     final lower = s.toLowerCase().trim();
     return lower
@@ -96,7 +95,7 @@ class BookFiltersSheet extends StatefulWidget {
 class _BookFiltersSheetState extends State<BookFiltersSheet> {
   late double? _minPrice = widget.initial.minPrice;
   late double? _maxPrice = widget.initial.maxPrice;
-  late String? _language = widget.initial.language; // guardamos literal 'english' / 'español'
+  late String? _language = widget.initial.language;
   late SortBy _sortBy = widget.initial.sortBy;
 
   final _minCtrl = TextEditingController();
@@ -117,7 +116,7 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
   }
 
   void _apply() {
-    // parseo defensivo
+
     double? minP =
     _minCtrl.text.trim().isEmpty ? null : double.tryParse(_minCtrl.text.trim());
     double? maxP =
@@ -127,7 +126,7 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
       BookFilterOptions(
         minPrice: minP,
         maxPrice: maxP,
-        language: _language, // ya guardamos literal exacto
+        language: _language,
         sortBy: _sortBy,
       ),
     );
@@ -148,13 +147,13 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final langs = const [
-      // usamos los literales EXACTOS que devuelve tu API
+
       ('English', 'english'),
       ('Español', 'español'),
     ];
 
     return Padding(
-      padding: MediaQuery.of(context).viewInsets, // subir con teclado
+      padding: MediaQuery.of(context).viewInsets,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -164,19 +163,19 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
               // Header
               Row(
                 children: [
-                  Text('Filters',
+                  Text('Filtros',
                       style: t.headlineSmall?.copyWith(color: AppColors.darkBlue)),
                   const Spacer(),
                   TextButton(
                     onPressed: _clear,
-                    child: const Text('Clear'),
+                    child: const Text('Limpiar'),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
 
               // Precio
-              Text('Price range', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
+              Text('Rango de Precio', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -212,7 +211,7 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
               const SizedBox(height: 16),
 
               // Idioma
-              Text('Language', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
+              Text('Idioma', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -223,7 +222,7 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
                       selected: _language == value,
                       onSelected: (sel) {
                         setState(() {
-                          _language = sel ? value : null; // guardamos 'english' o 'español'
+                          _language = sel ? value : null;
                         });
                       },
                     ),
@@ -232,16 +231,16 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
               const SizedBox(height: 16),
 
               // Orden
-              Text('Sort by', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
+              Text('Ordenar por', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 children: [
-                  _sortChip('None', SortBy.none),
-                  _sortChip('Price ↑', SortBy.priceAsc),
-                  _sortChip('Price ↓', SortBy.priceDesc),
-                  _sortChip('Title A-Z', SortBy.titleAsc),
-                  _sortChip('Title Z-A', SortBy.titleDesc),
+                  _sortChip('Ninguno', SortBy.none),
+                  _sortChip('Precio ↑', SortBy.priceAsc),
+                  _sortChip('Precio ↓', SortBy.priceDesc),
+                  _sortChip('Titulo A-Z', SortBy.titleAsc),
+                  _sortChip('Titulo Z-A', SortBy.titleDesc),
                 ],
               ),
 
@@ -257,7 +256,7 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Apply',
+                  child: const Text('Aplicar',
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),

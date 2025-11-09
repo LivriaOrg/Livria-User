@@ -23,7 +23,7 @@ class _SearchPageState extends State<SearchPage> {
   String _query = '';
   late Future<List<Book>> _allBooksFuture;
 
-  // filtros actuales
+
   BookFilterOptions _filters = const BookFilterOptions();
 
   @override
@@ -78,7 +78,7 @@ class _SearchPageState extends State<SearchPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: Text(
-                'SEARCH BY TITLE OR AUTHOR',
+                'BUSQUEDA POR TITULO O AUTOR',
                 style: t.bodyLarge?.copyWith(
                   color: AppColors.softTeal,
                   letterSpacing: 1.4,
@@ -91,7 +91,7 @@ class _SearchPageState extends State<SearchPage> {
                 controller: _controller,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
-                  hintText: 'Search a book…',
+                  hintText: 'Buscar un libro…',
                   hintStyle: t.bodyMedium?.copyWith(color: Colors.black54),
                   filled: true,
                   fillColor: AppColors.white,
@@ -123,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
               child: Row(
                 children: [
                   Text(
-                    'RESULTS',
+                    'RESULTADOS',
                     style: t.bodyLarge?.copyWith(
                       color: AppColors.primaryOrange,
                       letterSpacing: 1.2,
@@ -170,13 +170,13 @@ class _SearchPageState extends State<SearchPage> {
                   if (_query.isNotEmpty && results.isEmpty) {
                     return Center(
                       child: Text(
-                        'No results for “$_query”.',
+                        'No resultados para “$_query”.',
                         style: t.bodyMedium,
                       ),
                     );
                   }
 
-                  // mismas tarjetas horizontales que en categorías
+
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 8),
