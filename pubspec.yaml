@@ -49,6 +49,7 @@ dependencies:
   provider: ^6.1.5+1
   mime: ^1.0.2
   url_launcher: ^6.2.5
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -122,3 +123,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo_icon.png"

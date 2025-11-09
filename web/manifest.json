@@ -1,6 +1,6 @@
 {
-    "name": "livria_user",
-    "short_name": "livria_user",
+    "name": "Livria",
+    "short_name": "Livria",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
