@@ -28,17 +28,17 @@ class CategoriesPage extends StatelessWidget {
             }
             final genres = snap.data ?? const [];
             if (genres.isEmpty) {
-              return const Center(child: Text('No categories found'));
+              return const Center(child: Text('No categorias encontradas'));
             }
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header “SEARCH BY CATEGORY”
+
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                   child: Text(
-                    'SEARCH BY CATEGORY',
+                    'BUSQUEDA POR CATEGORIA',
                     style: text.bodyLarge?.copyWith(
                       color: AppColors.softTeal,
                       letterSpacing: 1.2,
@@ -47,7 +47,7 @@ class CategoriesPage extends StatelessWidget {
                   ),
                 ),
 
-                // Lista con separadores que recorren casi todo el ancho
+
                 Expanded(
                   child: ListView.separated(
                     itemCount: genres.length,
@@ -72,7 +72,6 @@ class CategoriesPage extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              // Nombre de la categoría (Alexandria bold)
                               Expanded(
                                 child: Text(
                                   genre.toUpperCase(),
@@ -104,7 +103,7 @@ class CategoriesPage extends StatelessWidget {
   }
 
   Color _colorForRow(int i) {
-    // toque de color alterno como tu mock
+
     switch (i % 3) {
       case 0:
         return AppColors.vibrantBlue;

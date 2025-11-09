@@ -1,13 +1,12 @@
-// lib/features/book/presentation/pages/search_page.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../common/theme/app_colors.dart';
-import '../../../book/application/services/book_service.dart';
-import '../../../book/domain/entities/book.dart';
-import '../../../book/domain/repositories/book_repository_impl.dart';
-import '../../../book/infrastructure/datasource/book_remote_datasource.dart';
+import '../../application/services/book_service.dart';
+import '../../domain/entities/book.dart';
+import '../../domain/repositories/book_repository_impl.dart';
+import '../../infrastructure/datasource/book_remote_datasource.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -19,7 +18,6 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final _controller = TextEditingController();
   final _service = BookService(BookRepositoryImpl(BookRemoteDataSource()));
-
   Timer? _debounce;
   String _query = '';
   late Future<List<Book>> _allBooksFuture;
@@ -27,8 +25,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
-    // ⚠️ Si en tu servicio el método se llama distinto, cámbialo aquí:
-    _allBooksFuture = _service.getAllBooks(); // <- getAll() / getAllBooks()
+    _allBooksFuture = _service.getAllBooks();
     _controller.addListener(_onQueryChanged);
   }
 
@@ -58,11 +55,11 @@ class _SearchPageState extends State<SearchPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // ----- Campo de búsqueda -----
+            // --- Header de búsqueda ---
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: Text(
-                'SEARCH BY TITLE OR AUTHOR',
+                'BUSQUEDA POR TITULO O AUTOR',
                 style: t.bodyLarge?.copyWith(
                   color: AppColors.softTeal,
                   letterSpacing: 1.4,
@@ -74,20 +71,17 @@ class _SearchPageState extends State<SearchPage> {
               child: TextField(
                 controller: _controller,
                 decoration: InputDecoration(
-                  hintText: 'Search a book…',
+                  hintText: 'Buscar un libro…',
                   hintStyle: t.bodyMedium?.copyWith(color: Colors.black54),
                   filled: true,
                   fillColor: AppColors.white,
-                  contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    const BorderSide(color: AppColors.softTeal, width: 1.2),
+                    borderSide: const BorderSide(color: AppColors.softTeal, width: 1.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    const BorderSide(color: AppColors.vibrantBlue, width: 1.6),
+                    borderSide: const BorderSide(color: AppColors.vibrantBlue, width: 1.6),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   suffixIcon: const Padding(
@@ -100,13 +94,13 @@ class _SearchPageState extends State<SearchPage> {
 
             const SizedBox(height: 12),
 
-            // ----- Header resultados -----
+            // --- Encabezado de resultados ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Text(
-                    'RESULTS',
+                    'RESULTADOS',
                     style: t.bodyLarge?.copyWith(
                       color: AppColors.primaryOrange,
                       letterSpacing: 1.2,
@@ -121,7 +115,6 @@ class _SearchPageState extends State<SearchPage> {
 
             const SizedBox(height: 8),
 
-            // ----- Contenido -----
             Expanded(
               child: FutureBuilder<List<Book>>(
                 future: _allBooksFuture,
@@ -132,9 +125,9 @@ class _SearchPageState extends State<SearchPage> {
                   if (snap.hasError) {
                     return Center(child: Text('Error: ${snap.error}'));
                   }
+
                   final all = snap.data ?? const <Book>[];
 
-                  // Si no hay query, opcionalmente puedes mostrar vacio o sugerencias
                   final results = _query.isEmpty
                       ? <Book>[]
                       : all.where((b) {
@@ -146,24 +139,22 @@ class _SearchPageState extends State<SearchPage> {
                   if (_query.isNotEmpty && results.isEmpty) {
                     return Center(
                       child: Text(
-                        'No results for “$_query”.',
+                        'No hay resultados para “$_query”.',
                         style: t.bodyMedium,
                       ),
                     );
                   }
 
-                  // Grid compacto de resultados (2 columnas)
                   return GridView.builder(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 1.05, // compacto tipo mock
+                      childAspectRatio: 1.8,
                     ),
                     itemCount: results.length,
-                    itemBuilder: (_, i) => _SearchResultCard(book: results[i]),
+                    itemBuilder: (_, i) => _HorizontalBookCard(results[i], t),
                   );
                 },
               ),
@@ -175,63 +166,77 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
-class _SearchResultCard extends StatelessWidget {
-  const _SearchResultCard({required this.book});
-  final Book book;
+class _HorizontalBookCard extends StatelessWidget {
+  final Book b;
+  final TextTheme t;
+  const _HorizontalBookCard(this.b, this.t);
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-
     return Material(
-      color: AppColors.white,
       elevation: 3,
-      borderRadius: BorderRadius.circular(14),
+      color: AppColors.white,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         onTap: () {
-          final bookId = Uri.encodeComponent(book.id.toString());
+          final bookId = Uri.encodeComponent(b.id.toString());
           GoRouter.of(context).go('/book/$bookId');
         },
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: Column(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Portada centrada
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: 3 / 4,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        alignment: Alignment.center,
-                        child: Image.network(
-                          book.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: AppColors.lightGrey,
-                            alignment: Alignment.center,
-                            width: 120,
-                            height: 160,
-                            child: const Icon(Icons.image_not_supported),
-                          ),
-                        ),
-                      ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: AspectRatio(
+                  aspectRatio: 3 / 4,
+                  child: Image.network(
+                    b.cover,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: AppColors.lightGrey,
+                      alignment: Alignment.center,
+                      child: const Icon(Icons.image_not_supported),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 6),
-              // Precio
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'S/ ${book.salePrice.toStringAsFixed(2)}',
-                  style: t.bodyMedium?.copyWith(
-                    color: AppColors.primaryOrange,
-                    fontWeight: FontWeight.w700,
-                  ),
+              const SizedBox(width: 10),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      b.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: t.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.darkBlue,
+                      ),
+                    ),
+                    Text(
+                      b.author,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: t.bodySmall?.copyWith(
+                        color: AppColors.vibrantBlue,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      'S/ ${b.salePrice.toStringAsFixed(2)}',
+                      style: t.bodyMedium?.copyWith(
+                        color: AppColors.primaryOrange,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

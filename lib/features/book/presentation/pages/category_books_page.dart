@@ -54,18 +54,18 @@ class CategoryBooksPage extends StatelessWidget {
 
                   final books = snap.data ?? const [];
                   if (books.isEmpty) {
-                    return const Center(child: Text('No books for this category'));
+                    return const Center(child: Text('No hay libros para esta categoría'));
                   }
 
-                  // Grid de 2 columnas con celdas horizontales
+
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      // Card horizontal ⇒ más ancho que alto
-                      // (ancho/alto). Sube o baja si quieres más/menos altura.
+
+
                       childAspectRatio: 1.8,
                     ),
                     itemCount: books.length,
