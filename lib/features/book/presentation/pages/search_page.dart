@@ -7,6 +7,7 @@ import '../../application/services/book_service.dart';
 import '../../domain/entities/book.dart';
 import '../../domain/repositories/book_repository_impl.dart';
 import '../../infrastructure/datasource/book_remote_datasource.dart';
+import '../widgets/book_filters_sheet.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -21,6 +22,9 @@ class _SearchPageState extends State<SearchPage> {
   Timer? _debounce;
   String _query = '';
   late Future<List<Book>> _allBooksFuture;
+
+  // filtros actuales
+  BookFilterOptions _filters = const BookFilterOptions();
 
   @override
   void initState() {
@@ -46,6 +50,21 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  Future<void> _openFilters() async {
+    final applied = await showModalBottomSheet<BookFilterOptions>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => BookFiltersSheet(initial: _filters),
+    );
+    if (applied != null && mounted) {
+      setState(() => _filters = applied);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
@@ -59,7 +78,7 @@ class _SearchPageState extends State<SearchPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: Text(
-                'BUSQUEDA POR TITULO O AUTOR',
+                'SEARCH BY TITLE OR AUTHOR',
                 style: t.bodyLarge?.copyWith(
                   color: AppColors.softTeal,
                   letterSpacing: 1.4,
@@ -70,18 +89,22 @@ class _SearchPageState extends State<SearchPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
                 controller: _controller,
+                textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
-                  hintText: 'Buscar un libro…',
+                  hintText: 'Search a book…',
                   hintStyle: t.bodyMedium?.copyWith(color: Colors.black54),
                   filled: true,
                   fillColor: AppColors.white,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: AppColors.softTeal, width: 1.2),
+                    borderSide:
+                    const BorderSide(color: AppColors.softTeal, width: 1.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: AppColors.vibrantBlue, width: 1.6),
+                    borderSide: const BorderSide(
+                        color: AppColors.vibrantBlue, width: 1.6),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   suffixIcon: const Padding(
@@ -100,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
               child: Row(
                 children: [
                   Text(
-                    'RESULTADOS',
+                    'RESULTS',
                     style: t.bodyLarge?.copyWith(
                       color: AppColors.primaryOrange,
                       letterSpacing: 1.2,
@@ -108,7 +131,11 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
                   const Spacer(),
-                  const Icon(Icons.filter_list, color: AppColors.primaryOrange),
+                  IconButton(
+                    onPressed: _openFilters,
+                    icon: const Icon(Icons.filter_list,
+                        color: AppColors.primaryOrange),
+                  ),
                 ],
               ),
             ),
@@ -128,7 +155,8 @@ class _SearchPageState extends State<SearchPage> {
 
                   final all = snap.data ?? const <Book>[];
 
-                  final results = _query.isEmpty
+                  // filtrar por query
+                  var results = _query.isEmpty
                       ? <Book>[]
                       : all.where((b) {
                     final q = _query.toLowerCase();
@@ -136,25 +164,32 @@ class _SearchPageState extends State<SearchPage> {
                         b.author.toLowerCase().contains(q);
                   }).toList();
 
+                  // aplicar filtros
+                  results = _filters.apply(results);
+
                   if (_query.isNotEmpty && results.isEmpty) {
                     return Center(
                       child: Text(
-                        'No hay resultados para “$_query”.',
+                        'No results for “$_query”.',
                         style: t.bodyMedium,
                       ),
                     );
                   }
 
+                  // mismas tarjetas horizontales que en categorías
                   return GridView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                       childAspectRatio: 1.8,
                     ),
                     itemCount: results.length,
-                    itemBuilder: (_, i) => _HorizontalBookCard(results[i], t),
+                    itemBuilder: (_, i) =>
+                        _HorizontalBookCard(results[i], t),
                   );
                 },
               ),
