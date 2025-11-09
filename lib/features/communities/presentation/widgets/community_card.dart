@@ -1,16 +1,20 @@
-// lib/features/communities/presentation/widgets/community_card.dart
-
 import 'package:flutter/material.dart';
+import 'package:livria_user/features/communities/infrastructure/datasource/community_remote_datasource.dart';
 import '../../domain/entities/community.dart';
 import 'package:livria_user/common/theme/app_colors.dart';
+import '../pages/community_detail_page.dart';
+import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
+import '../../../auth/infrastructure/datasource/auth_remote_datasource.dart';
+import '../../infrastructure/datasource/post_remote_datasource.dart';
+
 
 class CommunityCard extends StatelessWidget {
   final Community community;
 
   const CommunityCard({
-    Key? key,
+    super.key,
     required this.community,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +22,18 @@ class CommunityCard extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        // Lógica de navegación a la pantalla de la comunidad
-        print('Navegar a comunidad: ${community.name}');
+        // LÓGICA DE NAVEGACIÓN A COMMUNITY DETAIL PAGE
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CommunityDetailPage(
+              community: community,
+              authLocalDataSource: AuthLocalDataSource(),
+              authRemoteDataSource: AuthRemoteDataSource(),
+              postRemoteDataSource: PostRemoteDataSource(),
+              communityRemoteDataSource: CommunityRemoteDataSource(),
+            ),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(

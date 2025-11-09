@@ -1,0 +1,82 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../../domain/entities/post.dart';
+import '../../domain/repositories/post_repository.dart';
+import '../../infrastructure/datasource/post_remote_datasource.dart';
+
+class PostRepositoryImpl implements PostRepository {
+  final PostRemoteDataSource _dataSource;
+
+  // Constructor posicional
+  const PostRepositoryImpl(this._dataSource);
+
+  // Mapeo para un solo post (usado por fetchPostById y createPost)
+  Post _mapPost(String responseBody) {
+    try {
+      final Map<String, dynamic> jsonMap = json.decode(responseBody);
+      return Post.fromJson(jsonMap);
+    } catch (e) {
+      throw Exception('Fallo al parsear JSON de Post: $e');
+    }
+  }
+
+  // Mapeo para lista de posts (Solo se usará si el DataSource devuelve Response)
+  List<Post> _mapPostList(String responseBody) {
+    try {
+      final List<dynamic> jsonList = json.decode(responseBody);
+      return jsonList.map((jsonItem) =>
+          Post.fromJson(jsonItem as Map<String, dynamic>)).toList();
+    } catch (e) {
+      throw Exception('Fallo al parsear JSON de lista de Posts: $e');
+    }
+  }
+
+  // -----------------------------------------------------------------------
+
+  @override
+  Future<List<Post>> fetchPostsByCommunityId(int communityId, int offset, int limit) async {
+    // CORRECCIÓN CLAVE: La variable debe ser de tipo List<Post> porque
+    // _dataSource.fetchPostsByCommunityId devuelve Future<List<Post>>.
+    // El DataSource ahora es responsable de manejar los códigos HTTP y el mapeo.
+    final List<Post> posts = await _dataSource.fetchPostsByCommunityId(communityId, offset, limit);
+
+    // Simplemente devolvemos la lista. Si el DataSource devuelve una excepción
+    // (por error HTTP), esta se propagará automáticamente.
+    return posts;
+  }
+
+  @override
+  Future<Post> fetchPostById(int id) async {
+    // Este método sigue usando el patrón antiguo (DataSource devuelve http.Response)
+    final http.Response response = await _dataSource.fetchPostById(id);
+
+    if (response.statusCode == 200) {
+      return _mapPost(response.body);
+    } else {
+      throw Exception('HTTP ${response.statusCode}: Fallo al cargar el post con ID $id.');
+    }
+  }
+
+  @override
+  Future<Post> createPost({
+    required int communityId,
+    required String username,
+    required String content,
+    String? img,
+  }) async {
+    // Este método sigue usando el patrón antiguo (DataSource devuelve http.Response)
+    final http.Response response = await _dataSource.createPost(
+      communityId: communityId,
+      username: username,
+      content: content,
+      img: img,
+    );
+
+    // Generalmente, POST devuelve 201 (Created)
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return _mapPost(response.body);
+    } else {
+      throw Exception('HTTP ${response.statusCode}: Fallo al crear el post. Cuerpo: ${response.body}');
+    }
+  }
+}

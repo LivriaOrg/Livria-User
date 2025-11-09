@@ -1,33 +1,97 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:livria_user/common/config/env.dart';
+import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
 
 class CommunityRemoteDataSource {
   static const String _base = Env.apiBase;
-  static const String _communitiesPath = '/communities';
-  static const String _postsPath = '/posts';
+  static const String _communitiesPath = '/api/v1/communities';
 
+  final AuthLocalDataSource _authDs;
   final http.Client _client;
-  CommunityRemoteDataSource({http.Client? client}) : _client = client ?? http.Client();
+
+  CommunityRemoteDataSource({http.Client? client, AuthLocalDataSource? authDs})
+      : _client = client ?? http.Client(),
+        _authDs = authDs ?? AuthLocalDataSource();
+
+  // --- Lógica Auxiliar para Headers Autenticados ---
+  Future<Map<String, String>> _getAuthenticatedHeaders() async {
+    final token = await _authDs.getToken();
+
+    if (token == null || token.isEmpty) {
+      // Usamos una excepción estándar que puede ser capturada por la capa de presentación
+      throw Exception('Error 401: Token de autorización no encontrado. El usuario debe iniciar sesión.');
+    }
+
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
+  // --------------------------------------------------
 
   // communities
-  Future<http.Response> fetchCommunityList(int offset, int limit) {
+  Future<http.Response> fetchCommunityList(int offset, int limit) async {
     final uri = Uri.parse('$_base$_communitiesPath?offset=$offset&limit=$limit');
-    return _client.get(uri);
+    final headers = await _getAuthenticatedHeaders(); // Obtenemos el token
+
+    return _client.get(
+      uri,
+      headers: headers, // Usamos los headers autenticados
+    );
   }
 
-  Future<http.Response> fetchCommunityById(int id) {
+  Future<http.Response> fetchCommunityById(int id) async {
     final uri = Uri.parse('$_base$_communitiesPath/$id');
-    return _client.get(uri);
+    final headers = await _getAuthenticatedHeaders();
+
+    return _client.get(
+      uri,
+      headers: headers,
+    );
   }
 
-  // posts
-  Future<http.Response> fetchPostsByCommunityId(int communityId, int offset, int limit) {
-    final uri = Uri.parse('$_base$_postsPath/community/$communityId?offset=$offset&limit=$limit');
-    return _client.get(uri);
+  /// Envía una solicitud POST para crear una nueva comunidad.
+  Future<http.Response> createCommunity(Map<String, dynamic> body) async {
+    final uri = Uri.parse('$_base$_communitiesPath');
+    final headers = await _getAuthenticatedHeaders();
+
+    return _client.post(
+      uri,
+      headers: headers,
+      body: jsonEncode(body), // El cuerpo debe ser una cadena JSON
+    );
   }
 
-  Future<http.Response> fetchPostById(int id) {
-    final uri = Uri.parse('$_base$_postsPath/$id');
-    return _client.get(uri);
+  // --- NUEVAS FUNCIONES DE MEMBRESÍA ---
+
+  /// Envía una solicitud POST para que un usuario se una a una comunidad.
+  /// URL: /api/v1/communities/join
+  Future<http.Response> joinCommunity(Map<String, dynamic> body) async {
+    final uri = Uri.parse('$_base$_communitiesPath/join');
+    final headers = await _getAuthenticatedHeaders();
+
+    return _client.post(
+      uri,
+      headers: headers,
+      body: jsonEncode(body), // { "userClientId": 0, "communityId": 0}
+    );
+  }
+
+  /// Envía una solicitud DELETE para que un usuario salga de una comunidad.
+  /// URL: /api/v1/communities/{communityId}/members/{userId}
+  Future<http.Response> leaveCommunity({
+    required int communityId,
+    required int userId,
+  }) async {
+    final uri = Uri.parse('$_base$_communitiesPath/$communityId/members/$userId');
+    final headers = await _getAuthenticatedHeaders();
+
+    // Utilizamos http.delete para la acción de "salir"
+    return _client.delete(
+      uri,
+      headers: headers,
+    );
   }
 }

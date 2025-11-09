@@ -3,13 +3,13 @@ import 'package:livria_user/common/theme/app_colors.dart';
 import 'package:livria_user/common/utils/app_icons.dart';
 import '../../application/services/community_service.dart';
 import '../../domain/entities/community.dart';
-import '../widgets/community_card.dart';
 import '../../infrastructure/repositories/community_repository_api.dart';
 import '../../infrastructure/datasource/community_remote_datasource.dart';
+import '../../presentation/widgets/community_card.dart';
 
 
 class CommunitiesPage extends StatefulWidget {
-  const CommunitiesPage({Key? key}) : super(key: key);
+  const CommunitiesPage({super.key});
 
   @override
   State<CommunitiesPage> createState() => _CommunitiesPageState();
