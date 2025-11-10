@@ -34,14 +34,13 @@ class CategoriesPage extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                  padding: const EdgeInsets.fromLTRB(32, 32, 20, 16),
                   child: Text(
-                    'BUSQUEDA POR CATEGORIA',
-                    style: text.bodyLarge?.copyWith(
+                    'BÚSQUEDA POR CATEGORÍA',
+                    style: text.headlineMedium?.copyWith(
                       color: AppColors.softTeal,
-                      letterSpacing: 1.2,
+                      letterSpacing: 1.4,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -67,7 +66,7 @@ class CategoriesPage extends StatelessWidget {
                             context.go('/categories/${Uri.encodeComponent(genre)}'),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
+                            horizontal: 32,
                             vertical: 18,
                           ),
                           child: Row(

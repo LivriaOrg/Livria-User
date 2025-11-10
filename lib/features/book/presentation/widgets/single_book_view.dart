@@ -76,7 +76,7 @@ class _SingleBookViewState extends State<SingleBookView> {
     super.dispose();
   }
 
-  // --- WIDGET AUXILIAR PARA LAS ETIQUETAS LATERALES ---
+  // --- WIDGET PARA LAS ETIQUETAS LATERALES ---
   Widget _buildVerticalLabel(String text, Color color, double top, double left, int turn) {
     return Positioned(
       top: top,
@@ -157,17 +157,21 @@ class _SingleBookViewState extends State<SingleBookView> {
             children: [
               // Íconos
               const Icon(Icons.remove_circle_outline, color: AppColors.darkBlue, size: 32,),
-              const SizedBox(width: 8.0),
-              const Icon(Icons.bookmark_border, color: AppColors.darkBlue, size: 32,),
               const SizedBox(width: 16.0),
+              const Icon(Icons.bookmark_border, color: AppColors.darkBlue, size: 32,),
+              const Spacer(),
               // Precio
               Text(
                 'S/ ${widget.b.salePrice.toStringAsFixed(2)}',
                 style: t.titleLarge?.copyWith(
                     color: AppColors.primaryOrange, fontWeight: FontWeight.bold),
               ),
+            ],
+          ),
+          const SizedBox(height: 16.0),
+          Row(
+            children: [
               const Spacer(),
-
               // Dropdown de Cantidad
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
@@ -181,11 +185,11 @@ class _SingleBookViewState extends State<SingleBookView> {
                     style: t.bodyMedium?.copyWith(color: AppColors.darkBlue, fontWeight: FontWeight.bold),
                     value: _selectedQuantity,
                     icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.darkBlue, size: 20),items: _quantities.map((int value) {
-                      return DropdownMenuItem<int>(
-                        value: value,
-                        child: Text('$value', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBlue, fontSize: 14)),
-                      );
-                    }).toList(),
+                    return DropdownMenuItem<int>(
+                      value: value,
+                      child: Text('$value', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBlue, fontSize: 14)),
+                    );
+                  }).toList(),
                     onChanged: (int? newValue) {
                       setState(() {
                         _selectedQuantity = newValue!;
@@ -194,9 +198,10 @@ class _SingleBookViewState extends State<SingleBookView> {
                   ),
                 ),
               ),
-              const SizedBox(width: 8.0),
+              const SizedBox(width: 16.0),
               // Botón Añadir al Carrito
               ElevatedButton(
+                /* TODO: Funcionalidad de Carrito */
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.vibrantBlue,
@@ -207,10 +212,10 @@ class _SingleBookViewState extends State<SingleBookView> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                 ),
-                child: const Text('AÑADIR A CARRITO', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                child: const Text('AÑADIR AL CARRITO', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               ),
             ],
-          ),
+          )
         ],
       ),
     );
