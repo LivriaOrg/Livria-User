@@ -161,12 +161,14 @@ class _MainShellState extends State<MainShell> {
       // titulo clickeable
       title: GestureDetector(
         onTap: () => context.go('/home'), // acción ir a /home
-        child: Image.asset(
-          'assets/images/logo.png',
-          height: 28,
-          fit: BoxFit.contain,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+            child: Image.asset(
+                'assets/images/logo.png',
+                height: 24,
+                fit: BoxFit.contain)
+            ),
         ),
-      ),
       centerTitle: false, // Alinea el logo a la izquierda
       backgroundColor: AppColors.white,
       //  acciones
@@ -185,7 +187,6 @@ class _MainShellState extends State<MainShell> {
         const SizedBox(width: 16),
         IconButton(
           icon: const FaIcon(AppIcons.location),
-          // CAMBIO: Usar .push
           onPressed: () => context.push('/location'),
         ),
         const SizedBox(width: 16),
@@ -194,7 +195,7 @@ class _MainShellState extends State<MainShell> {
           color: getIconColor('/cart'),
           onPressed: () => context.push('/cart'),
         ),
-        const SizedBox(width: 8) // espacio a la derecha
+        const SizedBox(width: 16) // espacio a la derecha
 
       ],
     );
@@ -202,12 +203,12 @@ class _MainShellState extends State<MainShell> {
     // usamos PreferredSize para definir un alto total
     return PreferredSize(
       // Alto total = AppBar (kToolbarHeight) + Línea (3)
-      preferredSize: Size.fromHeight(kToolbarHeight + 3),
+      preferredSize: Size.fromHeight(kToolbarHeight + 4),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end, // para alinear a la derecha de la pantalla
         children: [
           defaultAppBar,
-          const MultiColorLine(height: 3,)
+          const MultiColorLine(height: 4,)
         ],
       ),
     );

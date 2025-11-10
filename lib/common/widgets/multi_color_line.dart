@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:livria_user/common/theme/app_colors.dart';
 
 class MultiColorLine extends StatelessWidget {
-  const MultiColorLine({super.key, this.height = 3}); // height es para el grosor
+  const MultiColorLine({super.key, this.height = 4}); // height es para el grosor
 
   final double height;
 

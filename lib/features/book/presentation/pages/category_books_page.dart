@@ -49,7 +49,7 @@ class _CategoryBooksPageState extends State<CategoryBooksPage> {
           children: [
             // Header (AsapCondensed)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(32, 32, 32, 16),
               child: Row(
                 children: [
                   Text(
@@ -98,12 +98,12 @@ class _CategoryBooksPageState extends State<CategoryBooksPage> {
                   // Grid de 2 columnas con celdas horizontales
                   return GridView.builder(
                     padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
                     gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
                       childAspectRatio: 1.8,
                     ),
                     itemCount: books.length,
