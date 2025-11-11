@@ -7,6 +7,7 @@ import '../../domain/entities/book.dart';
 import '../../domain/repositories/book_repository_impl.dart';
 import '../../infrastructure/datasource/book_remote_datasource.dart';
 import '../widgets/book_filters_sheet.dart';
+import '../widgets/horizontal_book_card.dart';
 
 class CategoryBooksPage extends StatefulWidget {
   final String genre;
@@ -108,99 +109,12 @@ class _CategoryBooksPageState extends State<CategoryBooksPage> {
                     ),
                     itemCount: books.length,
                     itemBuilder: (_, i) =>
-                        _HorizontalBookCard(books[i], t),
+                        HorizontalBookCard(books[i], t),
                   );
                 },
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HorizontalBookCard extends StatelessWidget {
-  final Book b;
-  final TextTheme t;
-  const _HorizontalBookCard(this.b, this.t);
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 3,
-      color: AppColors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          final bookId = Uri.encodeComponent(b.id.toString());
-          GoRouter.of(context).go('/book/$bookId');
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Portada a la izquierda
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: AspectRatio(
-                  aspectRatio: 3 / 4,
-                  child: Image.network(
-                    b.cover,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: AppColors.lightGrey,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.image_not_supported),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 10),
-
-              // Texto a la derecha
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Título
-                    Text(
-                      b.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: t.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.darkBlue,
-                      ),
-                    ),
-                    // Autor
-                    Text(
-                      b.author,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: t.bodySmall?.copyWith(
-                        color: AppColors.vibrantBlue,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const Spacer(),
-                    // Precio al fondo
-                    Text(
-                      'S/ ${b.salePrice.toStringAsFixed(2)}',
-                      style: t.bodyMedium?.copyWith(
-                        color: AppColors.primaryOrange,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
