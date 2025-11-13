@@ -43,5 +43,7 @@ class BookService {
       return null;
     }
   }
-
+  Future<List<Book>> getRandomBooks() {
+    return _repo.getRandomBooks();
+  }
 }

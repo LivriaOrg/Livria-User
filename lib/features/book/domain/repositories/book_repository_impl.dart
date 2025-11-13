@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'dart:math';
 
 import '../../domain/entities/book.dart';
 import '../../domain/repositories/book_repository.dart';
@@ -15,5 +16,16 @@ class BookRepositoryImpl implements BookRepository {
       return Book.listFromJson(res.body);
     }
     throw Exception('HTTP ${res.statusCode}: ${res.reasonPhrase}');
+  }
+
+  @override
+  Future<List<Book>> getRandomBooks() async {
+    final allBooks = await getAll();
+    if (allBooks.length <= 4) {
+      return allBooks;
+    }
+    final List<Book> shuffled = List.from(allBooks);
+    shuffled.shuffle(Random());
+    return shuffled.take(4).toList();
   }
 }
