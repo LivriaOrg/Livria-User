@@ -30,7 +30,7 @@ class HorizontalBookCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: AspectRatio(
-                  aspectRatio: 3 / 4,
+                  aspectRatio: 2.5 / 4,
                   child: Image.network(
                     b.cover,
                     fit: BoxFit.cover,
@@ -58,7 +58,7 @@ class HorizontalBookCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: t.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.darkBlue,
                       ),
                     ),
@@ -69,7 +69,7 @@ class HorizontalBookCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: t.bodySmall?.copyWith(
                         color: AppColors.vibrantBlue,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     const Spacer(),
@@ -78,7 +78,7 @@ class HorizontalBookCard extends StatelessWidget {
                       'S/ ${b.salePrice.toStringAsFixed(2)}',
                       style: t.bodyMedium?.copyWith(
                         color: AppColors.darkBlue,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],

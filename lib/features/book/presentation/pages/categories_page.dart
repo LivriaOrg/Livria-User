@@ -37,7 +37,7 @@ class CategoriesPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(32, 32, 20, 16),
                   child: Text(
-                    'BÚSQUEDA POR CATEGORÍA',
+                    'SEARCH BY CATEGORY',
                     style: text.headlineMedium?.copyWith(
                       color: AppColors.softTeal,
                       letterSpacing: 1.4,

@@ -95,7 +95,7 @@ class _HomeViewState extends State<_HomeView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 12.0),
+          padding: const EdgeInsets.fromLTRB(32.0, 16.0, 24.0, 12.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -103,7 +103,8 @@ class _HomeViewState extends State<_HomeView> {
                 genre.toUpperCase(),
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   color: sectionColor,
-                  letterSpacing: 0.8,
+                  letterSpacing: 1.4,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               TextButton(
@@ -111,10 +112,10 @@ class _HomeViewState extends State<_HomeView> {
                   context.go('/categories/${Uri.encodeComponent(genre)}');
                 },
                 child: Text(
-                  'Ver todo (${genreBooks.length})',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  'See more (${genreBooks.length})',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: sectionColor,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
@@ -374,7 +375,7 @@ class _CategoryCarouselWithArrowsState
       icon: Icon(icon, color: widget.sectionColor, size: 16),
       style: IconButton.styleFrom(
         backgroundColor: AppColors.white.withOpacity(0.7),
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(4),
         minimumSize: Size.zero,
         elevation: 4,
         shape: const CircleBorder(),

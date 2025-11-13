@@ -86,14 +86,14 @@ class _CategoryBooksPageState extends State<CategoryBooksPage> {
                   var books = snap.data ?? const <Book>[];
                   if (books.isEmpty) {
                     return const Center(
-                        child: Text('No hay libros para esta categoría'));
+                        child: Text('There are no books for this category'));
                   }
 
                   // aplicar filtros seleccionados
                   books = _filters.apply(books);
 
                   if (books.isEmpty) {
-                    return const Center(child: Text('Sin resultados con filtros'));
+                    return const Center(child: Text('No results for the applied filters'));
                   }
 
                   // Grid de 2 columnas con celdas horizontales
@@ -103,8 +103,8 @@ class _CategoryBooksPageState extends State<CategoryBooksPage> {
                     gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
                       childAspectRatio: 1.8,
                     ),
                     itemCount: books.length,
