@@ -53,7 +53,7 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
     } catch (e) {
       print('Error al cargar comunidades: $e');
       setState(() {
-        _hasError = 'No se pudieron cargar las comunidades. Intenta de nuevo.';
+        _hasError = 'The communities could not be loaded. Please try again.';
         _isLoading = false;
       });
     }
@@ -221,7 +221,7 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
             ElevatedButton(
               onPressed: _fetchCommunities, // Intentar recargar
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryOrange),
-              child: const Text('Reintentar', style: TextStyle(color: AppColors.white)),
+              child: const Text('Retry', style: TextStyle(color: AppColors.white)),
             ),
           ],
         ),
@@ -233,8 +233,8 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
       return Center(
         child: Text(
           _searchController.text.isEmpty
-              ? 'No hay comunidades disponibles.'
-              : 'No se encontraron resultados para "${_searchController.text}"',
+              ? 'No available.'
+              : 'No matches for "${_searchController.text}"',
           style: Theme.of(context).textTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),

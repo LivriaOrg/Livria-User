@@ -79,13 +79,13 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
           _selectedIconFile = File('simulated_icon_path/temp.jpg');
           _imageController.clear();
         });
-        _showSnackbar('Ícono seleccionado de la galería.', color: AppColors.softTeal);
+        _showSnackbar('Selected icon from the gallery.', color: AppColors.softTeal);
       } else {
         setState(() {
           _selectedBannerFile = File('simulated_banner_path/temp.jpg');
           _bannerController.clear();
         });
-        _showSnackbar('Banner seleccionado de la galería.', color: AppColors.softTeal);
+        _showSnackbar('Selected banner from the gallery.', color: AppColors.softTeal);
       }
     } else if (source == ImageSource.camera) {
       if (isIcon) {
@@ -93,13 +93,13 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
           _selectedIconFile = File('simulated_icon_path/camera_temp.jpg');
           _imageController.clear();
         });
-        _showSnackbar('Ícono capturado con la cámara.', color: AppColors.softTeal);
+        _showSnackbar('Selected icon from camera.', color: AppColors.softTeal);
       } else {
         setState(() {
           _selectedBannerFile = File('simulated_banner_path/camera_temp.jpg');
           _bannerController.clear();
         });
-        _showSnackbar('Banner capturado con la cámara.', color: AppColors.softTeal);
+        _showSnackbar('Selected icon from camera.', color: AppColors.softTeal);
       }
     }
   }
@@ -117,17 +117,17 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
       return;
     }
     if (_selectedType == null) {
-      _showSnackbar('Debe seleccionar un tipo de comunidad.', color: AppColors.secondaryYellow);
+      _showSnackbar('You must select a community type.', color: AppColors.secondaryYellow);
       return;
     }
 
     // 2. Comprobar que se ha proporcionado **alguna** imagen/URL para ícono y banner.
     if (_imageController.text.isEmpty && _selectedIconFile == null) {
-      _showSnackbar('Debe proporcionar una URL o seleccionar una imagen para el Ícono.', color: AppColors.errorRed);
+      _showSnackbar('You must provide a URL or select an image for the Icon.', color: AppColors.errorRed);
       return;
     }
     if (_bannerController.text.isEmpty && _selectedBannerFile == null) {
-      _showSnackbar('Debe proporcionar una URL o seleccionar una imagen para el Banner.', color: AppColors.errorRed);
+      _showSnackbar('You must provide a URL or select an image for the Banner.', color: AppColors.errorRed);
       return;
     }
 
@@ -161,7 +161,7 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
       );
 
       _showSnackbar(
-        'Comunidad "${newCommunity.name}" creada exitosamente con ID ${newCommunity.id}!',
+        'Community "${newCommunity.name}" successfully created with ID ${newCommunity.id}!',
         color: AppColors.vibrantBlue,
       );
 
@@ -181,7 +181,7 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
     } catch (e) {
       print('Error al crear comunidad: $e');
       _showSnackbar(
-        'Fallo al crear comunidad: ${e.toString().replaceFirst('Exception: ', '')}',
+        'Failed to create community: ${e.toString().replaceFirst('Exception: ', '')}',
         color: Colors.red,
       );
     } finally {
