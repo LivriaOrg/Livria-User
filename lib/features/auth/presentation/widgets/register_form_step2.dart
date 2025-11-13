@@ -64,7 +64,6 @@ class _RegisterFormStep2State extends State<RegisterFormStep2> {
 
   // --- Lógica de Registro Final ---
   void _performRegister() async {
-    print("👆 BOTÓN REGISTRAR PRESIONADO");
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return; // Si el formulario no es válido, no hacer nada
 
@@ -118,7 +117,7 @@ class _RegisterFormStep2State extends State<RegisterFormStep2> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'REGISTRARSE',
+                'REGISTER',
                 style: textTheme.headlineMedium?.copyWith(
                   color: AppColors.primaryOrange,
                   fontWeight: FontWeight.w900,
@@ -131,28 +130,28 @@ class _RegisterFormStep2State extends State<RegisterFormStep2> {
               TextFormField(
                 controller: _nicknameController,
                 decoration: _buildInputDecoration('Nickname (Display)'),
-                validator: (v) => (v?.isEmpty ?? true) ? 'Ingresa tu Nickname' : null,
+                validator: (v) => (v?.isEmpty ?? true) ? 'Enter your nickname' : null,
               ),
               const SizedBox(height: 24),
 
               // Username
               TextFormField(
                 controller: _usernameController,
-                decoration: _buildInputDecoration('Usuario (Username)'),
-                validator: (v) => (v?.isEmpty ?? true) ? 'Ingresa tu Usuario' : null,
+                decoration: _buildInputDecoration('Username'),
+                validator: (v) => (v?.isEmpty ?? true) ? 'Enter your username' : null,
               ),
               const SizedBox(height: 24),
 
               // Frase (Opcional)
               TextFormField(
                 controller: _phraseController,
-                decoration: _buildInputDecoration('Frase (Opcional)'),
+                decoration: _buildInputDecoration('Phrase or Bio (Optional)'),
               ),
               const SizedBox(height: 24),
 
               // --- Sección de Foto de Perfil ---
               Text(
-                'Foto de Perfil',
+                'Profile Picture',
                 style: textTheme.bodyMedium?.copyWith(color: AppColors.darkBlue, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
@@ -215,7 +214,7 @@ class _RegisterFormStep2State extends State<RegisterFormStep2> {
                   child: _isLoading
                       ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: AppColors.darkBlue, strokeWidth: 3))
                       : Text(
-                    'REGISTRARSE',
+                    'REGISTER',
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: AppColors.darkBlue,

@@ -48,7 +48,7 @@ class _LoginFormState extends State<LoginForm> {
       } catch (e) {
         if (mounted) {
           setState(() {
-            _errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
+            _errorMessage = 'Error logging in. Please verify your credentials.';
             print('Login Error: $e');
           });
         }
@@ -76,7 +76,7 @@ class _LoginFormState extends State<LoginForm> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'INICIAR SESIÓN',
+                'LOG IN',
                 style: textTheme.headlineMedium?.copyWith(
                   color: AppColors.primaryOrange,
                   fontWeight: FontWeight.bold,
@@ -88,7 +88,7 @@ class _LoginFormState extends State<LoginForm> {
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
-                  labelText: 'Usuario',
+                  labelText: 'User',
                   filled: true,
                   fillColor: AppColors.white,
                   border: OutlineInputBorder(
@@ -97,7 +97,7 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                   prefixIcon: const Icon(Icons.person, color: AppColors.darkBlue),
                 ),
-                validator: (v) => (v?.isEmpty ?? true) ? 'Ingrese su usuario' : null,
+                validator: (v) => (v?.isEmpty ?? true) ? 'Enter your username' : null,
               ),
               const SizedBox(height: 24),
 
@@ -117,7 +117,7 @@ class _LoginFormState extends State<LoginForm> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Contraseña',
+                  labelText: 'Password',
                   filled: true,
                   fillColor: AppColors.white,
                   border: OutlineInputBorder(
@@ -126,7 +126,7 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                   prefixIcon: const Icon(Icons.lock, color: AppColors.darkBlue),
                 ),
-                validator: (v) => (v?.isEmpty ?? true) ? 'Ingrese su contraseña' : null,
+                validator: (v) => (v?.isEmpty ?? true) ? 'Enter your password' : null,
               ),
               const SizedBox(height: 48),
 
@@ -148,7 +148,7 @@ class _LoginFormState extends State<LoginForm> {
                     child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.darkBlue),
                   )
                       : Text(
-                    'INICIAR SESIÓN',
+                    'LOG IN',
                     style: textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.darkBlue,

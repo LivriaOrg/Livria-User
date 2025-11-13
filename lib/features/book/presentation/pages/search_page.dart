@@ -79,7 +79,7 @@ class _SearchPageState extends State<SearchPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(32, 32, 32, 16),
               child: Text(
-                'BÚSQUEDA POR TÍTULO O AUTOR',
+                'SEARCH BY TITLE OR AUTHOR',
                 style: t.headlineMedium?.copyWith(
                   color: AppColors.softTeal,
                   letterSpacing: 1.4,
@@ -93,7 +93,7 @@ class _SearchPageState extends State<SearchPage> {
                 controller: _controller,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
-                  hintText: 'Buscar un libro…',
+                  hintText: 'Search here…',
                   hintStyle: t.bodyMedium?.copyWith(color: Colors.black54),
                   filled: true,
                   fillColor: AppColors.white,

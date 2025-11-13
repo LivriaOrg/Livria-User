@@ -16,7 +16,7 @@ class RegisterCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              '¿No tienes una cuenta?',
+              'Don\'t have an account?',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.vibrantBlue,
                 fontWeight: FontWeight.w600,
@@ -35,7 +35,7 @@ class RegisterCard extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'REGISTRARSE',
+                  'REGISTER',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.darkBlue,

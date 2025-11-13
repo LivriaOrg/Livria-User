@@ -7,11 +7,12 @@ class HorizontalBookCard extends StatelessWidget {
   final Book b;
   final TextTheme t;
 
+  static const double standardHeight = 120.0;
+
   const HorizontalBookCard(this.b, this.t);
 
   @override
   Widget build(BuildContext context) {
-    const double standardHeight = 120.0;
     return SizedBox(
       height: standardHeight,
       child: Material(
