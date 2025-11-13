@@ -76,17 +76,18 @@ class _SearchPageState extends State<SearchPage> {
           children: [
             // --- Header de búsqueda ---
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+              padding: const EdgeInsets.fromLTRB(32, 32, 32, 16),
               child: Text(
-                'BUSQUEDA POR TITULO O AUTOR',
-                style: t.bodyLarge?.copyWith(
+                'BÚSQUEDA POR TÍTULO O AUTOR',
+                style: t.headlineMedium?.copyWith(
                   color: AppColors.softTeal,
                   letterSpacing: 1.4,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               child: TextField(
                 controller: _controller,
                 textInputAction: TextInputAction.search,
@@ -99,7 +100,7 @@ class _SearchPageState extends State<SearchPage> {
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                    const BorderSide(color: AppColors.softTeal, width: 1.2),
+                    const BorderSide(color: AppColors.accentGold, width: 1.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -115,11 +116,12 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
 
-            const SizedBox(height: 12),
-
+            const SizedBox(height: 16),
+            const Divider(height: 1, thickness: 2, color: AppColors.lightGrey),
+            const SizedBox(height: 16),
             // --- Encabezado de resultados ---
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Row(
                 children: [
                   Text(
@@ -179,12 +181,12 @@ class _SearchPageState extends State<SearchPage> {
 
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                        horizontal: 32, vertical: 8),
                     gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
                       childAspectRatio: 1.8,
                     ),
                     itemCount: results.length,
