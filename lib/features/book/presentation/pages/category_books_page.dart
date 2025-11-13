@@ -99,12 +99,12 @@ class _CategoryBooksPageState extends State<CategoryBooksPage> {
                   // Grid de 2 columnas con celdas horizontales
                   return GridView.builder(
                     padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
                       childAspectRatio: 1.8,
                     ),
                     itemCount: books.length,
