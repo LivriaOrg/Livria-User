@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 
-// Importaciones necesarias para la arquitectura
 import '../../../../common/theme/app_colors.dart';
 import '../../../book/application/services/book_service.dart';
 import '../../../book/domain/entities/book.dart';
 import '../../../book/domain/repositories/book_repository_impl.dart';
 import '../../../book/infrastructure/datasource/book_remote_datasource.dart';
-// Importación del widget de tarjeta reutilizable (cambiado a HorizontalBookCard)
 import '../../../book/presentation/widgets/horizontal_book_card.dart';
-
-// =========================================================================
 
 class RecommendationsPage extends StatefulWidget {
   const RecommendationsPage({super.key});
@@ -19,7 +15,6 @@ class RecommendationsPage extends StatefulWidget {
 }
 
 class _RecommendationsPageState extends State<RecommendationsPage> {
-  // Inicialización de la cadena de servicios
   late final BookService _bookService = BookService(
     BookRepositoryImpl(
       BookRemoteDataSource(),
@@ -31,14 +26,11 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
   @override
   void initState() {
     super.initState();
-    // Iniciar la carga de los 4 libros aleatorios al inicio
     _recommendationsFuture = _bookService.getRandomBooks();
   }
 
-  /// Refresca la lista de recomendaciones volviendo a llamar al servicio.
   Future<void> _refreshRecommendations() async {
     setState(() {
-      // Reasigna el Future para disparar una nueva llamada a la API
       _recommendationsFuture = _bookService.getRandomBooks();
     });
   }
@@ -101,41 +93,37 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                     return const Center(child: Text('No se encontraron recomendaciones.'));
                   }
 
-                  // Grid de 2 columnas con celdas horizontales
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      // Aspect ratio idéntico al usado en CategoryBooksPage
                       childAspectRatio: 1.8,
                     ),
                     itemCount: books.length,
-                    // Utilizamos HorizontalBookCard y pasamos argumentos posicionales (b, t)
                     itemBuilder: (_, i) => HorizontalBookCard(books[i], t),
                   );
                 },
               ),
             ),
-            // Botón de refresco centrado debajo de la cuadrícula de libros
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24.0),
               child: ElevatedButton(
                 onPressed: _refreshRecommendations,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.vibrantBlue.withOpacity(0.7), // Color de fondo azul claro
-                  foregroundColor: AppColors.white, // Color del texto
+                  backgroundColor: AppColors.vibrantBlue.withOpacity(0.7),
+                  foregroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0), // Bordes redondeados
+                    borderRadius: BorderRadius.circular(30.0),
                   ),
-                  elevation: 5, // Sombra suave
+                  elevation: 5,
                 ),
                 child: Text(
                   'REFRESH',
                   style: t.labelLarge?.copyWith(
-                    color: AppColors.darkBlue, // Color del texto según la imagen
+                    color: AppColors.darkBlue,
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                   ),

@@ -21,11 +21,11 @@ class BookRepositoryImpl implements BookRepository {
   @override
   Future<List<Book>> getRandomBooks() async {
     final allBooks = await getAll();
-    if (allBooks.length <= 4) {
+    if (allBooks.length <= 6) {
       return allBooks;
     }
     final List<Book> shuffled = List.from(allBooks);
     shuffled.shuffle(Random());
-    return shuffled.take(4).toList();
+    return shuffled.take(6).toList();
   }
 }

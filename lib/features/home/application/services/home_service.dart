@@ -9,14 +9,12 @@ class HomeService {
 
   const HomeService(this._bookService);
 
-  /// Obtiene todos los libros y selecciona los 10 primeros (ejemplo de "Novedades").
   Future<List<Book>> getNewReleases() async {
     final allBooks = await _bookService.getAllBooks();
 
-    return allBooks.take(10).toList();
+    return allBooks.toList();
   }
 
-  /// Obtiene una lista de géneros para la navegación por categorías.
   Future<List<String>> getAllGenres() {
     return _bookService.getGenres();
   }
