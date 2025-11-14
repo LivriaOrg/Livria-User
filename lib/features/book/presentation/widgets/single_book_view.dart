@@ -174,7 +174,7 @@ class _SingleBookViewState extends State<SingleBookView> {
               const Spacer(),
               // Dropdown de Cantidad
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 15.0),
                 decoration: BoxDecoration(
                   color: AppColors.softTeal.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(4.0),
@@ -182,8 +182,11 @@ class _SingleBookViewState extends State<SingleBookView> {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<int>(
                     isDense: true,
-                    style: t.bodyMedium?.copyWith(color: AppColors.darkBlue, fontWeight: FontWeight.bold),
-                    value: _selectedQuantity,
+                    style: t.bodyMedium?.copyWith(
+                        color: AppColors.darkBlue,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14
+                    ),                    value: _selectedQuantity,
                     icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.darkBlue, size: 20),items: _quantities.map((int value) {
                     return DropdownMenuItem<int>(
                       value: value,
