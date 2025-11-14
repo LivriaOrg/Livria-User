@@ -218,7 +218,6 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
   _isJoined = !_isJoined;
   });
 
-  print('${action} la comunidad: ${widget.community.name}');
   _showSnackbar('$message the community ${widget.community.name}.',
   color: _isJoined ? AppColors.primaryOrange : AppColors.secondaryYellow);
   }

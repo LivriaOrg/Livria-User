@@ -19,9 +19,9 @@ class LoginPage extends StatelessWidget {
               // 1. Logo
               Image.asset(
                 'assets/images/logo.png',
-                height: 80,
+                height: 50,
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 64),
 
               // Formulario de Login
               const LoginForm(),
@@ -30,7 +30,7 @@ class LoginPage extends StatelessWidget {
 
               // Separador "O"
               Text(
-                'O',
+                'OR',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: AppColors.darkBlue,
                   fontWeight: FontWeight.bold,

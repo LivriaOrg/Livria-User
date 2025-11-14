@@ -42,13 +42,14 @@ class PostList extends StatelessWidget {
 
     final String defaultIcon = 'https://cdn-icons-png.flaticon.com/512/3447/3447354.png';
 
+    final List<Post> reversedPosts = posts.reversed.toList();
 
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: posts.length,
       itemBuilder: (context, index) {
-        final post = posts[index];
+        final post = reversedPosts[index];
 
         // Regla para el ícono: Si el post pertenece al usuario logueado, usar su ícono. Sino, usar el default.
         final String iconToUse = (currentUsername != null && post.username == currentUsername)
