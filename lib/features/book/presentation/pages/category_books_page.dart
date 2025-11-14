@@ -86,25 +86,25 @@ class _CategoryBooksPageState extends State<CategoryBooksPage> {
                   var books = snap.data ?? const <Book>[];
                   if (books.isEmpty) {
                     return const Center(
-                        child: Text('No hay libros para esta categoría'));
+                        child: Text('There are no books for this category'));
                   }
 
                   // aplicar filtros seleccionados
                   books = _filters.apply(books);
 
                   if (books.isEmpty) {
-                    return const Center(child: Text('Sin resultados con filtros'));
+                    return const Center(child: Text('No results for the applied filters'));
                   }
 
                   // Grid de 2 columnas con celdas horizontales
                   return GridView.builder(
                     padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
                       childAspectRatio: 1.8,
                     ),
                     itemCount: books.length,

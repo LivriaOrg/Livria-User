@@ -38,7 +38,7 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
       if (!_termsAccepted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Debes aceptar los términos y condiciones para continuar.'),
+            content: Text('You must accept the terms and conditions to continue.'),
             backgroundColor: AppColors.errorRed,
           ),
         );
@@ -83,7 +83,7 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'REGISTRARSE',
+                'REGISTER',
                 style: textTheme.headlineMedium?.copyWith(
                   color: AppColors.primaryOrange,
                   fontWeight: FontWeight.bold,
@@ -96,10 +96,10 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: _buildInputDecoration('Correo electrónico'),
+                decoration: _buildInputDecoration('Email'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Ingrese su correo';
-                  if (!EmailValidator.validate(value)) return 'Correo inválido';
+                  if (value == null || value.isEmpty) return 'Enter your email';
+                  if (!EmailValidator.validate(value)) return 'Invalid email';
                   return null;
                 },
               ),
@@ -109,10 +109,10 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: _buildInputDecoration('Contraseña'),
+                decoration: _buildInputDecoration('Password'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Ingrese una contraseña';
-                  if (value.length < 8) return 'Debe tener al menos 8 caracteres';
+                  if (value == null || value.isEmpty) return 'Enter a password';
+                  if (value.length < 8) return 'It must have at least 8 characters';
                   return null;
                 },
               ),
@@ -122,10 +122,10 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: true,
-                decoration: _buildInputDecoration('Confirmar Contraseña'),
+                decoration: _buildInputDecoration('Confirm Password'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Confirme su contraseña';
-                  if (value != _passwordController.text) return 'Las contraseñas no coinciden';
+                  if (value == null || value.isEmpty) return 'Confirm your password';
+                  if (value != _passwordController.text) return 'Passwords don\'t match';
                   return null;
                 },
               ),
@@ -154,9 +154,9 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
                       text: TextSpan(
                         style: textTheme.bodySmall?.copyWith(color: AppColors.darkBlue, fontSize: 13),
                         children: [
-                          const TextSpan(text: 'He leído y acepto la '),
+                          const TextSpan(text: 'I have read and agree to the'),
                           TextSpan(
-                            text: 'Política de Privacidad',
+                            text: 'Privacy Policy',
                             style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
                             // --- ENLACE 1 ---
                             recognizer: TapGestureRecognizer()
@@ -166,7 +166,7 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
                           ),
                           const TextSpan(text: ' y los '),
                           TextSpan(
-                            text: 'Términos y Condiciones',
+                            text: 'Terms and Conditions',
                             style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
                             // --- ENLACE 2 ---
                             recognizer: TapGestureRecognizer()
@@ -174,7 +174,7 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
                                   'https://es.wikipedia.org/wiki/Política_de_privacidad'
                               ),
                           ),
-                          const TextSpan(text: ' de Livria.'),
+                          const TextSpan(text: ' of Livria.'),
                         ],
                       ),
                     ),
@@ -196,7 +196,7 @@ class _RegisterFormStep1State extends State<RegisterFormStep1> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text(
-                    'CONTINUAR',
+                    'CONTINUE',
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: AppColors.darkBlue,

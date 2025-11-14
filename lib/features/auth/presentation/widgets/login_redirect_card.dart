@@ -16,7 +16,7 @@ class LoginRedirectCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              '¿Ya tienes una cuenta?',
+              'Do you already have an account?',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.vibrantBlue,
                 fontWeight: FontWeight.w600,
@@ -36,7 +36,7 @@ class LoginRedirectCard extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'INICIAR SESIÓN',
+                  'LOG IN',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.darkBlue,

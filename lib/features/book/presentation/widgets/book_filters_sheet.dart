@@ -163,19 +163,19 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
               // Header
               Row(
                 children: [
-                  Text('Filtros',
+                  Text('Filters',
                       style: t.headlineSmall?.copyWith(color: AppColors.darkBlue)),
                   const Spacer(),
                   TextButton(
                     onPressed: _clear,
-                    child: const Text('Limpiar'),
+                    child: const Text('Clean Filters'),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
 
               // Precio
-              Text('Rango de Precio', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
+              Text('Price Range', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -231,16 +231,16 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
               const SizedBox(height: 16),
 
               // Orden
-              Text('Ordenar por', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
+              Text('Order by', style: t.titleMedium?.copyWith(color: AppColors.darkBlue)),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 children: [
-                  _sortChip('Ninguno', SortBy.none),
-                  _sortChip('Precio ↑', SortBy.priceAsc),
-                  _sortChip('Precio ↓', SortBy.priceDesc),
-                  _sortChip('Titulo A-Z', SortBy.titleAsc),
-                  _sortChip('Titulo Z-A', SortBy.titleDesc),
+                  _sortChip('None', SortBy.none),
+                  _sortChip('Price ↑', SortBy.priceAsc),
+                  _sortChip('Price ↓', SortBy.priceDesc),
+                  _sortChip('Title A-Z', SortBy.titleAsc),
+                  _sortChip('Title Z-A', SortBy.titleDesc),
                 ],
               ),
 
@@ -256,7 +256,7 @@ class _BookFiltersSheetState extends State<BookFiltersSheet> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Aplicar',
+                  child: const Text('Apply Filters',
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),

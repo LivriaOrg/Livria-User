@@ -38,7 +38,7 @@ class _SingleBookViewState extends State<SingleBookView> {
   Future<void> _handlePostReview(int bookId) async {
     if (_reviewController.text.isEmpty || _newReviewStars == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, ingresa un comentario y selecciona una calificación.')),
+        const SnackBar(content: Text('Please enter a comment and select a rating.')),
       );
       return;
     }
@@ -57,7 +57,7 @@ class _SingleBookViewState extends State<SingleBookView> {
 
       // Notificar éxito y actualizar la lista de reseñas
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('¡Reseña publicada con éxito!')),
+        const SnackBar(content: Text('Review successfully published!')),
       );
 
       // forzamos un rebuild para que el FutureBuilder recargue la lista:
@@ -65,7 +65,7 @@ class _SingleBookViewState extends State<SingleBookView> {
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Fallo al publicar la reseña: ${e.toString()}')),
+        SnackBar(content: Text('Failed to publish review: ${e.toString()}')),
       );
     }
   }
@@ -174,7 +174,7 @@ class _SingleBookViewState extends State<SingleBookView> {
               const Spacer(),
               // Dropdown de Cantidad
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 15.0),
                 decoration: BoxDecoration(
                   color: AppColors.softTeal.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(4.0),
@@ -182,8 +182,11 @@ class _SingleBookViewState extends State<SingleBookView> {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<int>(
                     isDense: true,
-                    style: t.bodyMedium?.copyWith(color: AppColors.darkBlue, fontWeight: FontWeight.bold),
-                    value: _selectedQuantity,
+                    style: t.bodyMedium?.copyWith(
+                        color: AppColors.darkBlue,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14
+                    ),                    value: _selectedQuantity,
                     icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.darkBlue, size: 20),items: _quantities.map((int value) {
                     return DropdownMenuItem<int>(
                       value: value,
@@ -212,7 +215,7 @@ class _SingleBookViewState extends State<SingleBookView> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                 ),
-                child: const Text('AÑADIR AL CARRITO', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                child: const Text('ADD TO CART', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               ),
             ],
           )
@@ -255,7 +258,7 @@ class _SingleBookViewState extends State<SingleBookView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                'RESEÑAS',
+                'REVIEWS',
                 style: t.headlineMedium?.copyWith(
                   color: AppColors.primaryOrange,
                   letterSpacing: 1.4,
@@ -263,7 +266,7 @@ class _SingleBookViewState extends State<SingleBookView> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              Text('Comparte una reseña para este libro.', style: TextStyle(color: AppColors.darkBlue)),
+              Text('Share a review for this book.', style: TextStyle(color: AppColors.darkBlue)),
             ],
           ),
         ),
@@ -298,7 +301,7 @@ class _SingleBookViewState extends State<SingleBookView> {
                 controller: _reviewController,
                 maxLines: 5,
                 decoration: InputDecoration(
-                  hintText: '¿Cuál es tu opinión?',
+                  hintText: 'What are your thoughts?',
                   hintStyle: TextStyle(color: AppColors.darkBlue.withOpacity(0.7)),
                   filled: true,
                   fillColor: AppColors.softTeal.withOpacity(0.5),
@@ -325,7 +328,7 @@ class _SingleBookViewState extends State<SingleBookView> {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   ),
-                  child: const Text('PUBLICAR', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  child: const Text('POST REVIEW', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -355,7 +358,7 @@ class _SingleBookViewState extends State<SingleBookView> {
             if (reviews.isEmpty) {
               return const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 32.0),
-                child: Text('Aún no hay reseñas para este libro. ¡Sé el primero!'),
+                child: Text('There are no reviews for this book yet. Be the first!'),
               );
             }
 

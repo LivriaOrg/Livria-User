@@ -7,7 +7,7 @@ class LocationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Pantalla Location'),
+      child: Text('Location Screen'),
     );
   }
 }

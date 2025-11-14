@@ -82,14 +82,14 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
        setState(() {
         _selectedImageFile = File(pickedFile.path);
        });
-       _showSnackbar('Imagen seleccionada: ${pickedFile.name}', color: AppColors.softTeal);
+       _showSnackbar('Image selected: ${pickedFile.name}', color: AppColors.softTeal);
       }
      } else {
-      _showSnackbar('No se seleccionó ninguna imagen.', color: AppColors.secondaryYellow);
+      _showSnackbar('No image selected.', color: AppColors.secondaryYellow);
      }
     } catch (e) {
      print('Error al seleccionar imagen: $e');
-     _showSnackbar('Fallo al acceder a la galería.', color: Colors.red);
+     _showSnackbar('Failed to access gallery.', color: Colors.red);
     }
    }
    Future<void> _removeSelectedImage() async {
@@ -98,7 +98,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
       _selectedImageFile = null;
      });
     }
-    _showSnackbar('Imagen removida.', color: AppColors.softTeal);
+    _showSnackbar('Image removed.', color: AppColors.softTeal);
    }
    Future<void> _fetchPosts() async {
     if (mounted) {
@@ -121,7 +121,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
        _isLoadingPosts = false;
       });
      }
-     _showSnackbar('Error al cargar posts: $e', color: Colors.red);
+     _showSnackbar('Failed to load posts: $e', color: Colors.red);
     }
    }
    Future<void> _loadUserProfile() async {
@@ -151,17 +151,17 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
        _isUserLoading = false;
       });
      }
-     _showSnackbar('No se pudo cargar el perfil de usuario. Intente de nuevo.', color: Colors.red);
+     _showSnackbar('The user profile could not be loaded. Please try again.', color: Colors.red);
     }
    }
    Future<void> _handlePostCreation() async {
     final content = _contentController.text.trim();
     if (_username == null) {
-     _showSnackbar('Error: No se pudo obtener el nombre de usuario. Intente iniciar sesión de nuevo.', color: Colors.red);
+     _showSnackbar('Error: The username could not be retrieved. Please try logging in again.', color: Colors.red);
      return;
     }
     if (content.isEmpty && _selectedImageFile == null) {
-     _showSnackbar('El post no puede estar vacío. Escriba contenido o seleccione una imagen.', color: AppColors.secondaryYellow);
+     _showSnackbar('The post cannot be empty. Enter content or select an image.', color: AppColors.secondaryYellow);
      return;
     }
     if (mounted) {
@@ -180,7 +180,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
       img: imageUrlForApi,
      );
      _contentController.clear();
-     _showSnackbar('Post publicado exitosamente!', color: AppColors.primaryOrange);
+     _showSnackbar('Post successfully published!', color: AppColors.primaryOrange);
      if (mounted) {
       setState(() {
        _selectedImageFile = null;
@@ -188,7 +188,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
       });
      }
     } catch (e) {
-     _showSnackbar('Error al publicar el post: ${e.toString()}', color: Colors.red);
+     _showSnackbar('Error publishing post: ${e.toString()}', color: Colors.red);
      print('Excepción al crear post: $e');
     } finally {
      if (mounted) {
@@ -211,15 +211,14 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
 
   // join leave to do
   void _handleJoinPressed() {
-  final String action = _isJoined ? 'salir de' : 'unirse a';
-  final String message = _isJoined ? 'Has salido de' : 'Te has unido a';
+  final String action = _isJoined ? 'leave' : 'join';
+  final String message = _isJoined ? 'You have left' : 'You have joined';
 
   setState(() {
   _isJoined = !_isJoined;
   });
 
-  print('${action} la comunidad: ${widget.community.name}');
-  _showSnackbar('$message la comunidad ${widget.community.name}.',
+  _showSnackbar('$message the community ${widget.community.name}.',
   color: _isJoined ? AppColors.primaryOrange : AppColors.secondaryYellow);
   }
 
@@ -253,7 +252,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
          onGalleryPick: _handleGalleryPick,
          onRemoveImage: _removeSelectedImage,
          onPost: _handlePostCreation,
-         onCameraPressed: () => _showSnackbar('Cámara no implementada.', color: AppColors.softTeal),
+         onCameraPressed: () => _showSnackbar('Camera not implemented.', color: AppColors.softTeal),
          showSnackbar: _showSnackbar,
         ),
         const SizedBox(height: 24),

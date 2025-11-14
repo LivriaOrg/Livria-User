@@ -23,7 +23,7 @@ class ProfilePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
-            'Pantalla de Perfil',
+            'Profile Screen',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 32),
@@ -32,7 +32,7 @@ class ProfilePage extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => _logout(context),
             icon: const Icon(Icons.logout, color: AppColors.white),
-            label: const Text('CERRAR SESIÓN'),
+            label: const Text('LOG OUT'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.errorRed,
               foregroundColor: AppColors.white,

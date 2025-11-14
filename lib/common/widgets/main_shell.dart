@@ -83,23 +83,23 @@ class _MainShellState extends State<MainShell> {
                   items: const [
                     BottomNavigationBarItem(
                       icon: FaIcon(AppIcons.home),
-                      label: 'Inicio',
+                      label: 'Home',
                     ),
                     BottomNavigationBarItem(
                       icon: FaIcon(AppIcons.categories),
-                      label: 'Categorías',
+                      label: 'Categories',
                     ),
                     BottomNavigationBarItem(
                       icon: FaIcon(AppIcons.community),
-                      label: 'Comunidad',
+                      label: 'Community',
                     ),
                     BottomNavigationBarItem(
                       icon: FaIcon(AppIcons.notifications),
-                      label: 'Alertas',
+                      label: 'Notifications',
                     ),
                     BottomNavigationBarItem(
                       icon: FaIcon(AppIcons.profile),
-                      label: 'Perfil',
+                      label: 'Profile',
                     ),
                   ]
               ),
