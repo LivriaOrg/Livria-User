@@ -241,6 +241,8 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
       );
     }
 
+    final List<Community> reversedCommunities = _filteredCommunities.reversed.toList();
+
     // 4. Grid View de 3 columnas (Datos cargados)
     return GridView.builder(
       padding: const EdgeInsets.only(bottom: 16),
@@ -254,7 +256,7 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
       itemBuilder: (context, index) {
         // Usa la entidad Community
         return CommunityCard(
-          community: _filteredCommunities[index],
+          community: reversedCommunities[index],
         );
       },
     );
