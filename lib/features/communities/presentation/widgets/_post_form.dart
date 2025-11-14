@@ -54,7 +54,7 @@ class PostForm extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            'Debes iniciar sesión para poder publicar en esta comunidad.',
+            'You must log in to post in this community.',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.red[800]),
             textAlign: TextAlign.center,
           ),
@@ -83,7 +83,7 @@ class PostForm extends StatelessWidget {
                 controller: contentController,
                 // Garantiza que username no es nulo aquí, gracias al Early Exit
                 decoration: InputDecoration(
-                  hintText: 'What are your thoughts? (Publicando como $username)',
+                  hintText: 'What are your thoughts?',
                   hintStyle: TextStyle(color: AppColors.darkBlue.withOpacity(0.5)),
                   border: InputBorder.none,
                 ),

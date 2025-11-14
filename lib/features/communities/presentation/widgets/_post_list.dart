@@ -31,7 +31,7 @@ class PostList extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Center(
           child: Text(
-            'No hay publicaciones en esta comunidad.',
+            'There are no posts in this community',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                 color: AppColors.black.withOpacity(0.5)
             ),
