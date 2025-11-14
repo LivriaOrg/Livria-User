@@ -6,6 +6,8 @@ import '../../domain/entities/community.dart';
 import '../../infrastructure/repositories/community_repository_api.dart';
 import '../../infrastructure/datasource/community_remote_datasource.dart';
 import '../../presentation/widgets/community_card.dart';
+import '../../domain/usecases/create_community_usecase.dart';
+import 'create_community_page.dart';
 
 
 class CommunitiesPage extends StatefulWidget {
@@ -23,6 +25,8 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
   late final CommunityRepositoryApi _repository = CommunityRepositoryApi(dataSource: _dataSource);
 
   late final CommunityService _communityService = CommunityService(_repository);
+
+  late final CreateCommunityUseCase _createCommunityUseCase = CreateCommunityUseCase(_repository);
 
   List<Community> _filteredCommunities = [];
   bool _isLoading = true;
@@ -103,7 +107,6 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Título "COMMUNITIES"
         Text(
           'COMMUNITIES',
           style: Theme.of(context).textTheme.headlineLarge!.copyWith(
@@ -112,10 +115,19 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
           ),
         ),
 
-        // Botón "CREATE +" estilizado
         OutlinedButton.icon(
-          onPressed: () {
-            print('Navegar a la pantalla de Creación de Comunidad');
+          onPressed: () async {
+            final bool? result = await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CreateCommunityPage(
+                  createCommunityUseCase: _createCommunityUseCase,
+                ),
+              ),
+            );
+
+            if (result == true) {
+              _fetchCommunities();
+            }
           },
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -156,7 +168,6 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
       ),
       child: Row(
         children: [
-          // Campo de texto de búsqueda
           Expanded(
             child: TextField(
               controller: _searchController,
@@ -176,10 +187,8 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
             ),
           ),
 
-          // Separador visual de 1.5px (el grosor del borde)
           Container(width: borderThickness, color: AppColors.accentGold),
 
-          // Botón de búsqueda (Ícono de lupa)
           GestureDetector(
             onTap: () => _performSearch(_searchController.text),
             child: ClipRRect(
@@ -205,12 +214,10 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
   }
 
   Widget _buildCommunityGrid() {
-    // 1. Estado de Carga (Muestra un indicador de progreso)
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator(color: AppColors.primaryOrange));
     }
 
-    // 2. Estado de Error (Muestra mensaje y botón de reintento)
     if (_hasError != null) {
       return Center(
         child: Column(
@@ -219,7 +226,7 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
             Text(_hasError!, style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.errorRed)),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _fetchCommunities, // Intentar recargar
+              onPressed: _fetchCommunities,
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryOrange),
               child: const Text('Retry', style: TextStyle(color: AppColors.white)),
             ),
@@ -228,7 +235,6 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
       );
     }
 
-    // 3. Resultados Vacíos (No hay comunidades o la búsqueda no encontró nada)
     if (_filteredCommunities.isEmpty) {
       return Center(
         child: Text(
@@ -243,7 +249,6 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
 
     final List<Community> reversedCommunities = _filteredCommunities.reversed.toList();
 
-    // 4. Grid View de 3 columnas (Datos cargados)
     return GridView.builder(
       padding: const EdgeInsets.only(bottom: 16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -254,7 +259,6 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
       ),
       itemCount: _filteredCommunities.length,
       itemBuilder: (context, index) {
-        // Usa la entidad Community
         return CommunityCard(
           community: reversedCommunities[index],
         );
