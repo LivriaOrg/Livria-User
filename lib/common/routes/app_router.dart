@@ -9,13 +9,11 @@ import 'package:livria_user/features/auth/presentation/pages/splash_page.dart';
 import 'package:livria_user/features/book/presentation/pages/search_page.dart';
 import 'package:livria_user/features/book/presentation/pages/recommendations_page.dart';
 import 'package:livria_user/features/orders/presentation/pages/location_page.dart';
-import 'package:livria_user/features/drawers/presentation/pages/cart_page.dart';
 
 import 'package:livria_user/features/home/presentation/pages/home_page.dart';
 import 'package:livria_user/features/book/presentation/pages/categories_page.dart';
 import 'package:livria_user/features/book/presentation/pages/category_books_page.dart'; // <-- NUEVO
 import 'package:livria_user/features/communities/presentation/pages/communities_page.dart';
-import 'package:livria_user/features/drawers/presentation/pages/notifications_page.dart';
 import 'package:livria_user/features/profile/presentation/pages/profile_page.dart';
 
 import '../../features/book/application/services/book_service.dart';
@@ -23,6 +21,8 @@ import '../../features/book/domain/entities/book.dart';
 import '../../features/book/domain/repositories/book_repository_impl.dart';
 import '../../features/book/infrastructure/datasource/book_remote_datasource.dart';
 import '../../features/book/presentation/pages/book_page.dart';
+import '../../features/cart/presentation/pages/cart_page.dart';
+import '../../features/cart/presentation/pages/notifications_page.dart';
 
 //import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
 
