@@ -14,6 +14,7 @@ class OrderProvider extends ChangeNotifier {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
   String get fullRecipientName => "${nameController.text} ${lastNameController.text}".trim();
 
@@ -59,9 +60,9 @@ class OrderProvider extends ChangeNotifier {
 
       await createOrderUseCase(
         userClientId: userId,
-        userEmail: "user@email.com",
+        userEmail: emailController.text,
         userPhone: phoneController.text,
-        userFullName: "User Name",
+        userFullName: fullRecipientName,
         recipientName: fullRecipientName,
         isDelivery: _isDelivery,
         status: "pending",
@@ -87,6 +88,7 @@ class OrderProvider extends ChangeNotifier {
     nameController.clear();
     lastNameController.clear();
     phoneController.clear();
+    emailController.clear();
     addressController.clear();
     cityController.clear();
     districtController.clear();

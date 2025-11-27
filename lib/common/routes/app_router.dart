@@ -23,6 +23,7 @@ import '../../features/book/infrastructure/datasource/book_remote_datasource.dar
 import '../../features/book/presentation/pages/book_page.dart';
 import '../../features/cart/presentation/pages/cart_page.dart';
 import '../../features/cart/presentation/pages/notifications_page.dart';
+import '../../features/orders/presentation/pages/recipient_info_page.dart';
 
 //import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
 
@@ -144,9 +145,17 @@ final appRouter = GoRouter(
                     builder: (context, state) => const LocationPage()
                 ),
                 GoRoute(
+                  path: '/checkout/shipping',
+                  builder: (context, state) => const ShippingInfoPage(),
+                ),
+                GoRoute(
                     path: '/cart',
                     builder: (context, state) => const CartPage()
-                )
+                ),
+              GoRoute(
+                path: '/checkout/recipient',
+                builder: (context, state) => const RecipientInfoPage(),
+              )
 
             ],
         ),

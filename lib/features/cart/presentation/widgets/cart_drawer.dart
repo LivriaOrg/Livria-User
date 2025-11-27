@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import '../../domain/entities/cart_item.dart';
@@ -243,6 +244,11 @@ class _CartDrawerState extends State<CartDrawer> {
                     onPressed: (_items.isEmpty || _isLoading)
                         ? null
                         : () {
+                      if (Scaffold.of(context).isEndDrawerOpen) {
+                        Navigator.of(context).pop();
+                      }
+
+                      context.push('/checkout/recipient');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: lightBlueBtn, // Color activo
@@ -256,7 +262,6 @@ class _CartDrawerState extends State<CartDrawer> {
                     child: const Text(
                       "COMPLETE MY PURCHASE",
                       style: TextStyle(
-                        color: backgroundColor,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),

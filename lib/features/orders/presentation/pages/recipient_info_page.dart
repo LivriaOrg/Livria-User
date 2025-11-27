@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../common/theme/app_colors.dart';
+import '../../../cart/presentation/widgets/cart_drawer.dart';
 import '../providers/order_provider.dart';
 import '../widgets/checkout_progress_bar.dart';
+import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
 
 class RecipientInfoPage extends StatelessWidget {
   const RecipientInfoPage({super.key});
@@ -16,6 +18,17 @@ class RecipientInfoPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.white,
+      endDrawer: FutureBuilder<int?>(
+        future: AuthLocalDataSource().getUserId(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return CartDrawer(userId: snapshot.data!);
+          }
+          return const Drawer(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        },
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -111,10 +124,8 @@ class RecipientInfoPage extends StatelessWidget {
                       // Input: Email (Read Only / Estilo diferente)
                       _buildLabel("Email"),
                       _buildInput(
-                        initialValue: "alice@wonderland.com",
-                        readOnly: true,
-                        backgroundColor: AppColors.softTeal.withOpacity(0.3), // softTeal50 aprox
-                        textColor: AppColors.darkBlue,
+                        controller: orderProvider.emailController,
+                        keyboardType: TextInputType.emailAddress,
                       ),
                     ],
                   ),
@@ -127,12 +138,40 @@ class RecipientInfoPage extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
                     onPressed: () {
+                      final name = orderProvider.nameController.text.trim();
+                      final lastName = orderProvider.lastNameController.text.trim();
+                      final phone = orderProvider.phoneController.text.trim();
+                      final email = orderProvider.emailController.text.trim();
                       // Validar campos básicos
                       if (orderProvider.nameController.text.isEmpty ||
                           orderProvider.lastNameController.text.isEmpty ||
-                          orderProvider.phoneController.text.isEmpty) {
+                          orderProvider.phoneController.text.isEmpty ||
+                          orderProvider.emailController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Please fill all fields"))
+                        );
+                        return;
+                      }
+                      final phoneRegex = RegExp(r'^[0-9]{9}$');
+
+                      if (!phoneRegex.hasMatch(phone)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Phone number must be exactly 9 digits"),
+                              backgroundColor: AppColors.errorRed,
+                            )
+                        );
+                        return;
+                      }
+
+                      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+
+                      if (!emailRegex.hasMatch(email)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Please enter a valid email address"),
+                              backgroundColor: AppColors.errorRed,
+                            )
                         );
                         return;
                       }

@@ -12,8 +12,6 @@ class CheckoutProgressBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildStepIcon(context, 0, Icons.shopping_cart),
-        const SizedBox(width: 15),
         _buildStepIcon(context, 1, Icons.person), // User (Actual)
         const SizedBox(width: 15),
         _buildStepIcon(context, 2, FontAwesomeIcons.box), // Shipping
