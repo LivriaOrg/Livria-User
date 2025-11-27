@@ -240,10 +240,16 @@ class _CartDrawerState extends State<CartDrawer> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: (_items.isEmpty || _isLoading)
+                        ? null
+                        : () {
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: lightBlueBtn,
+                      backgroundColor: lightBlueBtn, // Color activo
+
+                      disabledBackgroundColor: Colors.grey.withOpacity(0.2),
+                      disabledForegroundColor: Colors.white.withOpacity(0.3),
+
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
