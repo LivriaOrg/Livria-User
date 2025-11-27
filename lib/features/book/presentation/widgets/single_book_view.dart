@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:livria_user/features/book/presentation/widgets/review_card.dart';
 import '../../../../common/theme/app_colors.dart';
 import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
@@ -7,6 +8,10 @@ import '../../domain/entities/book.dart';
 import '../../domain/entities/review.dart';
 import '../../domain/repositories/review_repository_impl.dart';
 import '../../infrastructure/datasource/review_remote_datasource.dart';
+
+import '../../../cart/domain/usecases/add_to_cart_usecase.dart';
+import '../../../cart/infrastructure/repositories/cart_repository_impl.dart';
+import '../../../cart/infrastructure/datasource/cart_remote_datasource.dart';
 
 
 class SingleBookView extends StatefulWidget {
@@ -19,11 +24,14 @@ class SingleBookView extends StatefulWidget {
 
 class _SingleBookViewState extends State<SingleBookView> {
   int _selectedQuantity = 1;
-  final List<int> _quantities = [1, 2, 3];
+  final List<int> _quantities = [1, 2, 3, 4, 5];
 
   late final ReviewService _reviewService;
   final TextEditingController _reviewController = TextEditingController();
   int _newReviewStars = 0;
+
+  late final AddToCartUseCase _addToCartUseCase;
+  bool _isAddingToCart = false;
 
   @override
   void initState() {
@@ -33,6 +41,52 @@ class _SingleBookViewState extends State<SingleBookView> {
         ReviewRemoteDataSource(authDs: AuthLocalDataSource()),
       ),
     );
+    final cartDs = CartRemoteDataSource(client: http.Client());
+    final cartRepo = CartRepositoryImpl(remoteDataSource: cartDs);
+    _addToCartUseCase = AddToCartUseCase(cartRepo);
+  }
+
+
+  Future<void> _handleAddToCart() async {
+    setState(() => _isAddingToCart = true);
+
+    try {
+      final authDs = AuthLocalDataSource();
+      final userId = await authDs.getUserId();
+
+      if (userId == null) {
+        throw Exception("You must be logged in to add items.");
+      }
+
+      await _addToCartUseCase(
+          widget.b.id,
+          _selectedQuantity,
+          userId
+      );
+
+      if (!mounted) return;
+
+      // c) Feedback de Éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Book added to your cart! 📚'),
+          backgroundColor: AppColors.darkBlue,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      Scaffold.of(context).openEndDrawer();
+
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: AppColors.errorRed),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingToCart = false);
+      }
+    }
   }
 
   Future<void> _handlePostReview(int bookId) async {
@@ -204,18 +258,23 @@ class _SingleBookViewState extends State<SingleBookView> {
               const SizedBox(width: 16.0),
               // Botón Añadir al Carrito
               ElevatedButton(
-                /* TODO: Funcionalidad de Carrito */
-                onPressed: () {},
+                onPressed: _isAddingToCart ? null : _handleAddToCart,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.vibrantBlue,
                   foregroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
-                  minimumSize: Size.zero,
+                  minimumSize: const Size(120, 50),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                 ),
-                child: const Text('ADD TO CART', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                child: _isAddingToCart
+                    ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                )
+                    : const Text('ADD TO CART', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               ),
             ],
           )

@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:livria_user/common/utils/app_icons.dart';
 import 'package:livria_user/common/theme/app_colors.dart';
 import 'package:livria_user/common/widgets/multi_color_line.dart';
-
+import 'package:livria_user/features/cart/presentation/widgets/cart_drawer.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_local_datasource.dart';
 
 class MainShell extends StatefulWidget {
   // este child es la página actual
@@ -20,8 +21,29 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   // "Memoria" para guardar el último tab principal activo
   int _lastMainTabIndex = 0;
+
+  int? _currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final authLocal = AuthLocalDataSource();
+    final userId = await authLocal.getUserId();
+
+    if (mounted && userId != null) {
+      setState(() {
+        _currentUserId = userId;
+      });
+    }
+  }
 
   bool _isMainTab(String location) {
     return location.startsWith('/home') ||
@@ -49,6 +71,12 @@ class _MainShellState extends State<MainShell> {
     }
 
     return Scaffold(
+        key: _scaffoldKey,
+
+        endDrawer: _currentUserId != null
+            ? CartDrawer(userId: _currentUserId!)
+            : const Drawer(child: Center(child: CircularProgressIndicator())),
+
         appBar: _buildAppBar(context, location),
 
         // el body es la página que el go_router nos pasa
@@ -193,7 +221,15 @@ class _MainShellState extends State<MainShell> {
         IconButton(
           icon: const FaIcon(AppIcons.cart),
           color: getIconColor('/cart'),
-          onPressed: () => context.push('/cart'),
+          onPressed: () {
+            if (_currentUserId != null) {
+              _scaffoldKey.currentState?.openEndDrawer();
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Loading user data..."))
+              );
+            }
+          },
         ),
         const SizedBox(width: 16) // espacio a la derecha
 
