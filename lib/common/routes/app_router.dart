@@ -23,6 +23,7 @@ import '../../features/book/infrastructure/datasource/book_remote_datasource.dar
 import '../../features/book/presentation/pages/book_page.dart';
 import '../../features/cart/presentation/pages/cart_page.dart';
 import '../../features/cart/presentation/pages/notifications_page.dart';
+import '../../features/orders/presentation/pages/payment_page.dart';
 import '../../features/orders/presentation/pages/recipient_info_page.dart';
 import '../../features/orders/presentation/pages/shipping_info_page.dart';
 
@@ -156,7 +157,15 @@ final appRouter = GoRouter(
               GoRoute(
                 path: '/checkout/recipient',
                 builder: (context, state) => const RecipientInfoPage(),
-              )
+              ),
+              GoRoute(
+                path: '/checkout/payment',
+                builder: (context, state) => const PaymentPage(),
+              ),
+              GoRoute(
+                path: '/checkout/confirmation',
+                builder: (context, state) => const Scaffold(body: Center(child: Text("Thanks for your purchase! 🎉"))),
+              ),
 
             ],
         ),

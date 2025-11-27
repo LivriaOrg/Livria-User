@@ -11,14 +11,42 @@ import 'features/orders/domain/usecases/create_order_usecase.dart';
 import 'features/orders/infrastructure/repositories/order_repository_impl.dart';
 import 'features/orders/infrastructure/datasource/order_remote_datasource.dart';
 
+import 'package:flutter_stripe/flutter_stripe.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await di.initializeDependencies();
+
+  Stripe.publishableKey = "pk_test_51SYEEjCT8H4q0SwHXOXEueZELjE8n2mE2HO2RePX2sUBNn2sWUo85aROv82Cz1CxYNMBrXB3MfghckoOFsYd56sB00XotlaES0";
+
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    _initializeStripe();
+  }
+
+  Future<void> _initializeStripe() async {
+    try {
+      await Stripe.instance.applySettings();
+      debugPrint("Stripe settings applied correctly");
+    } catch (e) {
+      debugPrint("Stripe init error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +55,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => OrderProvider(
             createOrderUseCase: CreateOrderUseCase(
-                OrderRepositoryImpl(
-                    OrderRemoteDataSource(client: http.Client())
-                )
+              OrderRepositoryImpl(
+                OrderRemoteDataSource(client: http.Client()),
+              ),
             ),
           ),
         ),
