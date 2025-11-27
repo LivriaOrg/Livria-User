@@ -24,6 +24,7 @@ import '../../features/book/presentation/pages/book_page.dart';
 import '../../features/cart/presentation/pages/cart_page.dart';
 import '../../features/cart/presentation/pages/notifications_page.dart';
 import '../../features/orders/presentation/pages/recipient_info_page.dart';
+import '../../features/orders/presentation/pages/shipping_info_page.dart';
 
 //import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
 
