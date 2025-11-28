@@ -11,4 +11,6 @@ abstract class OrderRepository {
     required String status,
     ShippingDetails? shippingDetails,
   });
+
+  Future<List<Order>> getOrdersByUser(int userId);
 }

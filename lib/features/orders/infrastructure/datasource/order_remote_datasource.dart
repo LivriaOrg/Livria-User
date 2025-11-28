@@ -66,4 +66,21 @@ class OrderRemoteDataSource {
       throw Exception('Failed to create order: ${response.body}');
     }
   }
+
+  Future<List<Order>> getOrdersByUser(int userId) async {
+    final uri = Uri.parse('$_base$_orderPath/users/$userId');
+    final headers = await _getHeaders();
+
+    debugPrint("🔵 [ORDERS GET] Fetching for user: $userId");
+
+    final response = await _client.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      return Order.listFromJson(response.body);
+    } else {
+      throw Exception('Failed to load orders: ${response.body}');
+    }
+  }
+
+
 }

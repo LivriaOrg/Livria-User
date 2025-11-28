@@ -29,4 +29,9 @@ class OrderRepositoryImpl implements OrderRepository {
       shippingDetails: shippingDetails,
     );
   }
+
+  @override
+  Future<List<Order>> getOrdersByUser(int userId) async {
+    return await remoteDataSource.getOrdersByUser(userId);
+  }
 }
