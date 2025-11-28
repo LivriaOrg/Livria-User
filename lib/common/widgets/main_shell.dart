@@ -123,7 +123,7 @@ class _MainShellState extends State<MainShell> {
                     ),
                     BottomNavigationBarItem(
                       icon: FaIcon(AppIcons.notifications),
-                      label: 'Notifications',
+                      label: 'Alerts',
                     ),
                     BottomNavigationBarItem(
                       icon: FaIcon(AppIcons.profile),

@@ -1,0 +1,132 @@
+import 'package:flutter/material.dart';
+import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
+import '../../../orders/domain/entities/order.dart';
+import '../../../orders/domain/usecases/get_user_orders_usecase.dart';
+import '../../domain/entities/user_profile.dart';
+import '../../domain/repositories/profile_repository.dart';
+
+class ProfileProvider extends ChangeNotifier {
+  // Dependencias
+  final ProfileRepository profileRepository;
+  final GetUserOrdersUseCase getUserOrdersUseCase;
+
+  ProfileProvider({
+    required this.profileRepository,
+    required this.getUserOrdersUseCase,
+  });
+
+  // ESTADO
+  UserProfile? _user;
+  List<Order> _orders = [];
+  bool _isLoading = true;
+  int _selectedTab = 0; // 0: My Orders, 1: Edit Bio
+
+  final TextEditingController displayController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController phraseController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+
+  // GETTERS
+  UserProfile? get user => _user;
+  List<Order> get orders => _orders;
+  bool get isLoading => _isLoading;
+  int get selectedTab => _selectedTab;
+
+  // INICIO
+  Future<void> loadData() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final userId = await AuthLocalDataSource().getUserId();
+      if (userId == null) throw Exception("No user logged in");
+
+      final results = await Future.wait([
+        profileRepository.getUserProfile(userId),
+        getUserOrdersUseCase(userId),
+      ]);
+
+      _user = results[0] as UserProfile;
+      _orders = results[1] as List<Order>;
+
+      _fillControllers();
+
+      _isLoading = false;
+    } catch (e) {
+      debugPrint("Error loading profile: $e");
+      _isLoading = false;
+    }
+    notifyListeners();
+  }
+
+  void _fillControllers() {
+    if (_user != null) {
+      displayController.text = _user!.display;
+      usernameController.text = _user!.username;
+      phraseController.text = _user!.phrase;
+      emailController.text = _user!.email;
+    }
+  }
+
+  void changeTab(int index) {
+    _selectedTab = index;
+    notifyListeners();
+  }
+
+  Future<bool> saveProfileChanges(BuildContext context) async {
+    if (_user == null) return false;
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final updatedProfile = _user!.copyWith(
+        display: displayController.text,
+        username: usernameController.text,
+        phrase: phraseController.text,
+        email: emailController.text,
+      );
+
+      final newUser = await profileRepository.updateUserProfile(_user!.id, updatedProfile);
+
+      _user = newUser;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Profile updated successfully!"), backgroundColor: Colors.green),
+      );
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error updating profile: $e"), backgroundColor: Colors.red),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> deleteAccount(BuildContext context) async {
+    if (_user == null) return false;
+
+    try {
+      await profileRepository.deleteAccount(_user!.id);
+
+      await AuthLocalDataSource().clearAuthData();
+
+      return true;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error deleting account: $e"), backgroundColor: Colors.red),
+      );
+      return false;
+    }
+  }
+
+  Future<void> logout() async {
+    await AuthLocalDataSource().clearAuthData();
+  }
+}
