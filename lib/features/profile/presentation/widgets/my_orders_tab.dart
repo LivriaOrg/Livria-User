@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../common/theme/app_colors.dart';
 import '../../../orders/domain/entities/order.dart';
 import '../providers/profile_provider.dart';
+import 'order_detail_sheet.dart';
 
 class MyOrdersTab extends StatelessWidget {
   const MyOrdersTab({super.key});
@@ -24,7 +25,7 @@ class MyOrdersTab extends StatelessWidget {
       separatorBuilder: (ctx, i) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final order = orders[index];
-        return _buildOrderCard(order);
+        return _buildOrderCard(context, order);
       },
     );
   }
@@ -52,7 +53,7 @@ class MyOrdersTab extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderCard(Order order) {
+  Widget _buildOrderCard(BuildContext context, Order order) {
     final dateStr = "${order.date.day}/${order.date.month}/${order.date.year}";
 
     Color statusColor = AppColors.secondaryYellow;
@@ -146,7 +147,17 @@ class MyOrdersTab extends StatelessWidget {
                 ],
               ),
 
-              const Icon(Icons.chevron_right, color: AppColors.softTeal),
+              IconButton(
+                icon: const Icon(Icons.chevron_right, color: AppColors.softTeal),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => OrderDetailSheet(order: order),
+                  );
+                },
+              ),
             ],
           ),
         ],
