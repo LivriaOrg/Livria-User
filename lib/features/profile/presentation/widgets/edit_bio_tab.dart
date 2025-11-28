@@ -32,6 +32,35 @@ class EditBioTab extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
+          Center(
+            child: Column(
+              children: [
+                if (provider.iconController.text.isNotEmpty) ...[
+                  const Icon(Icons.image, color: AppColors.softTeal),
+                  const SizedBox(height: 8),
+                ],
+
+                TextButton.icon(
+                  onPressed: () => provider.pickImage(context),
+                  icon: const Icon(Icons.camera_alt, color: AppColors.primaryOrange),
+                  label: const Text(
+                      "CHANGE PROFILE PHOTO",
+                      style: TextStyle(
+                          color: AppColors.primaryOrange,
+                          fontWeight: FontWeight.bold
+                      )
+                  ),
+                  style: TextButton.styleFrom(
+                    backgroundColor: AppColors.primaryOrange.withOpacity(0.1),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
           // DISPLAY NAME
           _buildLabel("Display Name"),
           _buildInput(

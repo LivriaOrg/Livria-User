@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
 import '../../../orders/domain/entities/order.dart';
 import '../../../orders/domain/usecases/get_user_orders_usecase.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../domain/repositories/profile_repository.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileProvider extends ChangeNotifier {
   // Dependencias
@@ -25,12 +29,45 @@ class ProfileProvider extends ChangeNotifier {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController phraseController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController iconController = TextEditingController();
 
   // GETTERS
   UserProfile? get user => _user;
   List<Order> get orders => _orders;
   bool get isLoading => _isLoading;
   int get selectedTab => _selectedTab;
+
+
+
+  Future<void> pickImage(BuildContext context) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 50,
+      );
+
+      if (image != null) {
+        final bytes = await File(image.path).readAsBytes();
+        final String base64String = base64Encode(bytes);
+
+        final String fullBase64 = "data:image/jpeg;base64,$base64String";
+
+        iconController.text = fullBase64;
+
+        if (_user != null) {
+          _user = _user!.copyWith(icon: fullBase64);
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Error picking image: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not pick image")),
+      );
+    }
+  }
+
 
   // INICIO
   Future<void> loadData() async {
@@ -65,6 +102,7 @@ class ProfileProvider extends ChangeNotifier {
       usernameController.text = _user!.username;
       phraseController.text = _user!.phrase;
       emailController.text = _user!.email;
+      iconController.text = _user!.icon;
     }
   }
 
@@ -85,6 +123,7 @@ class ProfileProvider extends ChangeNotifier {
         username: usernameController.text,
         phrase: phraseController.text,
         email: emailController.text,
+        icon: iconController.text,
       );
 
       final newUser = await profileRepository.updateUserProfile(_user!.id, updatedProfile);

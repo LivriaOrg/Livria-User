@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../common/theme/app_colors.dart';
 import '../../domain/entities/user_profile.dart';
+import 'smart_profile_image.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserProfile user;
@@ -31,33 +32,9 @@ class ProfileHeader extends StatelessWidget {
           const SizedBox(height: 20),
       
           // IMAGEN DE PERFIL
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                user.icon,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: AppColors.lightGrey,
-                    child: const Icon(Icons.person, size: 60, color: AppColors.softTeal),
-                  );
-                },
-              ),
-            ),
+          SmartProfileImage(
+            imageData: user.icon,
+            size: 120,
           ),
       
           const SizedBox(height: 16),
