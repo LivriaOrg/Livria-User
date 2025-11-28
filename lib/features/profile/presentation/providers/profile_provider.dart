@@ -129,4 +129,20 @@ class ProfileProvider extends ChangeNotifier {
   Future<void> logout() async {
     await AuthLocalDataSource().clearAuthData();
   }
+
+  Future<void> changeSubscriptionPlan(String newPlan) async {
+    if (_user == null) return;
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final updatedUser = await profileRepository.updateSubscription(_user!.id, newPlan);
+      _user = updatedUser;
+      _isLoading = false;
+    } catch (e) {
+      debugPrint("Error updating plan: $e");
+      _isLoading = false;
+    }
+    notifyListeners();
+  }
 }

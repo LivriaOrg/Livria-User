@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../../../../common/theme/app_colors.dart';
 import '../providers/profile_provider.dart';
 
-// Widgets que creamos antes
 import '../widgets/profile_header.dart';
 import '../widgets/subscription_bar.dart';
 import '../widgets/my_orders_tab.dart';
@@ -73,7 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
 
-    //  ESTADO DE ERROR
+    // ESTADO DE ERROR
     if (user == null) {
       return Scaffold(
         backgroundColor: AppColors.white,
@@ -99,15 +98,20 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // SECCIÓN SUPERIOR
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
                 child: ProfileHeader(user: user),
               ),
 
-              // BARRA DE SUSCRIPCIÓN
-              SubscriptionBar(planName: user.subscription == 'freeplan' ? 'Free Plan' : 'Community Plan'),
+              // BARRA DE SUSCRIPCIÓN (CORREGIDA)
+              SubscriptionBar(
+                currentPlan: user.subscription,
+                onPlanChanged: (newPlan) {
+                  context.read<ProfileProvider>().changeSubscriptionPlan(newPlan);
+                },
+              ),
 
               const SizedBox(height: 20),
 
@@ -115,16 +119,14 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribuye espacio
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    // Botón My Orders
                     _buildTabButton(
                         context,
                         label: "MY ORDERS",
                         index: 0,
                         isSelected: provider.selectedTab == 0
                     ),
-                    // Botón Edit Bio
                     _buildTabButton(
                         context,
                         label: "EDIT BIO",

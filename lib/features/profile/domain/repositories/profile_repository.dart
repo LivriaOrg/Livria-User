@@ -9,4 +9,6 @@ abstract class ProfileRepository {
 
   // Borrar cuenta
   Future<void> deleteAccount(int userId);
+
+  Future<UserProfile> updateSubscription(int userId, String newPlan);
 }

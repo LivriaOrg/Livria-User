@@ -2,15 +2,24 @@ import 'package:flutter/material.dart';
 import '../../../../common/theme/app_colors.dart';
 
 class SubscriptionBar extends StatelessWidget {
-  final String planName;
+  final String currentPlan;
+  final Function(String) onPlanChanged;
 
-  const SubscriptionBar({super.key, required this.planName});
+  const SubscriptionBar({
+    super.key,
+    required this.currentPlan,
+    required this.onPlanChanged
+  });
 
   @override
   Widget build(BuildContext context) {
+    final String selectedValue = (currentPlan.toLowerCase().contains('community'))
+        ? 'communityplan'
+        : 'freeplan';
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
       decoration: const BoxDecoration(
         color: AppColors.white,
         border: Border(
@@ -21,24 +30,46 @@ class SubscriptionBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // ETIQUETA "SUBSCRIPTION"
-          const Text(
-            "SUBSCRIPTION",
-            style: TextStyle(
-              color: AppColors.secondaryYellow,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              letterSpacing: 0.5,
+          const Flexible(
+            child: Text(
+              "SUBSCRIPTION",
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: AppColors.secondaryYellow,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
 
-          // NOMBRE DEL PLAN
-          Text(
-            planName,
-            style: const TextStyle(
-              color: AppColors.vibrantBlue,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+          const SizedBox(width: 10),
+
+          DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedValue,
+              isDense: true,
+              icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.vibrantBlue),
+              style: const TextStyle(
+                color: AppColors.vibrantBlue,
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+              ),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  onPlanChanged(newValue);
+                }
+              },
+              items: const [
+                DropdownMenuItem(
+                  value: 'freeplan',
+                  child: Text("Free Plan"),
+                ),
+                DropdownMenuItem(
+                  value: 'communityplan',
+                  child: Text("Community Plan"),
+                ),
+              ],
             ),
           ),
         ],

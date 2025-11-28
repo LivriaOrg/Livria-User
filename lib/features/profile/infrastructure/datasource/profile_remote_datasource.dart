@@ -72,4 +72,19 @@ class ProfileRemoteDataSource {
       throw Exception('Failed to delete account: ${response.body}');
     }
   }
+
+  // PUT: Actualizar Plan de Suscripción
+  Future<UserProfile> updateSubscription(int userId, String newPlan) async {
+    final uri = Uri.parse('$_base$_userPath/$userId/subscription');
+    final headers = await _getHeaders();
+    final body = json.encode({"newSubscriptionPlan": newPlan});
+
+    final response = await _client.put(uri, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      return UserProfile.fromMap(json.decode(response.body));
+    } else {
+      throw Exception('Failed to update plan: ${response.body}');
+    }
+  }
 }

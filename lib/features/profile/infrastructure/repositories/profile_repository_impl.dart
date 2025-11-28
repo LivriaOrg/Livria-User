@@ -21,4 +21,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<void> deleteAccount(int userId) async {
     await remoteDataSource.deleteAccount(userId);
   }
+
+  @override
+  Future<UserProfile> updateSubscription(int userId, String newPlan) async {
+    return await remoteDataSource.updateSubscription(userId, newPlan);
+  }
 }
