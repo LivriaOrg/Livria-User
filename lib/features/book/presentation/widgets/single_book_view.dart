@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:livria_user/features/book/application/services/favorite_service.dart';
+import 'package:livria_user/features/book/infrastructure/repositories/favorite_repository_impl.dart';
+import 'package:livria_user/features/book/infrastructure/datasource/favorite_remote_datasource.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_local_datasource.dart';
 import 'package:http/http.dart' as http;
 import 'package:livria_user/features/book/presentation/widgets/review_card.dart';
 import '../../../../common/theme/app_colors.dart';
@@ -33,6 +37,11 @@ class _SingleBookViewState extends State<SingleBookView> {
   late final AddToCartUseCase _addToCartUseCase;
   bool _isAddingToCart = false;
 
+  late final FavoriteService _favoriteService;
+  bool _isAddingToFavorites = false;
+  bool _isFavorite = false;
+  bool _isLoadingFavoriteStatus = true;
+
   @override
   void initState() {
     super.initState();
@@ -44,8 +53,15 @@ class _SingleBookViewState extends State<SingleBookView> {
     final cartDs = CartRemoteDataSource(client: http.Client());
     final cartRepo = CartRepositoryImpl(remoteDataSource: cartDs);
     _addToCartUseCase = AddToCartUseCase(cartRepo);
-  }
 
+    final favoriteDs = FavoriteRemoteDataSource(
+      client: http.Client(),
+      authDs: AuthLocalDataSource(),
+    );
+    final favoriteRepo = FavoriteRepositoryImpl(remoteDataSource: favoriteDs);
+    _favoriteService = FavoriteService(favoriteRepo);
+    _loadFavoriteStatus();
+  }
 
   Future<void> _handleAddToCart() async {
     setState(() => _isAddingToCart = true);
@@ -66,7 +82,6 @@ class _SingleBookViewState extends State<SingleBookView> {
 
       if (!mounted) return;
 
-      // c) Feedback de Éxito
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Book added to your cart! 📚'),
@@ -121,6 +136,118 @@ class _SingleBookViewState extends State<SingleBookView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to publish review: ${e.toString()}')),
       );
+    }
+  }
+
+  Future<void> _loadFavoriteStatus() async {
+    final authDs = AuthLocalDataSource();
+    final userId = await authDs.getUserId();
+
+    if (userId != null) {
+      try {
+        final isFav = await _favoriteService.getIsFavoriteStatus(
+          userId: userId,
+          bookId: widget.b.id,
+        );
+        if (mounted) {
+          setState(() {
+            _isFavorite = isFav;
+          });
+        }
+      } catch (e) {
+        print('Error loading favorite status: $e');
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoadingFavoriteStatus = false;
+      });
+    }
+  }
+
+  Future<void> _handleAddToFavorites() async {
+    setState(() => _isAddingToFavorites = true);
+
+    try {
+      final authDs = AuthLocalDataSource();
+      final userId = await authDs.getUserId();
+
+      if (userId == null) {
+        if (!mounted) return;
+        return;
+      }
+
+      await _favoriteService.addFavorite(
+        userId: userId,
+        bookId: widget.b.id,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _isFavorite = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Book added to your favorites! ❤️'),
+          backgroundColor: AppColors.darkBlue,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error adding to favorites: ${e.toString()}'), backgroundColor: AppColors.errorRed),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingToFavorites = false);
+      }
+    }
+  }
+
+  Future<void> _handleRemoveFromFavorites() async {
+    setState(() => _isAddingToFavorites = true);
+
+    try {
+      final authDs = AuthLocalDataSource();
+      final userId = await authDs.getUserId();
+
+      if (userId == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please log in.'), backgroundColor: AppColors.errorRed),
+        );
+        return;
+      }
+
+      await _favoriteService.removeFavorite(
+        userId: userId,
+        bookId: widget.b.id,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _isFavorite = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Book removed from favorites. 💔'),
+          backgroundColor: AppColors.darkBlue,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error removing favorite: ${e.toString()}'), backgroundColor: AppColors.errorRed),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingToFavorites = false);
+      }
     }
   }
 
@@ -212,7 +339,25 @@ class _SingleBookViewState extends State<SingleBookView> {
               // Íconos
               const Icon(Icons.remove_circle_outline, color: AppColors.darkBlue, size: 32,),
               const SizedBox(width: 16.0),
-              const Icon(Icons.bookmark_border, color: AppColors.darkBlue, size: 32,),
+              GestureDetector(
+                onTap: _isLoadingFavoriteStatus || _isAddingToFavorites
+                    ? null : _isFavorite
+                    ? _handleRemoveFromFavorites : _handleAddToFavorites,
+                child: _isLoadingFavoriteStatus || _isAddingToFavorites
+                    ? const SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: CircularProgressIndicator(color: AppColors.darkBlue, strokeWidth: 2)
+                    )
+                )
+                    : Icon(
+                  _isFavorite ? Icons.bookmark : Icons.bookmark_border,
+                  color: AppColors.darkBlue,
+                  size: 32,
+                ),
+              ),
               const Spacer(),
               // Precio
               Text(
