@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../../common/theme/app_colors.dart';
-import '../../../book/application/services/book_service.dart';
+import '../../../book/application/services/recommendation_service.dart';
 import '../../../book/domain/entities/book.dart';
-import '../../../book/domain/repositories/book_repository_impl.dart';
 import '../../../book/infrastructure/datasource/book_remote_datasource.dart';
-import '../../../book/presentation/widgets/horizontal_book_card.dart';
+import '../../../book/infrastructure/datasource/recommendation_remote_datasource.dart';
+import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
+import '../../domain/repositories/recommendation_repository_impl.dart';
+import '../widgets/horizontal_book_card.dart';
 
 class RecommendationsPage extends StatefulWidget {
   const RecommendationsPage({super.key});
@@ -15,23 +17,29 @@ class RecommendationsPage extends StatefulWidget {
 }
 
 class _RecommendationsPageState extends State<RecommendationsPage> {
-  late final BookService _bookService = BookService(
-    BookRepositoryImpl(
-      BookRemoteDataSource(),
-    ),
-  );
+  late final RecommendationService _recommendationService;
 
   late Future<List<Book>> _recommendationsFuture;
+
 
   @override
   void initState() {
     super.initState();
-    _recommendationsFuture = _bookService.getRandomBooks();
+
+    final authDs = AuthLocalDataSource();
+    final bookDs = BookRemoteDataSource();
+    final recDs = RecommendationRemoteDataSource();
+
+    final recRepo = RecommendationRepositoryImpl(recDs, authDs, bookDs);
+
+    _recommendationService = RecommendationService(recRepo);
+
+    _recommendationsFuture = _recommendationService.getRecommendedBooks();
   }
 
   Future<void> _refreshRecommendations() async {
     setState(() {
-      _recommendationsFuture = _bookService.getRandomBooks();
+      _recommendationsFuture = _recommendationService.getRecommendedBooks();
     });
   }
 
