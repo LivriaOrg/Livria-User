@@ -1,6 +1,6 @@
 class Env {
   static const apiBase = String.fromEnvironment(
     'API_BASE',
-    defaultValue: 'https://livriaapp.azurewebsites.net',
+    defaultValue: 'https://soylivria.azurewebsites.net/',
   );
 }
