@@ -368,18 +368,6 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Go to subscription page'),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryOrange),
-              child: const Text('Upgrade Subscription', style: TextStyle(color: AppColors.white)),
-            ),
           ],
         ),
       ),
