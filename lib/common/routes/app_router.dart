@@ -22,7 +22,7 @@ import '../../features/book/domain/repositories/book_repository_impl.dart';
 import '../../features/book/infrastructure/datasource/book_remote_datasource.dart';
 import '../../features/book/presentation/pages/book_page.dart';
 import '../../features/cart/presentation/pages/cart_page.dart';
-import '../../features/cart/presentation/pages/notifications_page.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/orders/presentation/pages/payment_page.dart';
 import '../../features/orders/presentation/pages/recipient_info_page.dart';
 import '../../features/orders/presentation/pages/shipping_info_page.dart';
