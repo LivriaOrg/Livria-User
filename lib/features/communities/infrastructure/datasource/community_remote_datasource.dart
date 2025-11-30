@@ -15,7 +15,6 @@ class CommunityRemoteDataSource {
       : _client = client ?? http.Client(),
         _authDs = authDs ?? AuthLocalDataSource();
 
-  // --- Lógica Auxiliar para Headers Autenticados ---
   Future<Map<String, String>> _getAuthenticatedHeaders() async {
     final token = await _authDs.getToken();
 
@@ -38,7 +37,7 @@ class CommunityRemoteDataSource {
 
     return _client.get(
       uri,
-      headers: headers, // Usamos los headers autenticados
+      headers: headers,
     );
   }
 
@@ -60,11 +59,9 @@ class CommunityRemoteDataSource {
     return _client.post(
       uri,
       headers: headers,
-      body: jsonEncode(body), // El cuerpo debe ser una cadena JSON
+      body: jsonEncode(body),
     );
   }
-
-  // --- NUEVAS FUNCIONES DE MEMBRESÍA ---
 
   /// Envía una solicitud POST para que un usuario se una a una comunidad.
   /// URL: /api/v1/communities/join
@@ -88,8 +85,22 @@ class CommunityRemoteDataSource {
     final uri = Uri.parse('$_base$_communitiesPath/$communityId/members/$userId');
     final headers = await _getAuthenticatedHeaders();
 
-    // Utilizamos http.delete para la acción de "salir"
     return _client.delete(
+      uri,
+      headers: headers,
+    );
+  }
+
+  /// Envía una solicitud GET para verificar si un usuario es miembro de una comunidad.
+  /// URL: /api/v1/communities/{communityId}/members/{userId}/is-member
+  Future<http.Response> checkUserJoined({
+    required int communityId,
+    required int userId,
+  }) async {
+    final uri = Uri.parse('$_base$_communitiesPath/$communityId/members/$userId/is-member');
+    final headers = await _getAuthenticatedHeaders();
+
+    return _client.get(
       uri,
       headers: headers,
     );

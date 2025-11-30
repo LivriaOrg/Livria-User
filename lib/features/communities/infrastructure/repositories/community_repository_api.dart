@@ -12,8 +12,6 @@ class CommunityRepositoryApi implements CommunityRepository {
   const CommunityRepositoryApi({required CommunityRemoteDataSource dataSource})
       : _dataSource = dataSource;
 
-  // --- Mappers ---
-
   Community _mapCommunity(String responseBody) {
     try {
       final Map<String, dynamic> jsonMap = json.decode(responseBody);
@@ -58,8 +56,6 @@ class CommunityRepositoryApi implements CommunityRepository {
       throw Exception('Failed to parse post list JSON: $e');
     }
   }
-
-  // -----------------------------------------------------------------------
 
   @override
   Future<List<Community>> fetchCommunityList(int offset, int limit) async {
@@ -117,8 +113,6 @@ class CommunityRepositoryApi implements CommunityRepository {
     throw Exception('HTTP ${res.statusCode}: Fallo al crear la comunidad. Mensaje: ${res.body}');
   }
 
-  // --- IMPLEMENTACIONES DE UNIÓN Y SALIDA ---
-
   @override
   Future<JoinedCommunity> joinCommunity({
     required int userClientId,
@@ -129,14 +123,11 @@ class CommunityRepositoryApi implements CommunityRepository {
       "communityId": communityId,
     };
 
-    // Suponiendo que _dataSource.joinCommunity hace el POST a /api/v1/communities/join
     final http.Response res = await _dataSource.joinCommunity(body);
 
     if (res.statusCode == 200 || res.statusCode == 201) {
-      // Mapeamos la respuesta del servidor al objeto JoinedCommunity
       return _mapJoinedCommunity(res.body);
     }
-    // Si la respuesta no es 200/201, lanzamos un error
     throw Exception('HTTP ${res.statusCode}: Fallo al unirse a la comunidad. Mensaje: ${res.body}');
   }
 
@@ -145,18 +136,33 @@ class CommunityRepositoryApi implements CommunityRepository {
     required int userClientId,
     required int communityId,
   }) async {
-    // Suponiendo que _dataSource.leaveCommunity hace el DELETE a /api/v1/communities/{communityId}/members/{userId}
     final http.Response res = await _dataSource.leaveCommunity(
       communityId: communityId,
       userId: userClientId,
     );
 
-    // DELETE a menudo devuelve 200 (OK) o 204 (No Content)
     if (res.statusCode == 200 || res.statusCode == 204) {
-      return; // Éxito, no se espera cuerpo de respuesta
+      return;
     }
 
-    // Si la respuesta no es 200/204, lanzamos un error
     throw Exception('HTTP ${res.statusCode}: Fallo al salir de la comunidad. Mensaje: ${res.body}');
+  }
+
+  @override
+  Future<bool> checkUserJoined({
+    required int userId,
+    required int communityId,
+  }) async {
+    final http.Response res = await _dataSource.checkUserJoined(
+      communityId: communityId,
+      userId: userId,
+    );
+
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(res.body);
+      return jsonResponse['isMember'] as bool;
+    }
+
+    throw Exception('HTTP ${res.statusCode}: Fallo al verificar la unión a la comunidad. Mensaje: ${res.body}');
   }
 }

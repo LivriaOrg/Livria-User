@@ -60,7 +60,6 @@ class CommunityCard extends StatelessWidget {
                   errorBuilder: (context, error, stackTrace) => Container(
                     color: AppColors.lightGrey,
                     child: Center(
-                      // Usamos un ícono o texto simple si la imagen falla
                       child: Icon(community.type == 1 ? Icons.people : Icons.book, color: AppColors.darkBlue),
                     ),
                   ),

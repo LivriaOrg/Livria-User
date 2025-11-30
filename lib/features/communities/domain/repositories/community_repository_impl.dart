@@ -56,15 +56,14 @@ class CommunityRepositoryImpl implements CommunityRepository {
 
     final http.Response res = await _ds.createCommunity(body);
 
-    if (res.statusCode == 201) { // 201 Created es una respuesta típica para POST
+    if (res.statusCode == 201) {
       final Map<String, dynamic> communityJson = jsonDecode(res.body);
       return Community.fromJson(communityJson);
     }
-    // Lanza una excepción para indicar el error en la creación
     throw Exception('HTTP ${res.statusCode}: Fallo al crear la comunidad. Mensaje: ${res.body}');
   }
 
-  // --- Implementaciones de Unirse y Salir (Join & Leave) ---
+  // join, leave y check
 
   @override
   Future<JoinedCommunity> joinCommunity({
@@ -76,11 +75,9 @@ class CommunityRepositoryImpl implements CommunityRepository {
       "communityId": communityId,
     };
 
-    // Llama al método del DataSource para realizar el POST a /api/v1/communities/join
     final http.Response res = await _ds.joinCommunity(body);
 
     if (res.statusCode == 200 || res.statusCode == 201) {
-      // Mapea la respuesta JSON a JoinedCommunity
       final Map<String, dynamic> joinedJson = jsonDecode(res.body);
       return JoinedCommunity.fromJson(joinedJson);
     }
@@ -92,17 +89,33 @@ class CommunityRepositoryImpl implements CommunityRepository {
     required int userClientId,
     required int communityId,
   }) async {
-    // Llama al método del DataSource para realizar el DELETE
     final http.Response res = await _ds.leaveCommunity(
       communityId: communityId,
       userId: userClientId,
     );
 
-    // Un DELETE exitoso devuelve típicamente 200 o 204
     if (res.statusCode == 200 || res.statusCode == 204) {
       return;
     }
 
     throw Exception('HTTP ${res.statusCode}: Fallo al salir de la comunidad. Mensaje: ${res.body}');
+  }
+
+  @override
+  Future<bool> checkUserJoined({
+    required int userId,
+    required int communityId,
+  }) async {
+    final http.Response res = await _ds.checkUserJoined(
+      communityId: communityId,
+      userId: userId,
+    );
+
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(res.body);
+      return jsonResponse['isMember'] as bool;
+    }
+
+    throw Exception('HTTP ${res.statusCode}: Fallo al verificar la unión a la comunidad. Mensaje: ${res.body}');
   }
 }

@@ -24,4 +24,10 @@ abstract class CommunityRepository {
     required int userClientId,
     required int communityId,
   });
+
+  /// Verifica si el usuario ya es miembro de una comunidad específica.
+  Future<bool> checkUserJoined({
+    required int userId,
+    required int communityId,
+  });
 }

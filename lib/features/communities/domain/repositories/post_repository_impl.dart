@@ -64,7 +64,6 @@ class PostRepositoryImpl implements PostRepository {
     required String content,
     String? img,
   }) async {
-    // Este método sigue usando el patrón antiguo (DataSource devuelve http.Response)
     final http.Response response = await _dataSource.createPost(
       communityId: communityId,
       username: username,
@@ -72,7 +71,6 @@ class PostRepositoryImpl implements PostRepository {
       img: img,
     );
 
-    // Generalmente, POST devuelve 201 (Created)
     if (response.statusCode == 201 || response.statusCode == 200) {
       return _mapPost(response.body);
     } else {

@@ -9,14 +9,14 @@ class CommunityHeader extends StatelessWidget {
   final Community community;
   final String Function(int type) getCommunityTypeLabel;
   final VoidCallback onJoinPressed;
-  final bool isJoined; // NUEVO CAMPO
+  final bool isJoined;
 
   const CommunityHeader({
     Key? key,
     required this.community,
     required this.getCommunityTypeLabel,
     required this.onJoinPressed,
-    this.isJoined = false, // Valor por defecto
+    this.isJoined = false,
   }) : super(key: key);
 
   @override

@@ -68,7 +68,6 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
 
-        // PROFILE PROVIDER (NUEVO - Para la pantalla de Perfil)
         ChangeNotifierProvider(
           create: (_) => ProfileProvider(
             // A. Repositorio de Perfil

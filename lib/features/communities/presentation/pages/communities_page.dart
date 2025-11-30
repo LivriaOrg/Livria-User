@@ -8,10 +8,21 @@ import '../../infrastructure/datasource/community_remote_datasource.dart';
 import '../../presentation/widgets/community_card.dart';
 import '../../domain/usecases/create_community_usecase.dart';
 import 'create_community_page.dart';
+import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
+import '../../../auth/infrastructure/datasource/auth_remote_datasource.dart';
+import '../../../auth/infrastructure/model/user_model.dart';
 
 
 class CommunitiesPage extends StatefulWidget {
-  const CommunitiesPage({super.key});
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+
+  const CommunitiesPage(
+      {
+        super.key,
+        required this.authLocalDataSource,
+        required this.authRemoteDataSource,
+      });
 
   @override
   State<CommunitiesPage> createState() => _CommunitiesPageState();
@@ -21,21 +32,22 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
   final TextEditingController _searchController = TextEditingController();
 
   final CommunityRemoteDataSource _dataSource = CommunityRemoteDataSource();
-
   late final CommunityRepositoryApi _repository = CommunityRepositoryApi(dataSource: _dataSource);
-
   late final CommunityService _communityService = CommunityService(_repository);
-
   late final CreateCommunityUseCase _createCommunityUseCase = CreateCommunityUseCase(_repository);
 
   List<Community> _filteredCommunities = [];
   bool _isLoading = true;
   String? _hasError;
 
+  bool _isCheckingAccess = true;
+  bool _hasCommunityPlan = false;
+  String _userAccessError = '';
+
   @override
   void initState() {
     super.initState();
-    _fetchCommunities();
+    _checkSubscriptionAndLoadCommunities();
   }
 
   Future<void> _fetchCommunities({String query = ''}) async {
@@ -55,11 +67,53 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
         _hasError = null;
       });
     } catch (e) {
-      print('Error al cargar comunidades: $e');
       setState(() {
         _hasError = 'The communities could not be loaded. Please try again.';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _checkSubscriptionAndLoadCommunities() async {
+    setState(() {
+      _isCheckingAccess = true;
+      _userAccessError = '';
+    });
+
+    try {
+      final userId = await widget.authLocalDataSource.getUserId();
+      final token = await widget.authLocalDataSource.getToken();
+
+      if (userId == null || token == null) {
+        throw Exception('User is not logged in or token is missing.');
+      }
+
+      // obtener perfil
+      final UserModel user = await widget.authRemoteDataSource.getUserProfile(userId, token);
+
+      // verificar suscripción
+      const requiredPlan = 'communityplan';
+      final hasPlan = user.subscription == requiredPlan;
+
+      if (mounted) {
+        setState(() {
+          _isCheckingAccess = false;
+          _hasCommunityPlan = hasPlan;
+        });
+
+        // cargar comunidades si tiene plan
+        if (hasPlan) {
+          _fetchCommunities();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isCheckingAccess = false;
+          _hasCommunityPlan = false;
+          _userAccessError = 'Error: could not verify user subscription status.';
+        });
+      }
     }
   }
 
@@ -75,6 +129,25 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
 
   @override
   Widget build(BuildContext context) {
+    // verificando plan
+    if (_isCheckingAccess) {
+      return const Scaffold(
+        backgroundColor: AppColors.white,
+        body: Center(child: CircularProgressIndicator(color: AppColors.primaryOrange)),
+      );
+    }
+
+    // acceso denegado
+    if (!_hasCommunityPlan) {
+      return Scaffold(
+        backgroundColor: AppColors.white,
+        body: SafeArea(
+          child: _buildAccessDeniedView(),
+        ),
+      );
+    }
+
+    // vista de comunidades
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -263,6 +336,53 @@ class _CommunitiesPageState extends State<CommunitiesPage> {
           community: reversedCommunities[index],
         );
       },
+    );
+  }
+
+  Widget _buildAccessDeniedView() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.lock_outline_rounded,
+              size: 80,
+              color: AppColors.secondaryYellow,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              _userAccessError.isNotEmpty
+                  ? _userAccessError
+                  : 'Subscription required.',
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: AppColors.errorRed,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'To access this feature and join communities, please subscribe to the Community Plan.',
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Go to subscription page'),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryOrange),
+              child: const Text('Upgrade Subscription', style: TextStyle(color: AppColors.white)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

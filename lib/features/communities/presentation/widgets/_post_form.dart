@@ -33,7 +33,6 @@ class PostForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. EARLY EXIT: Estado de Carga
     if (isUserLoading) {
       return const Center(
         child: Padding(
@@ -43,7 +42,6 @@ class PostForm extends StatelessWidget {
       );
     }
 
-    // 2. EARLY EXIT: Estado No Autenticado
     if (username == null) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -62,11 +60,10 @@ class PostForm extends StatelessWidget {
       );
     }
 
-    // 3. Formulario de post (Contenido principal y solo se ejecuta si está autenticado)
+    // Formulario de POST
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: AbsorbPointer(
-        // Deshabilita la interacción mientras se está publicando
         absorbing: isPosting,
         child: Container(
           padding: const EdgeInsets.all(12.0),
@@ -78,10 +75,8 @@ class PostForm extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Campo de texto
               TextField(
                 controller: contentController,
-                // Garantiza que username no es nulo aquí, gracias al Early Exit
                 decoration: InputDecoration(
                   hintText: 'What are your thoughts?',
                   hintStyle: TextStyle(color: AppColors.darkBlue.withOpacity(0.5)),
@@ -91,7 +86,6 @@ class PostForm extends StatelessWidget {
                 minLines: 1,
               ),
 
-              // Mostrar imagen seleccionada
               if (selectedImageFile != null) ...[
                 const SizedBox(height: 12),
                 Stack(

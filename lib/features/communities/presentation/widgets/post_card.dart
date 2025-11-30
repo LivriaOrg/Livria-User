@@ -13,24 +13,19 @@ class PostCard extends StatelessWidget {
     required this.userIconUrl,
   });
 
-  // Función corregida para manejar el desfase horario
   String _formatTimestamp(dynamic timestamp) {
     DateTime dateTime;
     try {
       if (timestamp == null) return 'Fecha desconocida';
 
-      // Asegura que el timestamp sea un String (y lo trata como UTC si no tiene 'Z')
       String utcTimestamp = timestamp is String
           ? (timestamp.endsWith('Z') ? timestamp : '${timestamp}Z')
           : timestamp.toString();
 
-      // Parsea como UTC y lo convierte a la hora local del dispositivo (toLocal())
       dateTime = DateTime.parse(utcTimestamp).toLocal();
 
-      // Formato: DD/MM/YYYY 'a las' HH:MM (24 horas)
       return DateFormat('dd/MM/yyyy \'a las\' HH:mm').format(dateTime);
     } catch (e) {
-      // Manejo de errores de parsing o formato
       return 'Fecha desconocida';
     }
   }
@@ -39,13 +34,11 @@ class PostCard extends StatelessWidget {
   Widget _buildUserAvatar() {
     const double radius = 18;
     const String defaultIconUrl = 'https://cdn-icons-png.flaticon.com/512/3447/3447354.png';
-    // Prioriza userIconUrl si no está vacío, sino usa el default
     final String effectiveUrl = userIconUrl.isNotEmpty ? userIconUrl : defaultIconUrl;
 
     return CircleAvatar(
       radius: radius,
       backgroundColor: AppColors.softTeal.withOpacity(0.2),
-      // Usa un widget FutureBuilder o Image.network directo con un solo errorBuilder
       child: ClipOval(
         child: Image.network(
           effectiveUrl,

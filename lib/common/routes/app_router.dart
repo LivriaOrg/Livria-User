@@ -26,8 +26,11 @@ import '../../features/cart/presentation/pages/notifications_page.dart';
 import '../../features/orders/presentation/pages/payment_page.dart';
 import '../../features/orders/presentation/pages/recipient_info_page.dart';
 import '../../features/orders/presentation/pages/shipping_info_page.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_local_datasource.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_remote_datasource.dart';
 
-//import 'package:livria_user/features/auth/presentation/pages/login_page.dart';
+final AuthLocalDataSource authLocalDataSource = AuthLocalDataSource();
+final AuthRemoteDataSource authRemoteDataSource = AuthRemoteDataSource();
 
 final appRouter = GoRouter(
   // initialLocation: '/home', // inicia la app en la ruta /home
@@ -124,7 +127,10 @@ final appRouter = GoRouter(
                 ),
                 GoRoute(
                     path: '/communities',
-                    builder: (context, state) => const CommunitiesPage()
+                    builder: (context, state) => CommunitiesPage(
+                      authLocalDataSource: authLocalDataSource,
+                      authRemoteDataSource: authRemoteDataSource,
+                    )
                 ),
                 GoRoute(
                     path: '/notifications',
@@ -166,9 +172,7 @@ final appRouter = GoRouter(
                 path: '/checkout/confirmation',
                 builder: (context, state) => const Scaffold(body: Center(child: Text("Thanks for your purchase! 🎉"))),
               ),
-
             ],
         ),
-
     ]
 );

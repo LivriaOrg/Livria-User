@@ -9,6 +9,8 @@ import '../../domain/entities/community.dart';
 import '../../domain/entities/post.dart';
 import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
 import '../../../auth/infrastructure/datasource/auth_remote_datasource.dart';
+import '../../domain/repositories/community_repository.dart';
+import '../../domain/repositories/community_repository_impl.dart';
 import '../../infrastructure/datasource/post_remote_datasource.dart';
 import '../../domain/repositories/post_repository_impl.dart';
 import '../widgets/_community_header.dart';
@@ -33,13 +35,15 @@ class CommunityDetailPage extends StatefulWidget {
    final AuthLocalDataSource authLocalDataSource;
    final AuthRemoteDataSource authRemoteDataSource;
    final PostRemoteDataSource postRemoteDataSource;
+   final CommunityRemoteDataSource communityRemoteDataSource;
+
    const CommunityDetailPage({
     super.key,
     required this.community,
     required this.authLocalDataSource,
     required this.authRemoteDataSource,
     required this.postRemoteDataSource,
-    required CommunityRemoteDataSource communityRemoteDataSource,
+    required this.communityRemoteDataSource,
    });
    @override
    State<CommunityDetailPage> createState() => _CommunityDetailPageState();
@@ -57,14 +61,19 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
    bool _isLoadingPosts = true;
    late final PostRepositoryImpl _postRepository;
 
-  bool _isJoined = false;
+   late final CommunityRepository _communityRepository;
+   int? _currentUserId;
+   bool _isJoined = false;
+   bool _isTogglingJoin = false;
 
    @override
    void initState() {
     super.initState();
+    _communityRepository = CommunityRepositoryImpl(widget.communityRemoteDataSource);
     _postRepository = PostRepositoryImpl(widget.postRemoteDataSource);
     _loadUserProfile();
     _fetchPosts();
+    _checkUserJoinedStatus();
    }
    @override
    void dispose() {
@@ -124,6 +133,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
      _showSnackbar('Failed to load posts: $e', color: Colors.red);
     }
    }
+
    Future<void> _loadUserProfile() async {
     try {
      final userId = await widget.authLocalDataSource.getUserId();
@@ -209,18 +219,55 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
     );
    }
 
-  // join leave to do
-  void _handleJoinPressed() {
-  final String action = _isJoined ? 'leave' : 'join';
-  final String message = _isJoined ? 'You have left' : 'You have joined';
+   void _handleJoinPressed() async {
+    if (_currentUserId == null) {
+     _showSnackbar('User ID not available. Please try logging in again.', color: Colors.red);
+     return;
+    }
+    if (_isTogglingJoin) return;
 
-  setState(() {
-  _isJoined = !_isJoined;
-  });
+    setState(() {
+     _isTogglingJoin = true;
+    });
 
-  _showSnackbar('$message the community ${widget.community.name}.',
-  color: _isJoined ? AppColors.primaryOrange : AppColors.secondaryYellow);
-  }
+    try {
+     if (_isJoined) {
+      // Lógica de LEAVE
+      await _communityRepository.leaveCommunity(
+       userClientId: _currentUserId!,
+       communityId: widget.community.id,
+      );
+      if (mounted) {
+       setState(() {
+        _isJoined = false;
+       });
+       _showSnackbar('You have left the community ${widget.community.name}.',
+           color: AppColors.secondaryYellow);
+      }
+     } else {
+      // Lógica de JOIN
+      await _communityRepository.joinCommunity(
+       userClientId: _currentUserId!,
+       communityId: widget.community.id,
+      );
+      if (mounted) {
+       setState(() {
+        _isJoined = true;
+       });
+       _showSnackbar('You have successfully joined the community ${widget.community.name}!',
+           color: AppColors.primaryOrange);
+      }
+     }
+    } catch (e) {
+     _showSnackbar('Operation failed: ${e.toString()}', color: Colors.red);
+    } finally {
+     if (mounted) {
+      setState(() {
+       _isTogglingJoin = false;
+      });
+     }
+    }
+   }
 
    @override
    Widget build(BuildContext context) {
@@ -239,7 +286,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
         CommunityHeader(
          community: widget.community,
          getCommunityTypeLabel: _getCommunityTypeLabel,
-         onJoinPressed: _handleJoinPressed,
+         onJoinPressed: _isTogglingJoin ? () {} : _handleJoinPressed,
   isJoined: _isJoined,
         ),
         const SizedBox(height: 16),
@@ -277,5 +324,28 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
       ),
      ),
     );
+   }
+
+   Future<void> _checkUserJoinedStatus() async {
+    if (_currentUserId == null) {
+     await _loadUserProfile();
+    }
+
+    if (_currentUserId == null) return;
+
+    try {
+     final isMember = await _communityRepository.checkUserJoined(
+      userId: _currentUserId!,
+      communityId: widget.community.id,
+     );
+     if (mounted) {
+      setState(() {
+       _isJoined = isMember;
+      });
+     }
+    } catch (e) {
+     print('Error al verificar unión a comunidad: $e');
+     _showSnackbar('Failed to check membership status: $e', color: Colors.red);
+    }
    }
 }
