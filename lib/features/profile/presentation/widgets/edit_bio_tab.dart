@@ -77,6 +77,8 @@ class EditBioTab extends StatelessWidget {
             hint: "unique_handle",
             icon: Icons.alternate_email,
             prefixText: "@",
+            readOnly: true,
+            fillColor: Colors.grey.withOpacity(0.1),
           ),
           const SizedBox(height: 16),
 
@@ -159,33 +161,46 @@ class EditBioTab extends StatelessWidget {
     TextInputType inputType = TextInputType.text,
     int maxLines = 1,
     String? prefixText,
+    bool readOnly = false,
+    Color? fillColor,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: fillColor ?? AppColors.white,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          )
+          if (!readOnly)
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            )
         ],
       ),
       child: TextField(
         controller: controller,
+        readOnly: readOnly,
         keyboardType: inputType,
         maxLines: maxLines,
-        style: const TextStyle(color: AppColors.black, fontSize: 14),
+        style: TextStyle(
+            color: readOnly ? Colors.grey : AppColors.black,
+            fontSize: 14
+        ),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(color: Colors.grey.withOpacity(0.6)),
-          prefixIcon: Icon(icon, color: AppColors.softTeal, size: 20),
+          prefixIcon: Icon(
+              icon,
+              color: readOnly ? Colors.grey : AppColors.softTeal,
+              size: 20
+          ),
           prefixText: prefixText,
           prefixStyle: const TextStyle(color: AppColors.black, fontWeight: FontWeight.bold),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
           contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-          focusedBorder: OutlineInputBorder(
+          focusedBorder: readOnly
+              ? OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none)
+              : OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(color: AppColors.softTeal, width: 1.5),
           ),
