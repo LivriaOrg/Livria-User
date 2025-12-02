@@ -281,6 +281,8 @@ class _SingleBookViewState extends State<SingleBookView> {
   Widget _buildBookHeader(BuildContext context) {
     final t = Theme.of(context).textTheme;
 
+    final bool hasStock = widget.b.stock > 0;
+
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -297,7 +299,7 @@ class _SingleBookViewState extends State<SingleBookView> {
           ),
           const SizedBox(height: 16.0),
 
-          // ROW PRINCIPAL
+          // ROW DE IMAGEN 
           Align(
             alignment: Alignment.center,
             child: Container(
@@ -308,7 +310,6 @@ class _SingleBookViewState extends State<SingleBookView> {
                 alignment: Alignment.center,
                 clipBehavior: Clip.none,
                 children: [
-                  // Imagen de la Portada
                   Image.network(
                     widget.b.cover,
                     height: 280,
@@ -322,7 +323,6 @@ class _SingleBookViewState extends State<SingleBookView> {
                       child: const Icon(Icons.broken_image, color: AppColors.darkBlue),
                     ),
                   ),
-                  // Etiquetas Rotadas
                   _buildVerticalLabel(widget.b.genre.toUpperCase(), AppColors.primaryOrange, 0, -30, 3),
                   _buildVerticalLabel(widget.b.language.toUpperCase(), AppColors.vibrantBlue, 206, -30, 3),
                   _buildVerticalLabel(widget.b.author.toUpperCase(), AppColors.darkBlue, 0, 170, 1),
@@ -333,10 +333,9 @@ class _SingleBookViewState extends State<SingleBookView> {
 
           const SizedBox(height: 16.0),
 
-          // PRECIO Y BOTONES DE ACCIÓN 
+          // PRECIO Y BOTONES DE FAVORITOS 
           Row(
             children: [
-              // Íconos
               const Icon(Icons.remove_circle_outline, color: AppColors.darkBlue, size: 32,),
               const SizedBox(width: 16.0),
               GestureDetector(
@@ -359,7 +358,6 @@ class _SingleBookViewState extends State<SingleBookView> {
                 ),
               ),
               const Spacer(),
-              // Precio
               Text(
                 'S/ ${widget.b.salePrice.toStringAsFixed(2)}',
                 style: t.titleLarge?.copyWith(
@@ -367,46 +365,74 @@ class _SingleBookViewState extends State<SingleBookView> {
               ),
             ],
           ),
+
           const SizedBox(height: 16.0),
+
+          // --- CONTROLES DE CARRITO ---
           Row(
             children: [
               const Spacer(),
-              // Dropdown de Cantidad
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 15.0),
-                decoration: BoxDecoration(
-                  color: AppColors.softTeal.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<int>(
-                    isDense: true,
-                    style: t.bodyMedium?.copyWith(
-                        color: AppColors.darkBlue,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14
-                    ),                    value: _selectedQuantity,
-                    icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.darkBlue, size: 20),items: _quantities.map((int value) {
-                    return DropdownMenuItem<int>(
-                      value: value,
-                      child: Text('$value', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBlue, fontSize: 14)),
+
+              Builder(
+                  builder: (context) {
+                    int maxPerPurchase = 5;
+                    int realStock = widget.b.stock;
+
+                    int limit = realStock < maxPerPurchase ? realStock : maxPerPurchase;
+
+                    List<int> availableQuantities = List.generate(limit, (index) => index + 1);
+
+                    return Opacity(
+                      opacity: hasStock ? 1.0 : 0.5,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 15.0),
+                        decoration: BoxDecoration(
+                          color: AppColors.softTeal.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<int>(
+                            isDense: true,
+                            style: t.bodyMedium?.copyWith(
+                                color: AppColors.darkBlue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14
+                            ),
+                            value: hasStock ? _selectedQuantity : null,
+
+                            icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.darkBlue, size: 20),
+
+                            items: availableQuantities.map((int value) {
+                              return DropdownMenuItem<int>(
+                                value: value,
+                                child: Text('$value', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.darkBlue, fontSize: 14)),
+                              );
+                            }).toList(),
+
+                            onChanged: hasStock ? (int? newValue) {
+                              setState(() {
+                                _selectedQuantity = newValue!;
+                              });
+                            } : null,
+                          ),
+                        ),
+                      ),
                     );
-                  }).toList(),
-                    onChanged: (int? newValue) {
-                      setState(() {
-                        _selectedQuantity = newValue!;
-                      });
-                    },
-                  ),
-                ),
+                  }
               ),
+
               const SizedBox(width: 16.0),
-              // Botón Añadir al Carrito
+
+              // BOTÓN AÑADIR
               ElevatedButton(
-                onPressed: _isAddingToCart ? null : _handleAddToCart,
+                onPressed: (_isAddingToCart || !hasStock)
+                    ? null
+                    : _handleAddToCart,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.vibrantBlue,
                   foregroundColor: AppColors.white,
+                  disabledBackgroundColor: Colors.grey.withOpacity(0.3),
+                  disabledForegroundColor: Colors.grey,
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
                   minimumSize: const Size(120, 50),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -415,11 +441,13 @@ class _SingleBookViewState extends State<SingleBookView> {
                 ),
                 child: _isAddingToCart
                     ? const SizedBox(
-                    width: 20,
-                    height: 20,
+                    width: 20, height: 20,
                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
                 )
-                    : const Text('ADD TO CART', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    : Text(
+                    hasStock ? 'ADD TO CART' : 'OUT OF STOCK',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)
+                ),
               ),
             ],
           )
