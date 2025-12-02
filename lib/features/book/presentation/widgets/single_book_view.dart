@@ -7,15 +7,18 @@ import 'package:http/http.dart' as http;
 import 'package:livria_user/features/book/presentation/widgets/review_card.dart';
 import '../../../../common/theme/app_colors.dart';
 import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
+import '../../application/services/exclusion_service.dart';
 import '../../application/services/review_service.dart';
 import '../../domain/entities/book.dart';
 import '../../domain/entities/review.dart';
 import '../../domain/repositories/review_repository_impl.dart';
+import '../../infrastructure/datasource/exclusion_remote_datasource.dart';
 import '../../infrastructure/datasource/review_remote_datasource.dart';
 
 import '../../../cart/domain/usecases/add_to_cart_usecase.dart';
 import '../../../cart/infrastructure/repositories/cart_repository_impl.dart';
 import '../../../cart/infrastructure/datasource/cart_remote_datasource.dart';
+import '../../infrastructure/repositories/exclusion_repository_impl.dart';
 
 
 class SingleBookView extends StatefulWidget {
@@ -42,6 +45,11 @@ class _SingleBookViewState extends State<SingleBookView> {
   bool _isFavorite = false;
   bool _isLoadingFavoriteStatus = true;
 
+  late final ExclusionService _exclusionService;
+  bool _isAddingToExclusions = false;
+  bool _isExcluded = false;
+  bool _isLoadingExclusionStatus = true;
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +68,16 @@ class _SingleBookViewState extends State<SingleBookView> {
     );
     final favoriteRepo = FavoriteRepositoryImpl(remoteDataSource: favoriteDs);
     _favoriteService = FavoriteService(favoriteRepo);
+
+    final exclusionDs = ExclusionRemoteDataSource(
+      client: http.Client(),
+      authDs: AuthLocalDataSource(),
+    );
+    final exclusionRepo = ExclusionRepositoryImpl(remoteDataSource: exclusionDs);
+    _exclusionService = ExclusionService(exclusionRepo);
+
     _loadFavoriteStatus();
+    _loadExclusionStatus();
   }
 
   Future<void> _handleAddToCart() async {
@@ -186,6 +203,7 @@ class _SingleBookViewState extends State<SingleBookView> {
       if (!mounted) return;
       setState(() {
         _isFavorite = true;
+        _isExcluded = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -251,6 +269,119 @@ class _SingleBookViewState extends State<SingleBookView> {
     }
   }
 
+  Future<void> _loadExclusionStatus() async {
+    final authDs = AuthLocalDataSource();
+    final userId = await authDs.getUserId();
+
+    if (userId != null) {
+      try {
+        final isExc = await _exclusionService.getIsExcludedStatus(
+          userId: userId,
+          bookId: widget.b.id,
+        );
+        if (mounted) {
+          setState(() {
+            _isExcluded = isExc;
+          });
+        }
+      } catch (e) {
+        print('Error loading exclusion status: $e');
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoadingExclusionStatus = false;
+      });
+    }
+  }
+
+  Future<void> _handleAddToExclusions() async {
+    setState(() => _isAddingToExclusions = true);
+
+    try {
+      final authDs = AuthLocalDataSource();
+      final userId = await authDs.getUserId();
+
+      if (userId == null) {
+        if (!mounted) return;
+        return;
+      }
+
+      await _exclusionService.addExclusion(
+        userId: userId,
+        bookId: widget.b.id,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _isExcluded = true;
+        _isFavorite = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Book added to your exclusions! 🚫'),
+          backgroundColor: AppColors.errorRed,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error adding to exclusions: ${e.toString()}'), backgroundColor: AppColors.errorRed),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingToExclusions = false);
+      }
+    }
+  }
+
+  Future<void> _handleRemoveFromExclusions() async {
+    setState(() => _isAddingToExclusions = true);
+
+    try {
+      final authDs = AuthLocalDataSource();
+      final userId = await authDs.getUserId();
+
+      if (userId == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please log in.'), backgroundColor: AppColors.errorRed),
+        );
+        return;
+      }
+
+      await _exclusionService.removeExclusion(
+        userId: userId,
+        bookId: widget.b.id,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _isExcluded = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Book removed from exclusions. ✅'),
+          backgroundColor: AppColors.darkBlue,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error removing exclusion: ${e.toString()}'), backgroundColor: AppColors.errorRed),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingToExclusions = false);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _reviewController.dispose();
@@ -299,7 +430,7 @@ class _SingleBookViewState extends State<SingleBookView> {
           ),
           const SizedBox(height: 16.0),
 
-          // ROW DE IMAGEN 
+          // ROW DE IMAGEN
           Align(
             alignment: Alignment.center,
             child: Container(
@@ -333,10 +464,28 @@ class _SingleBookViewState extends State<SingleBookView> {
 
           const SizedBox(height: 16.0),
 
-          // PRECIO Y BOTONES DE FAVORITOS 
+          // PRECIO Y BOTONES DE FAVORITOS
           Row(
             children: [
-              const Icon(Icons.remove_circle_outline, color: AppColors.darkBlue, size: 32,),
+              GestureDetector(
+                onTap: _isLoadingExclusionStatus || _isAddingToExclusions
+                    ? null : _isExcluded
+                    ? _handleRemoveFromExclusions : _handleAddToExclusions,
+                child: _isLoadingExclusionStatus || _isAddingToExclusions
+                    ? const SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: CircularProgressIndicator(color: AppColors.errorRed, strokeWidth: 2)
+                    )
+                )
+                    : Icon(
+                  _isExcluded ? Icons.remove_circle : Icons.remove_circle_outline,
+                  color: AppColors.errorRed,
+                  size: 32,
+                ),
+              ),
               const SizedBox(width: 16.0),
               GestureDetector(
                 onTap: _isLoadingFavoriteStatus || _isAddingToFavorites
