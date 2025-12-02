@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:livria_user/features/book/presentation/pages/category_books_page.dart';
 
 import '../../../book/presentation/widgets/horizontal_book_card.dart';
 
@@ -100,8 +101,8 @@ class _HomeViewState extends State<_HomeView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                genre.toUpperCase(),
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                getCategoryProperName(genre),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: sectionColor,
                   letterSpacing: 1.4,
                   fontWeight: FontWeight.w700,
