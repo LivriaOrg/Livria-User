@@ -319,7 +319,7 @@ class _SingleBookViewState extends State<SingleBookView> {
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: AppColors.lightGrey,
                         height: 280,
-                        width: 160,
+                        width: 170,
                         alignment: Alignment.center,
                         child: const Icon(Icons.broken_image, color: AppColors.darkBlue),
                       ),

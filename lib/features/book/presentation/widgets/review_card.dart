@@ -4,13 +4,17 @@ import '../../domain/entities/review.dart';
 
 class ReviewCard extends StatelessWidget {
   final Review review;
+  final String userIconUrl;
 
-  const ReviewCard({super.key, required this.review});
+  const ReviewCard({super.key, required this.review, required this.userIconUrl});
 
   @override
   Widget build(BuildContext context) {
     final Color usernameColor = AppColors.primaryOrange;
     final Color contentColor = AppColors.black;
+
+    const String defaultIconUrl = 'https://cdn-icons-png.flaticon.com/512/3447/3447354.png';
+    final String effectiveUrl = userIconUrl.isNotEmpty ? userIconUrl : defaultIconUrl;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
@@ -31,11 +35,22 @@ class ReviewCard extends StatelessWidget {
                 Row(
                   children: [
                     // Avatar
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 18,
-                      // TODO: Conectar con el usuario loggeado para poner la img correcta
-                      backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3447/3447354.png'),
-                      backgroundColor: AppColors.lightGrey,
+                      backgroundColor: AppColors.softTeal.withOpacity(0.2),
+                      child: ClipOval(
+                        child: Image.network(
+                          effectiveUrl,
+                          width: 36,
+                          height: 36,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(
+                            Icons.account_circle,
+                            color: AppColors.softTeal,
+                            size: 36,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 10.0),
 
