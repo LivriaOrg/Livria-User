@@ -6,8 +6,12 @@ import '../../../book/domain/entities/book.dart';
 import '../../../book/infrastructure/datasource/book_remote_datasource.dart';
 import '../../../book/infrastructure/datasource/recommendation_remote_datasource.dart';
 import '../../../auth/infrastructure/datasource/auth_local_datasource.dart';
+import '../../application/services/book_service.dart';
+import '../../domain/repositories/book_repository_impl.dart';
 import '../../domain/repositories/recommendation_repository_impl.dart';
 import '../widgets/horizontal_book_card.dart';
+import '../../../book/infrastructure/repositories/exclusion_repository_impl.dart';
+import '../../../book/infrastructure/datasource/exclusion_remote_datasource.dart';
 
 class RecommendationsPage extends StatefulWidget {
   const RecommendationsPage({super.key});
@@ -30,10 +34,20 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     final bookDs = BookRemoteDataSource();
     final recDs = RecommendationRemoteDataSource();
 
-    final recRepo = RecommendationRepositoryImpl(recDs, authDs, bookDs);
+    final exclusionDs = ExclusionRemoteDataSource(authDs: authDs);
+    final exclusionRepo = ExclusionRepositoryImpl(remoteDataSource: exclusionDs);
+    final bookRepo = BookRepositoryImpl(bookDs);
 
-    _recommendationService = RecommendationService(recRepo);
+    final bookService = BookService(bookRepo);
 
+    final recRepo = RecommendationRepositoryImpl(recDs, authDs, bookDs, exclusionRepo);
+
+    _recommendationService = RecommendationService(
+      recRepo,
+      exclusionRepo,
+      authDs,
+      bookService
+    );
     _recommendationsFuture = _recommendationService.getRecommendedBooks();
   }
 
@@ -75,7 +89,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'We hope you like them! Remember, you can mark your interest in each book with the bookmark and negative icons, respectively.',
+                    'We hope you like them! Remember, you can mark your interest in each book with the **bookmark** and **negative icons** (exclusion), respectively. Excluded books won\'t appear here.',
                     style: t.bodyLarge?.copyWith(
                       color: AppColors.darkBlue,
                     ),

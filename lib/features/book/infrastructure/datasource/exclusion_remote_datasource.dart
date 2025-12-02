@@ -90,4 +90,33 @@ class ExclusionRemoteDataSource {
       throw Exception('Failed to load exclusions list. Status: ${response.statusCode}');
     }
   }
+
+  Future<List<int>> getExclusionsList({
+    required int userId,
+  }) async {
+    final String path = '$_userClientsPath/$userId/exclusions';
+    final uri = Uri.parse('$_base$path');
+
+    final token = await authDs.getToken();
+
+    final response = await _client.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> exclusionsJson = json.decode(response.body);
+
+      final List<int> excludedIds = exclusionsJson
+          .map((exc) => exc['id'] as int)
+          .toList();
+
+      return excludedIds;
+    } else {
+      throw Exception('Failed to load complete exclusions list. Status: ${response.statusCode}');
+    }
+  }
 }

@@ -39,4 +39,11 @@ class ExclusionRepositoryImpl implements ExclusionRepository {
       bookId: bookId,
     );
   }
+
+  @override
+  Future<List<int>> getExcludedBookIds({required int userId}) async {
+    return remoteDataSource.getExclusionsList(
+      userId: userId,
+    );
+  }
 }

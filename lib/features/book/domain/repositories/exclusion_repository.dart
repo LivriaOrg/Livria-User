@@ -13,4 +13,8 @@ abstract class ExclusionRepository {
     required int userId,
     required int bookId,
   });
+
+  Future<List<int>> getExcludedBookIds({
+    required int userId
+  });
 }
