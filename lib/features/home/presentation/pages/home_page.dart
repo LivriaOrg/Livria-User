@@ -339,7 +339,7 @@ class _BannerState extends State<_Banner> {
 
                     ElevatedButton(
                       onPressed: () {
-                        GoRouter.of(context).go('/communities');
+                        !_hasCommunityPlan ? GoRouter.of(context).go('/profile/subscription') : GoRouter.of(context).go('/communities');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.white,
