@@ -289,7 +289,7 @@ class _SingleBookViewState extends State<SingleBookView> {
           // TÍTULO PRINCIPAL
           Text(
             widget.b.title.toUpperCase(),
-            style: t.headlineMedium?.copyWith(
+            style: t.headlineLarge?.copyWith(
               color: AppColors.accentGold,
               letterSpacing: 1.4,
               fontWeight: FontWeight.w700,
@@ -309,17 +309,20 @@ class _SingleBookViewState extends State<SingleBookView> {
                 clipBehavior: Clip.none,
                 children: [
                   // Imagen de la Portada
-                  Image.network(
-                    widget.b.cover,
-                    height: 280,
-                    width: 160,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: AppColors.lightGrey,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.network(
+                      widget.b.cover,
                       height: 280,
                       width: 160,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.broken_image, color: AppColors.darkBlue),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: AppColors.lightGrey,
+                        height: 280,
+                        width: 160,
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.broken_image, color: AppColors.darkBlue),
+                      ),
                     ),
                   ),
                   // Etiquetas Rotadas
@@ -553,7 +556,7 @@ class _SingleBookViewState extends State<SingleBookView> {
             if (snapshot.hasError) {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Text('Error al cargar reseñas: ${snapshot.error}'),
+                child: Text('Error loading reviews: ${snapshot.error}'),
               );
             }
 
