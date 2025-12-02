@@ -169,8 +169,8 @@ class ProfileProvider extends ChangeNotifier {
     await AuthLocalDataSource().clearAuthData();
   }
 
-  Future<void> changeSubscriptionPlan(String newPlan) async {
-    if (_user == null) return;
+  Future<bool> changeSubscriptionPlan(String newPlan) async {
+    if (_user == null) return false;
     _isLoading = true;
     notifyListeners();
 
@@ -178,10 +178,13 @@ class ProfileProvider extends ChangeNotifier {
       final updatedUser = await profileRepository.updateSubscription(_user!.id, newPlan);
       _user = updatedUser;
       _isLoading = false;
+      notifyListeners();
+      return true; // ÉXITO
     } catch (e) {
       debugPrint("Error updating plan: $e");
       _isLoading = false;
+      notifyListeners();
+      return false; // FALLO
     }
-    notifyListeners();
   }
 }

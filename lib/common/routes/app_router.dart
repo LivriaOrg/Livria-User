@@ -29,6 +29,8 @@ import '../../features/orders/presentation/pages/shipping_info_page.dart';
 import 'package:livria_user/features/auth/infrastructure/datasource/auth_local_datasource.dart';
 import 'package:livria_user/features/auth/infrastructure/datasource/auth_remote_datasource.dart';
 
+import '../../features/profile/presentation/pages/subscription_payment_page.dart';
+
 final AuthLocalDataSource authLocalDataSource = AuthLocalDataSource();
 final AuthRemoteDataSource authRemoteDataSource = AuthRemoteDataSource();
 
@@ -147,6 +149,10 @@ final appRouter = GoRouter(
                 GoRoute(
                     path: '/recommendations',
                     builder: (context, state) => const RecommendationsPage()
+                ),
+                GoRoute(
+                  path: '/profile/subscription',
+                  builder: (context, state) => const SubscriptionPaymentPage(),
                 ),
                 GoRoute(
                     path: '/location',
