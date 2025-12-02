@@ -108,12 +108,16 @@ class _HomeViewState extends State<_HomeView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                getCategoryProperName(genre),
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: sectionColor,
-                  letterSpacing: 1.4,
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  getCategoryProperName(genre),
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: sectionColor,
+                    letterSpacing: 1.4,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               TextButton(
