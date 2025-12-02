@@ -46,17 +46,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
-    _initializeStripe();
-  }
-
-  Future<void> _initializeStripe() async {
-    try {
-      await Stripe.instance.applySettings();
-      debugPrint("Stripe settings applied correctly");
-    } catch (e) {
-      debugPrint("Stripe init error: $e");
-    }
   }
 
   @override
