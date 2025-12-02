@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../../domain/entities/community.dart';
 import '../../domain/usecases/create_community_usecase.dart';
+import 'dart:convert';
 
 enum CommunityType {
   literature(1, 'LITERATURE'),
@@ -100,10 +101,10 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
     }
   }
 
-  Future<String> _uploadFileAndGetUrl(XFile file, String name) async {
-    // Simulación de una subida de 1 segundo
-    await Future.delayed(const Duration(seconds: 1));
-    return 'https://cdn.livria.com/uploaded/community/${name}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+  Future<String> _fileToBase64(XFile file) async {
+    final bytes = await File(file.path).readAsBytes();
+    final String base64String = base64Encode(bytes);
+    return "data:image/jpeg;base64,$base64String";
   }
 
   // --- LÓGICA DE CREACIÓN ---
@@ -137,14 +138,14 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
     String finalBannerUrl = _bannerController.text.trim();
 
     try {
-      // 3. Subir el ícono si se seleccionó un archivo local
+      // 3. Convertir Ícono a Base64 si se seleccionó archivo
       if (_selectedIconFile != null) {
-        finalImageUrl = await _uploadFileAndGetUrl(_selectedIconFile!, 'icon');
+        finalImageUrl = await _fileToBase64(_selectedIconFile!);
       }
 
-      // 4. Subir el banner si se seleccionó un archivo local
+      // 4. Convertir Banner a Base64 si se seleccionó archivo
       if (_selectedBannerFile != null) {
-        finalBannerUrl = await _uploadFileAndGetUrl(_selectedBannerFile!, 'banner');
+        finalBannerUrl = await _fileToBase64(_selectedBannerFile!);
       }
 
       // 5. Crear la comunidad usando las URLs finales

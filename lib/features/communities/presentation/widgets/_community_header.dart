@@ -1,9 +1,11 @@
-// Archivo: community_header.dart
+// community_header.dart
 
 import 'package:flutter/material.dart';
 import 'package:livria_user/common/theme/app_colors.dart';
 import 'package:livria_user/common/utils/app_icons.dart';
 import '../../domain/entities/community.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class CommunityHeader extends StatelessWidget {
   final Community community;
@@ -19,43 +21,95 @@ class CommunityHeader extends StatelessWidget {
     this.isJoined = false,
   }) : super(key: key);
 
+  Widget _CommunityImageContent({
+    required String imageData,
+    required Widget placeholder,
+    required BoxFit fit,
+  }) {
+    if (imageData.isEmpty) {
+      return placeholder;
+    }
+
+    if (imageData.startsWith('http')) {
+      return Image.network(
+        imageData,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) => placeholder,
+      );
+    }
+
+    if (imageData.startsWith('data:image')) {
+      try {
+        final base64String = imageData.split(',').last;
+        final Uint8List bytes = base64Decode(base64String);
+        return Image.memory(
+          bytes,
+          fit: fit,
+          errorBuilder: (context, error, stackTrace) => placeholder,
+        );
+      } catch (e) {
+        return placeholder;
+      }
+    }
+
+    try {
+      final Uint8List bytes = base64Decode(imageData);
+      return Image.memory(bytes, fit: fit);
+    } catch (e) {
+      return placeholder;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // ... código de variables ...
     const double bannerHeight = 150;
     const double iconSize = 80;
     const double iconBottomMargin = 16;
 
-    // Lógica para el botón
     final Color buttonColor = isJoined ? Colors.red[700]! : AppColors.primaryOrange;
     final String buttonText = isJoined ? 'LEAVE' : 'JOIN +';
     final Icon buttonIcon = isJoined
-        ? const Icon(Icons.exit_to_app_rounded, size: 18, color: AppColors.white) // Icono de salir
-        : const Icon(AppIcons.post, size: 18, color: AppColors.white); // Icono de post
+        ? const Icon(Icons.exit_to_app_rounded, size: 18, color: AppColors.white)
+        : const Icon(AppIcons.post, size: 18, color: AppColors.white);
+
+    final Widget bannerPlaceholder = Container(
+      color: AppColors.softTeal.withOpacity(0.5),
+      child: const Center(
+        child: Text('Banner Image Failed', style: TextStyle(color: AppColors.darkBlue)),
+      ),
+    );
+
+    final Widget iconPlaceholder = Container(
+      decoration: BoxDecoration(
+        color: AppColors.lightGrey,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.group,
+          size: iconSize * 0.5,
+          color: AppColors.softTeal,
+        ),
+      ),
+    );
+
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // BANNER
         Container(
           height: bannerHeight,
           width: double.infinity,
           decoration: const BoxDecoration(
             color: AppColors.softTeal,
           ),
-          child: Image.network(
-            community.banner,
+          child: _CommunityImageContent(
+            imageData: community.banner,
+            placeholder: bannerPlaceholder,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
-              color: AppColors.softTeal.withOpacity(0.5),
-              child: const Center(
-                child: Text('Banner Image Failed', style: TextStyle(color: AppColors.darkBlue)),
-              ),
-            ),
           ),
         ),
 
-        // CONTENIDO PRINCIPAL DE LA COMUNIDAD
         Padding(
           padding: EdgeInsets.only(top: bannerHeight - (iconBottomMargin + iconSize / 2), left: 16.0, right: 16.0),
           child: Column(
@@ -64,7 +118,6 @@ class CommunityHeader extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Ícono de la Comunidad
                   Container(
                     width: iconSize,
                     height: iconSize,
@@ -80,24 +133,27 @@ class CommunityHeader extends StatelessWidget {
                           blurRadius: 5,
                         ),
                       ],
-                      image: DecorationImage(
-                        image: NetworkImage(community.image),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: _CommunityImageContent(
+                        imageData: community.image,
+                        placeholder: iconPlaceholder,
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
 
-                  // Botón JOIN / LEAVE
                   const Spacer(),
                   ElevatedButton.icon(
                     onPressed: onJoinPressed,
-                    icon: buttonIcon, // Icono dinámico
+                    icon: buttonIcon,
                     label: Text(
-                        buttonText, // Texto dinámico
+                        buttonText,
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.white)
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonColor, // Color dinámico (Naranja o Rojo)
+                      backgroundColor: buttonColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -106,7 +162,6 @@ class CommunityHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              // ... resto del código del CommunityHeader ...
               const SizedBox(height: 12),
               Text(
                 community.name.toUpperCase(),
