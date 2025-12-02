@@ -134,4 +134,18 @@ class MockCommunityRepository extends _i1.Mock
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
           as _i5.Future<void>);
+
+  @override
+  _i5.Future<bool> checkUserJoined({
+    required int? userId,
+    required int? communityId,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#checkUserJoined, [], {
+              #userId: userId,
+              #communityId: communityId,
+            }),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
 }
