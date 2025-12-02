@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:livria_user/common/routes/app_router.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_remote_datasource.dart';
+import 'package:livria_user/features/auth/infrastructure/model/user_model.dart';
 import 'package:livria_user/features/book/application/services/favorite_service.dart';
 import 'package:livria_user/features/book/infrastructure/repositories/favorite_repository_impl.dart';
 import 'package:livria_user/features/book/infrastructure/datasource/favorite_remote_datasource.dart';
@@ -23,7 +26,9 @@ import '../../infrastructure/repositories/exclusion_repository_impl.dart';
 
 class SingleBookView extends StatefulWidget {
   final Book b;
-  const SingleBookView({super.key, required this.b});
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+  const SingleBookView({super.key, required this.b, required this.authLocalDataSource, required this.authRemoteDataSource,});
 
   @override
   State<SingleBookView> createState() => _SingleBookViewState();
@@ -44,6 +49,10 @@ class _SingleBookViewState extends State<SingleBookView> {
   bool _isAddingToFavorites = false;
   bool _isFavorite = false;
   bool _isLoadingFavoriteStatus = true;
+
+  String? _username;
+  String? _userIconUrl;
+  bool _isUserLoading = true;
 
   late final ExclusionService _exclusionService;
   bool _isAddingToExclusions = false;
@@ -77,6 +86,7 @@ class _SingleBookViewState extends State<SingleBookView> {
     _exclusionService = ExclusionService(exclusionRepo);
 
     _loadFavoriteStatus();
+    _loadUserProfile();
     _loadExclusionStatus();
   }
 
@@ -269,6 +279,36 @@ class _SingleBookViewState extends State<SingleBookView> {
     }
   }
 
+  Future<void> _loadUserProfile() async {
+    try {
+      final userId = await widget.authLocalDataSource.getUserId();
+      final token = await widget.authLocalDataSource.getToken();
+      if (userId != null && token != null) {
+        final UserModel user = await widget.authRemoteDataSource.getUserProfile(userId, token);
+        if (mounted) {
+          setState(() {
+            _username = user.username;
+            _userIconUrl = user.icon;
+            _isUserLoading = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isUserLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error al cargar perfil de usuario: $e');
+      if (mounted) {
+        setState(() {
+          _isUserLoading = false;
+        });
+      }
+    }
+  }
+
   Future<void> _loadExclusionStatus() async {
     final authDs = AuthLocalDataSource();
     final userId = await authDs.getUserId();
@@ -422,7 +462,7 @@ class _SingleBookViewState extends State<SingleBookView> {
           // TÍTULO PRINCIPAL
           Text(
             widget.b.title.toUpperCase(),
-            style: t.headlineMedium?.copyWith(
+            style: t.headlineLarge?.copyWith(
               color: AppColors.accentGold,
               letterSpacing: 1.4,
               fontWeight: FontWeight.w700,
@@ -441,19 +481,24 @@ class _SingleBookViewState extends State<SingleBookView> {
                 alignment: Alignment.center,
                 clipBehavior: Clip.none,
                 children: [
-                  Image.network(
-                    widget.b.cover,
-                    height: 280,
-                    width: 160,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: AppColors.lightGrey,
+                  // Imagen de la Portada
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.network(
+                      widget.b.cover,
                       height: 280,
                       width: 160,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.broken_image, color: AppColors.darkBlue),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: AppColors.lightGrey,
+                        height: 280,
+                        width: 170,
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.broken_image, color: AppColors.darkBlue),
+                      ),
                     ),
                   ),
+                  // Etiquetas Rotadas
                   _buildVerticalLabel(widget.b.genre.toUpperCase(), AppColors.primaryOrange, 0, -30, 3),
                   _buildVerticalLabel(widget.b.language.toUpperCase(), AppColors.vibrantBlue, 206, -30, 3),
                   _buildVerticalLabel(widget.b.author.toUpperCase(), AppColors.darkBlue, 0, 170, 1),
@@ -630,6 +675,8 @@ class _SingleBookViewState extends State<SingleBookView> {
     final t = Theme.of(context).textTheme;
     final int bookId = widget.b.id;
 
+    final String defaultIcon = 'https://cdn-icons-png.flaticon.com/512/3447/3447354.png';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -730,7 +777,7 @@ class _SingleBookViewState extends State<SingleBookView> {
             if (snapshot.hasError) {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Text('Error al cargar reseñas: ${snapshot.error}'),
+                child: Text('Error loading reviews: ${snapshot.error}'),
               );
             }
 
@@ -749,7 +796,12 @@ class _SingleBookViewState extends State<SingleBookView> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: reviews.length,
               itemBuilder: (context, index) {
-                return ReviewCard(review: reviews[index]);
+                // Regla para el ícono: Si el post pertenece al usuario logueado, usar su ícono. Sino, usar el default.
+                final String iconToUse = (_username != null && reviews[index].username == _username)
+                    ? _userIconUrl ?? defaultIcon
+                    : defaultIcon;
+
+                return ReviewCard(review: reviews[index], userIconUrl: iconToUse,);
               },
             );
           },

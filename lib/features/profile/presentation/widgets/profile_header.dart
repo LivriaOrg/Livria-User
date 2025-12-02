@@ -16,15 +16,14 @@ class ProfileHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // TÍTULO "PROFILE"
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 4.0),
             child: Text(
               "PROFILE",
-              style: TextStyle(
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 color: AppColors.softTeal,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2.0,
+                letterSpacing: 1.4,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),

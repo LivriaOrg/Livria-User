@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_local_datasource.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_remote_datasource.dart';
+import 'package:livria_user/features/auth/infrastructure/model/user_model.dart';
+import 'package:livria_user/features/book/presentation/pages/category_books_page.dart';
 
 import '../../../book/presentation/widgets/horizontal_book_card.dart';
 
@@ -11,19 +15,24 @@ import '../../../book/infrastructure/datasource/book_remote_datasource.dart';
 import '../../application/services/home_service.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+
+  const HomePage({super.key, required this.authLocalDataSource, required this.authRemoteDataSource,});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.white,
-      body: _HomeView(),
+      body: _HomeView(authLocalDataSource: authLocalDataSource, authRemoteDataSource: authRemoteDataSource,),
     );
   }
 }
 
 class _HomeView extends StatefulWidget {
-  const _HomeView({super.key});
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+  const _HomeView({super.key, required this.authLocalDataSource, required this.authRemoteDataSource,});
 
   @override
   State<_HomeView> createState() => _HomeViewState();
@@ -77,7 +86,7 @@ class _HomeViewState extends State<_HomeView> {
 
     final screenWidth = MediaQuery.of(context).size.width;
 
-    const double arrowReservedSpace = 30.0;
+    const double arrowReservedSpace = 24.0;
     const double totalSymmetricSpace = arrowReservedSpace * 2;
 
     const double listViewPadding = 4.0;
@@ -89,7 +98,7 @@ class _HomeViewState extends State<_HomeView> {
 
     final itemWidth = (availableContentWidth - itemGap) / 2;
 
-    final carouselHeight = (itemWidth / 1.8) + 75.0;
+    final carouselHeight = (itemWidth / 1.8) + 50.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,8 +109,8 @@ class _HomeViewState extends State<_HomeView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                genre.toUpperCase(),
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                getCategoryProperName(genre),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: sectionColor,
                   letterSpacing: 1.4,
                   fontWeight: FontWeight.w700,
@@ -169,6 +178,8 @@ class _HomeViewState extends State<_HomeView> {
               genres: genres,
               allBooks: allBooks,
               buildCategoryCarousel: _buildCategoryCarousel,
+              authRemoteDataSource: widget.authRemoteDataSource,
+              authLocalDataSource: widget.authLocalDataSource
             );
           },
         );
@@ -182,10 +193,15 @@ class _HomeContent extends StatelessWidget {
   final List<Book> allBooks;
   final Widget Function(BuildContext, String, List<Book>, int) buildCategoryCarousel;
 
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+
   const _HomeContent({
     required this.genres,
     required this.allBooks,
     required this.buildCategoryCarousel,
+    required this.authLocalDataSource,
+    required this.authRemoteDataSource,
   });
 
   @override
@@ -193,7 +209,7 @@ class _HomeContent extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const _CommunityPlanBanner(),
+          _Banner(authRemoteDataSource: authRemoteDataSource, authLocalDataSource: authLocalDataSource,),
 
           ...genres.toList().asMap().entries.map((entry) {
             final index = entry.key;
@@ -205,8 +221,68 @@ class _HomeContent extends StatelessWidget {
     );
   }
 }
-class _CommunityPlanBanner extends StatelessWidget {
-  const _CommunityPlanBanner();
+class _Banner extends StatefulWidget {
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+
+  const _Banner({
+    super.key,
+    required this.authLocalDataSource,
+    required this.authRemoteDataSource,
+  });
+
+  @override
+  State<_Banner> createState() => _BannerState();
+}
+
+class _BannerState extends State<_Banner> {
+  bool _isCheckingAccess = true;
+  bool _hasCommunityPlan = false;
+  String _userAccessError = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSubscription();
+  }
+
+  Future<void> _checkSubscription() async {
+    setState(() {
+      _isCheckingAccess = true;
+      _userAccessError = '';
+    });
+
+    try {
+      final userId = await widget.authLocalDataSource.getUserId();
+      final token = await widget.authLocalDataSource.getToken();
+
+      if (userId == null || token == null) {
+        throw Exception('User is not logged in or token is missing.');
+      }
+
+      // obtener perfil
+      final UserModel user = await widget.authRemoteDataSource.getUserProfile(userId, token);
+
+      // verificar suscripción
+      const requiredPlan = 'communityplan';
+      final hasPlan = user.subscription == requiredPlan;
+
+      if (mounted) {
+        setState(() {
+          _isCheckingAccess = false;
+          _hasCommunityPlan = hasPlan;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isCheckingAccess = false;
+          _hasCommunityPlan = false;
+          _userAccessError = 'Error: could not verify user subscription status.';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +318,7 @@ class _CommunityPlanBanner extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'COMMUNITY PLAN',
+                      !_hasCommunityPlan ? 'COMMUNITY PLAN' : 'COMMUNITIES FOR YOU',
                       style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         color: AppColors.secondaryYellow,
                         letterSpacing: 1.5,
@@ -251,7 +327,8 @@ class _CommunityPlanBanner extends StatelessWidget {
                     const SizedBox(height: 18),
 
                     Text(
-                      'Connect with other readers, share your thoughts and join spaces where reading come alive',
+                      !_hasCommunityPlan ? 'Connect with other readers, share your thoughts and join spaces where reading come alive' :
+                      'Discover and join communities based on your interests... Or create one!',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.white.withOpacity(0.9),
@@ -262,6 +339,7 @@ class _CommunityPlanBanner extends StatelessWidget {
 
                     ElevatedButton(
                       onPressed: () {
+                        GoRouter.of(context).go('/communities');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.white,
@@ -272,7 +350,7 @@ class _CommunityPlanBanner extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'GET IT HERE',
+                        !_hasCommunityPlan ? 'GET IT HERE' : 'GO NOW',
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                             color: AppColors.darkBlue
                         ),
@@ -316,7 +394,7 @@ class _CategoryCarouselWithArrowsState
     extends State<_CategoryCarouselWithArrows> {
   late final ScrollController _scrollController;
 
-  static const double _verticalCarouselPadding = 10.0;
+  static const double _verticalCarouselPadding = 2.0;
   static const double _arrowIconPadding = 8.0;
   static const double _itemGap = 16.0;
 
@@ -422,7 +500,7 @@ class _CategoryCarouselWithArrowsState
                   final isLast = index == widget.genreBooks.length - 1;
 
                   return Padding(
-                    padding: EdgeInsets.only(right: isLast ? 0.0 : _itemGap, bottom: 16.0,),
+                    padding: EdgeInsets.only(right: isLast ? 0.0 : _itemGap, bottom: 24.0,),
                     child: SizedBox(
                       width: widget.itemWidth,
                       child: HorizontalBookCard(book, t),

@@ -76,7 +76,7 @@ final appRouter = GoRouter(
             },
             // 'routes' son las páginas que se inyectan en el child
             routes: [
-              GoRoute(path: '/home', builder: (_, __) => const HomePage()),
+              GoRoute(path: '/home', builder: (_, __) => HomePage(authLocalDataSource: authLocalDataSource, authRemoteDataSource: authRemoteDataSource,)),
               GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
               // ---------- NUEVA RUTA DETALLE POR CATEGORÍA ----------
               GoRoute(
@@ -97,6 +97,11 @@ final appRouter = GoRouter(
                     future: service.findBookById(bookId),
 
                     builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Scaffold(
+                          body: Center(child: CircularProgressIndicator()),
+                        );
+                      }
                       // Estado de error
                       if (snapshot.hasError) {
                         return const Scaffold(
@@ -114,14 +119,18 @@ final appRouter = GoRouter(
                       }
 
                       // Pasar el objeto Book real
-                      return BookPage(b: selectedBook);
+                      return BookPage(
+                        b: selectedBook,
+                        authLocalDataSource: authLocalDataSource,
+                        authRemoteDataSource: authRemoteDataSource,
+                      );
                     },
                   );
                 },
               ),
                 GoRoute(
                     path: '/home',
-                    builder: (context, state) => const HomePage()
+                    builder: (context, state) => HomePage(authLocalDataSource: authLocalDataSource, authRemoteDataSource: authRemoteDataSource,),
                 ),
                 GoRoute(
                     path: '/categories',
