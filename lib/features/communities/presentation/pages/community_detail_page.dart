@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,7 +19,7 @@ import '../widgets/_post_form.dart';
 import '../widgets/_post_list.dart';
 
 String _getCommunityTypeLabel(int type) {
-   switch (type) {
+  switch (type) {
     case 1: return 'LITERATURE';
     case 2: return 'NON-FICTION';
     case 3: return 'FICTION';
@@ -27,325 +28,363 @@ String _getCommunityTypeLabel(int type) {
     case 6: return 'CHILDREN';
     case 7: return 'EBOOKS & AUDIOBOOKS';
     default: return 'GENERAL';
-   }
+  }
 }
 
 class CommunityDetailPage extends StatefulWidget {
-   final Community community;
-   final AuthLocalDataSource authLocalDataSource;
-   final AuthRemoteDataSource authRemoteDataSource;
-   final PostRemoteDataSource postRemoteDataSource;
-   final CommunityRemoteDataSource communityRemoteDataSource;
+  final Community community;
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+  final PostRemoteDataSource postRemoteDataSource;
+  final CommunityRemoteDataSource communityRemoteDataSource;
 
-   const CommunityDetailPage({
+  const CommunityDetailPage({
     super.key,
     required this.community,
     required this.authLocalDataSource,
     required this.authRemoteDataSource,
     required this.postRemoteDataSource,
     required this.communityRemoteDataSource,
-   });
-   @override
-   State<CommunityDetailPage> createState() => _CommunityDetailPageState();
+  });
+
+  @override
+  State<CommunityDetailPage> createState() => _CommunityDetailPageState();
 }
 
 class _CommunityDetailPageState extends State<CommunityDetailPage> {
-   String? _username;
-   String? _userIconUrl;
-   bool _isUserLoading = true;
-   final TextEditingController _contentController = TextEditingController();
-   bool _isPosting = false;
-   File? _selectedImageFile;
-   final ImagePicker _picker = ImagePicker();
-   List<Post> _posts = [];
-   bool _isLoadingPosts = true;
-   late final PostRepositoryImpl _postRepository;
+  String? _username;
+  String? _userIconUrl;
+  bool _isUserLoading = true;
+  final TextEditingController _contentController = TextEditingController();
+  bool _isPosting = false;
+  File? _selectedImageFile;
+  final ImagePicker _picker = ImagePicker();
+  List<Post> _posts = [];
+  bool _isLoadingPosts = true;
+  late final PostRepositoryImpl _postRepository;
 
-   late final CommunityRepository _communityRepository;
-   int? _currentUserId;
-   bool _isJoined = false;
-   bool _isTogglingJoin = false;
+  late final CommunityRepository _communityRepository;
+  int? _currentUserId;
+  bool _isJoined = false;
+  bool _isTogglingJoin = false;
 
-   @override
-   void initState() {
+  @override
+  void initState() {
     super.initState();
     _communityRepository = CommunityRepositoryImpl(widget.communityRemoteDataSource);
     _postRepository = PostRepositoryImpl(widget.postRemoteDataSource);
     _loadUserProfile();
     _fetchPosts();
-    _checkUserJoinedStatus();
-   }
-   @override
-   void dispose() {
+  }
+
+  @override
+  void dispose() {
     _contentController.dispose();
     super.dispose();
-   }
-   Future<void> _handleGalleryPick() async {
+  }
+
+  Future<void> _handleGalleryPick() async {
     try {
-     final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 70,
-     );
-     if (pickedFile != null) {
-      if (mounted) {
-       setState(() {
-        _selectedImageFile = File(pickedFile.path);
-       });
-       _showSnackbar('Image selected: ${pickedFile.name}', color: AppColors.softTeal);
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+      );
+      if (pickedFile != null) {
+        if (mounted) {
+          setState(() {
+            _selectedImageFile = File(pickedFile.path);
+          });
+          _showSnackbar('Image selected', color: AppColors.softTeal);
+        }
       }
-     } else {
-      _showSnackbar('No image selected.', color: AppColors.secondaryYellow);
-     }
     } catch (e) {
-     print('Error al seleccionar imagen: $e');
-     _showSnackbar('Failed to access gallery.', color: Colors.red);
+      print('Error al seleccionar imagen: $e');
+      _showSnackbar('Failed to access gallery.', color: Colors.red);
     }
-   }
-   Future<void> _removeSelectedImage() async {
+  }
+
+  Future<void> _removeSelectedImage() async {
     if (mounted) {
-     setState(() {
-      _selectedImageFile = null;
-     });
+      setState(() {
+        _selectedImageFile = null;
+      });
     }
     _showSnackbar('Image removed.', color: AppColors.softTeal);
-   }
-   Future<void> _fetchPosts() async {
-    if (mounted) {
-     setState(() {
-      _isLoadingPosts = true;
-     });
-    }
-    try {
-     final fetchedPosts = await _postRepository.fetchPostsByCommunityId(widget.community.id, 0, 20);
-     if (mounted) {
-      setState(() {
-       _posts = fetchedPosts;
-       _isLoadingPosts = false;
-      });
-     }
-    } catch (e) {
-     print('Error al cargar posts: $e');
-     if (mounted) {
-      setState(() {
-       _isLoadingPosts = false;
-      });
-     }
-     _showSnackbar('Failed to load posts: $e', color: Colors.red);
-    }
-   }
+  }
 
-   Future<void> _loadUserProfile() async {
-    try {
-     final userId = await widget.authLocalDataSource.getUserId();
-     final token = await widget.authLocalDataSource.getToken();
-     if (userId != null && token != null) {
-      final UserModel user = await widget.authRemoteDataSource.getUserProfile(userId, token);
-      if (mounted) {
-       setState(() {
-        _username = user.username;
-        _userIconUrl = user.icon;
-        _isUserLoading = false;
-       });
-      }
-     } else {
-      if (mounted) {
-       setState(() {
-        _isUserLoading = false;
-       });
-      }
-     }
-    } catch (e) {
-     print('Error al cargar perfil de usuario: $e');
-     if (mounted) {
-      setState(() {
-       _isUserLoading = false;
-      });
-     }
-     _showSnackbar('The user profile could not be loaded. Please try again.', color: Colors.red);
-    }
-   }
-   Future<void> _handlePostCreation() async {
-    final content = _contentController.text.trim();
-    if (_username == null) {
-     _showSnackbar('Error: The username could not be retrieved. Please try logging in again.', color: Colors.red);
-     return;
-    }
-    if (content.isEmpty && _selectedImageFile == null) {
-     _showSnackbar('The post cannot be empty. Enter content or select an image.', color: AppColors.secondaryYellow);
-     return;
-    }
+  Future<void> _fetchPosts() async {
     if (mounted) {
-     setState(() {
-      _isPosting = true;
-     });
+      setState(() {
+        _isLoadingPosts = true;
+      });
     }
     try {
-     final String? imageUrlForApi = _selectedImageFile != null
-       ? 'LOCAL_FILE_PATH_PLACEHOLDER: ${_selectedImageFile!.path}'
-       : null;
-     final newPost = await _postRepository.createPost(
-      communityId: widget.community.id,
-      username: _username!,
-      content: content,
-      img: imageUrlForApi,
-     );
-     _contentController.clear();
-     _showSnackbar('Post successfully published!', color: AppColors.primaryOrange);
-     if (mounted) {
-      setState(() {
-       _selectedImageFile = null;
-       _posts.insert(0, newPost);
-      });
-     }
+      final fetchedPosts = await _postRepository.fetchPostsByCommunityId(widget.community.id, 0, 20);
+      if (mounted) {
+        setState(() {
+          _posts = fetchedPosts;
+          _isLoadingPosts = false;
+        });
+      }
     } catch (e) {
-     _showSnackbar('Error publishing post: ${e.toString()}', color: Colors.red);
-     print('Excepción al crear post: $e');
-    } finally {
-     if (mounted) {
-      setState(() {
-       _isPosting = false;
-      });
-     }
+      print('Error al cargar posts: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingPosts = false;
+        });
+      }
     }
-   }
-   void _showSnackbar(String message, {required Color color}) {
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final userId = await widget.authLocalDataSource.getUserId();
+      final token = await widget.authLocalDataSource.getToken();
+
+      if (userId != null && token != null) {
+        final UserModel user = await widget.authRemoteDataSource.getUserProfile(userId, token);
+
+        if (mounted) {
+          setState(() {
+            _currentUserId = userId;
+            _username = user.username;
+            _userIconUrl = user.icon;
+            _isUserLoading = false;
+          });
+          _checkUserJoinedStatus();
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isUserLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error al cargar perfil de usuario: $e');
+      if (mounted) {
+        setState(() {
+          _isUserLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handlePostCreation() async {
+    final content = _contentController.text.trim();
+
+    if (_username == null) {
+      _showSnackbar('Error: The username could not be retrieved. Please try logging in again.', color: Colors.red);
+      return;
+    }
+
+    if (content.isEmpty && _selectedImageFile == null) {
+      _showSnackbar('The post cannot be empty. Enter content or select an image.', color: AppColors.secondaryYellow);
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _isPosting = true;
+      });
+    }
+
+    try {
+      String? imageBase64;
+
+      if (_selectedImageFile != null) {
+        final bytes = await _selectedImageFile!.readAsBytes();
+        final base64String = base64Encode(bytes);
+        imageBase64 = "data:image/jpeg;base64,$base64String";
+      }
+
+      final newPost = await _postRepository.createPost(
+        communityId: widget.community.id,
+        username: _username!,
+        content: content,
+        img: imageBase64,
+      );
+
+      _contentController.clear();
+      _showSnackbar('Post successfully published!', color: AppColors.primaryOrange);
+
+      if (mounted) {
+        setState(() {
+          _selectedImageFile = null;
+          _posts.insert(0, newPost);
+        });
+      }
+    } catch (e) {
+      _showSnackbar('Error publishing post: ${e.toString()}', color: Colors.red);
+      print('Excepción al crear post: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPosting = false;
+        });
+      }
+    }
+  }
+
+  void _showSnackbar(String message, {required Color color}) {
     String cleanMessage = message.replaceFirst('Exception: ', '');
     ScaffoldMessenger.of(context).showSnackBar(
-     SnackBar(
-      content: Text(cleanMessage),
-      backgroundColor: color,
-      duration: const Duration(seconds: 3),
-     ),
+      SnackBar(
+        content: Text(cleanMessage),
+        backgroundColor: color,
+        duration: const Duration(seconds: 3),
+      ),
     );
-   }
+  }
 
-   void _handleJoinPressed() async {
+  void _handleJoinPressed() async {
     if (_currentUserId == null) {
-     _showSnackbar('User ID not available. Please try logging in again.', color: Colors.red);
-     return;
+      _showSnackbar('User ID not available. Please try logging in again.', color: Colors.red);
+      return;
     }
     if (_isTogglingJoin) return;
 
     setState(() {
-     _isTogglingJoin = true;
+      _isTogglingJoin = true;
     });
 
     try {
-     if (_isJoined) {
-      // Lógica de LEAVE
-      await _communityRepository.leaveCommunity(
-       userClientId: _currentUserId!,
-       communityId: widget.community.id,
-      );
-      if (mounted) {
-       setState(() {
-        _isJoined = false;
-       });
-       _showSnackbar('You have left the community ${widget.community.name}.',
-           color: AppColors.secondaryYellow);
+      if (_isJoined) {
+        // LEAVE
+        await _communityRepository.leaveCommunity(
+          userClientId: _currentUserId!,
+          communityId: widget.community.id,
+        );
+        if (mounted) {
+          setState(() {
+            _isJoined = false;
+          });
+          _showSnackbar('You have left the community ${widget.community.name}.',
+              color: AppColors.secondaryYellow);
+        }
+      } else {
+        // JOIN
+        await _communityRepository.joinCommunity(
+          userClientId: _currentUserId!,
+          communityId: widget.community.id,
+        );
+        if (mounted) {
+          setState(() {
+            _isJoined = true;
+          });
+          _showSnackbar('You have successfully joined the community ${widget.community.name}!',
+              color: AppColors.primaryOrange);
+        }
       }
-     } else {
-      // Lógica de JOIN
-      await _communityRepository.joinCommunity(
-       userClientId: _currentUserId!,
-       communityId: widget.community.id,
-      );
-      if (mounted) {
-       setState(() {
-        _isJoined = true;
-       });
-       _showSnackbar('You have successfully joined the community ${widget.community.name}!',
-           color: AppColors.primaryOrange);
-      }
-     }
     } catch (e) {
-     _showSnackbar('Operation failed: ${e.toString()}', color: Colors.red);
+      _showSnackbar('Operation failed: ${e.toString()}', color: Colors.red);
     } finally {
-     if (mounted) {
-      setState(() {
-       _isTogglingJoin = false;
-      });
-     }
+      if (mounted) {
+        setState(() {
+          _isTogglingJoin = false;
+        });
+      }
     }
-   }
+  }
 
-   @override
-   Widget build(BuildContext context) {
-    return Scaffold(
-     backgroundColor: AppColors.white,
-     appBar: AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      title: Text(widget.community.name, style: const TextStyle(color: AppColors.darkBlue)),
-      iconTheme: const IconThemeData(color: AppColors.darkBlue),
-     ),
-     body: SingleChildScrollView(
-      child: Column(
-       crossAxisAlignment: CrossAxisAlignment.start,
-       children: [
-        CommunityHeader(
-         community: widget.community,
-         getCommunityTypeLabel: _getCommunityTypeLabel,
-         onJoinPressed: _isTogglingJoin ? () {} : _handleJoinPressed,
-  isJoined: _isJoined,
-        ),
-        const SizedBox(height: 16),
-        PostForm(
-         isUserLoading: _isUserLoading,
-         username: _username,
-         isPosting: _isPosting,
-         contentController: _contentController,
-         selectedImageFile: _selectedImageFile,
-         onGalleryPick: _handleGalleryPick,
-         onRemoveImage: _removeSelectedImage,
-         onPost: _handlePostCreation,
-         onCameraPressed: () => _showSnackbar('Camera not implemented.', color: AppColors.softTeal),
-         showSnackbar: _showSnackbar,
-        ),
-        const SizedBox(height: 24),
-        Padding(
-         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-         child: Text(
-          'Recent Posts',
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-           color: AppColors.darkBlue,
-           fontWeight: FontWeight.bold,
-          ),
-         ),
-        ),
-        const SizedBox(height: 12),
-        PostList(
-         isLoadingPosts: _isLoadingPosts,
-         posts: _posts,
-         currentUsername: _username,
-         currentUserIconUrl: _userIconUrl,
-        ),
-       ],
-      ),
-     ),
-    );
-   }
-
-   Future<void> _checkUserJoinedStatus() async {
-    if (_currentUserId == null) {
-     await _loadUserProfile();
-    }
-
+  Future<void> _checkUserJoinedStatus() async {
     if (_currentUserId == null) return;
 
     try {
-     final isMember = await _communityRepository.checkUserJoined(
-      userId: _currentUserId!,
-      communityId: widget.community.id,
-     );
-     if (mounted) {
-      setState(() {
-       _isJoined = isMember;
-      });
-     }
+      final isMember = await _communityRepository.checkUserJoined(
+        userId: _currentUserId!,
+        communityId: widget.community.id,
+      );
+      if (mounted) {
+        setState(() {
+          _isJoined = isMember;
+        });
+      }
     } catch (e) {
-     print('Error al verificar unión a comunidad: $e');
-     _showSnackbar('Failed to check membership status: $e', color: Colors.red);
+      print('Error al verificar unión a comunidad: $e');
     }
-   }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        title: Text(widget.community.name, style: const TextStyle(color: AppColors.darkBlue)),
+        iconTheme: const IconThemeData(color: AppColors.darkBlue),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CommunityHeader(
+              community: widget.community,
+              getCommunityTypeLabel: _getCommunityTypeLabel,
+              onJoinPressed: _isTogglingJoin ? () {} : _handleJoinPressed,
+              isJoined: _isJoined,
+            ),
+            const SizedBox(height: 16),
+
+            // FORMULARIO DE POST
+            PostForm(
+              isUserLoading: _isUserLoading,
+              username: _username,
+              isPosting: _isPosting,
+              contentController: _contentController,
+              selectedImageFile: _selectedImageFile,
+              onGalleryPick: _handleGalleryPick,
+              onRemoveImage: _removeSelectedImage,
+              onPost: _handlePostCreation,
+              onCameraPressed: _handleCameraPick,
+              showSnackbar: _showSnackbar,
+            ),
+
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Recent Posts',
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: AppColors.darkBlue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            PostList(
+              isLoadingPosts: _isLoadingPosts,
+              posts: _posts,
+              currentUsername: _username,
+              currentUserIconUrl: _userIconUrl,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleCameraPick() async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 70,
+      );
+
+      if (pickedFile != null) {
+        if (mounted) {
+          setState(() {
+            _selectedImageFile = File(pickedFile.path);
+          });
+        }
+      }
+    } catch (e) {
+      print('Error al tomar foto: $e');
+      _showSnackbar('Failed to open camera.', color: Colors.red);
+    }
+  }
 }
+
+

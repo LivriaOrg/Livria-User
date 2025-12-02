@@ -86,13 +86,13 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
             _selectedIconFile = pickedFile;
             _imageController.clear();
           });
-          _showSnackbar('Icon selected successfully.', color: AppColors.softTeal);
+          _showSnackbar('Icon selected successfully.', color: AppColors.darkBlue);
         } else {
           setState(() {
             _selectedBannerFile = pickedFile;
             _bannerController.clear();
           });
-          _showSnackbar('Banner selected successfully.', color: AppColors.softTeal);
+          _showSnackbar('Banner selected successfully.', color: AppColors.darkBlue);
         }
       }
     } catch (e) {
@@ -159,7 +159,7 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
 
       _showSnackbar(
         'Community "${newCommunity.name}" successfully created with ID ${newCommunity.id}!',
-        color: AppColors.vibrantBlue,
+        color: AppColors.darkBlue,
       );
 
       // Limpiar y salir
@@ -300,18 +300,19 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
         required String title,
         required String hintText,
         required TextEditingController controller,
-        required XFile? file, // Cambiado a XFile?
+        required XFile? file,
         required VoidCallback onGallery,
         required VoidCallback onCamera,
-        required VoidCallback onRemove, // Nuevo parámetro para el botón de cerrar
+        required VoidCallback onRemove,
       }) {
-    // Si hay un archivo seleccionado, mostramos una vista previa simple
+
+    // Vista previa de la imagen seleccionada
     Widget filePreview = file != null
         ? Padding(
-      padding: const EdgeInsets.only(top: 12.0),
-      child: Stack(
-        alignment: Alignment.topRight,
+      padding: const EdgeInsets.only(top: 12.0, bottom: 8.0),
+      child: Row(
         children: [
+          // Imagen
           Container(
             width: 80,
             height: 80,
@@ -320,24 +321,24 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
               border: Border.all(color: AppColors.vibrantBlue, width: 2),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(6),
               child: Image.file(
-                File(file.path), // Se usa File(file.path) para mostrar la imagen local
+                File(file.path),
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image)),
               ),
             ),
           ),
-          Positioned(
-            top: -10,
-            right: -10,
-            child: IconButton(
-              icon: const Icon(Icons.close, color: AppColors.errorRed, size: 20),
-              onPressed: onRemove,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+          const SizedBox(width: 12),
+
+          // Botón de eliminar (Más grande y accesible)
+          TextButton.icon(
+            onPressed: onRemove,
+            icon: const Icon(Icons.delete_outline, color: AppColors.errorRed),
+            label: const Text("Remove Image", style: TextStyle(color: AppColors.errorRed)),
+            style: TextButton.styleFrom(
+              backgroundColor: AppColors.errorRed.withOpacity(0.1),
             ),
-          ),
+          )
         ],
       ),
     )
@@ -346,23 +347,20 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Título del campo
         Text(
           title,
           style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.darkBlue, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
 
-        // Campo de texto para URL
+        // Campo de texto (Se bloquea si hay foto, igual que antes)
         TextFormField(
           controller: controller,
-          enabled: file == null, // Deshabilitar si ya se seleccionó un archivo
+          enabled: file == null,
           validator: (value) {
-            // Si el campo tiene valor (y no hay archivo local), debe ser una URL válida
             if (file == null && value != null && value.isNotEmpty) {
               return _urlValidator(value);
             }
-            // Si no hay archivo ni URL, el control de "Requerido" se hace en _handleCreateCommunity
             return null;
           },
           decoration: InputDecoration(
@@ -370,52 +368,31 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
             hintText: hintText,
             labelStyle: TextStyle(color: file == null ? AppColors.darkBlue : AppColors.softTeal),
             prefixIcon: const Icon(Icons.link, color: AppColors.softTeal),
-            // Botón de eliminar archivo local. El botón de remover ahora está en la vista previa.
             suffixIcon: controller.text.isNotEmpty && file == null
                 ? IconButton(
               icon: const Icon(Icons.close, color: AppColors.errorRed),
               onPressed: () => controller.clear(),
             )
                 : null,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.softTeal),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: AppColors.softTeal.withOpacity(0.5), width: 1.5),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.primaryOrange, width: 2),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             fillColor: file == null ? AppColors.lightGrey : AppColors.lightGrey.withOpacity(0.5),
             filled: true,
           ),
         ),
 
-        // Indicador de imagen seleccionada y Vista Previa
-        if (file != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              'Image Selected: ${file.path.split('/').last}',
-              style: const TextStyle(color: AppColors.vibrantBlue, fontStyle: FontStyle.italic),
-            ),
-          ),
-        filePreview, // Muestra la vista previa si hay un archivo
+        filePreview, // Mostramos la preview aquí
 
         const SizedBox(height: 12),
         const Text('OR Select from device:', style: TextStyle(color: AppColors.darkBlue)),
         const SizedBox(height: 8),
 
-        // Botones de selección de archivo
+        // Botones de selección
         Row(
           children: [
             Expanded(
               child: OutlinedButton.icon(
-                // Deshabilitar si hay archivo local O si el campo URL tiene texto
-                onPressed: file != null || controller.text.isNotEmpty ? null : onGallery,
+                onPressed: controller.text.isNotEmpty ? null : onGallery,
+
                 icon: const Icon(Icons.photo_library, color: AppColors.primaryOrange),
                 label: const Text('Gallery'),
                 style: OutlinedButton.styleFrom(
@@ -428,8 +405,8 @@ class _CreateCommunityPageState extends State<CreateCommunityPage> {
             const SizedBox(width: 8),
             Expanded(
               child: OutlinedButton.icon(
-                // Deshabilitar si hay archivo local O si el campo URL tiene texto
-                onPressed: file != null || controller.text.isNotEmpty ? null : onCamera,
+                onPressed: controller.text.isNotEmpty ? null : onCamera,
+
                 icon: const Icon(Icons.camera_alt, color: AppColors.primaryOrange),
                 label: const Text('Camera'),
                 style: OutlinedButton.styleFrom(

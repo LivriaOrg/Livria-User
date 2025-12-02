@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/post.dart';
 import 'package:livria_user/common/theme/app_colors.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class PostCard extends StatelessWidget {
   final Post post;
@@ -129,20 +131,34 @@ class PostCard extends StatelessWidget {
               const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  post.img!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    padding: const EdgeInsets.all(16),
-                    color: AppColors.lightGrey,
-                    child: Center(
-                      child: Text(
-                        'Image Load Failed',
-                        style: TextStyle(color: Colors.red[800]),
-                      ),
-                    ),
-                  ),
+                child: Builder(
+                    builder: (context) {
+                      final imageStr = post.img!;
+
+                      // CASO A: Es Base64
+                      if (imageStr.startsWith('data:image')) {
+                        try {
+                          final base64String = imageStr.split(',').last;
+                          final Uint8List bytes = base64Decode(base64String);
+                          return Image.memory(bytes, fit: BoxFit.cover, width: double.infinity);
+                        } catch (e) {
+                          return const SizedBox();
+                        }
+                      }
+                      // CASO B: Es URL normal
+                      else {
+                        return Image.network(
+                          imageStr,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorBuilder: (_, __, ___) => Container(
+                            padding: const EdgeInsets.all(16),
+                            color: AppColors.lightGrey,
+                            child: const Center(child: Icon(Icons.broken_image)),
+                          ),
+                        );
+                      }
+                    }
                 ),
               ),
             ],
