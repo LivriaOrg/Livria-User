@@ -32,9 +32,9 @@ class HorizontalBookCard extends StatelessWidget {
               children: [
                 // Portada a la izquierda
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(6),
                   child: AspectRatio(
-                    aspectRatio: 3 / 4,
+                    aspectRatio: 2.5 / 4,
                     child: Image.network(
                       b.cover,
                       fit: BoxFit.cover,

@@ -77,7 +77,7 @@ class _HomeViewState extends State<_HomeView> {
 
     final screenWidth = MediaQuery.of(context).size.width;
 
-    const double arrowReservedSpace = 30.0;
+    const double arrowReservedSpace = 24.0;
     const double totalSymmetricSpace = arrowReservedSpace * 2;
 
     const double listViewPadding = 4.0;
@@ -89,7 +89,7 @@ class _HomeViewState extends State<_HomeView> {
 
     final itemWidth = (availableContentWidth - itemGap) / 2;
 
-    final carouselHeight = (itemWidth / 1.8) + 75.0;
+    final carouselHeight = (itemWidth / 1.8) + 50.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,7 +316,7 @@ class _CategoryCarouselWithArrowsState
     extends State<_CategoryCarouselWithArrows> {
   late final ScrollController _scrollController;
 
-  static const double _verticalCarouselPadding = 10.0;
+  static const double _verticalCarouselPadding = 2.0;
   static const double _arrowIconPadding = 8.0;
   static const double _itemGap = 16.0;
 
@@ -422,7 +422,7 @@ class _CategoryCarouselWithArrowsState
                   final isLast = index == widget.genreBooks.length - 1;
 
                   return Padding(
-                    padding: EdgeInsets.only(right: isLast ? 0.0 : _itemGap, bottom: 16.0,),
+                    padding: EdgeInsets.only(right: isLast ? 0.0 : _itemGap, bottom: 24.0,),
                     child: SizedBox(
                       width: widget.itemWidth,
                       child: HorizontalBookCard(book, t),
