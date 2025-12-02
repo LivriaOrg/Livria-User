@@ -17,6 +17,8 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'features/profile/infrastructure/datasource/profile_remote_datasource.dart';
 import 'features/profile/infrastructure/repositories/profile_repository_impl.dart';
 import 'features/profile/presentation/providers/profile_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,10 @@ void main() async {
   await di.initializeDependencies();
 
   Stripe.publishableKey = "pk_test_51SYEEjCT8H4q0SwHXOXEueZELjE8n2mE2HO2RePX2sUBNn2sWUo85aROv82Cz1CxYNMBrXB3MfghckoOFsYd56sB00XotlaES0";
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const MyApp());
 }
