@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:livria_user/common/routes/app_router.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_remote_datasource.dart';
+import 'package:livria_user/features/auth/infrastructure/model/user_model.dart';
 import 'package:livria_user/features/book/application/services/favorite_service.dart';
 import 'package:livria_user/features/book/infrastructure/repositories/favorite_repository_impl.dart';
 import 'package:livria_user/features/book/infrastructure/datasource/favorite_remote_datasource.dart';
@@ -20,7 +23,9 @@ import '../../../cart/infrastructure/datasource/cart_remote_datasource.dart';
 
 class SingleBookView extends StatefulWidget {
   final Book b;
-  const SingleBookView({super.key, required this.b});
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+  const SingleBookView({super.key, required this.b, required this.authLocalDataSource, required this.authRemoteDataSource,});
 
   @override
   State<SingleBookView> createState() => _SingleBookViewState();
@@ -42,6 +47,10 @@ class _SingleBookViewState extends State<SingleBookView> {
   bool _isFavorite = false;
   bool _isLoadingFavoriteStatus = true;
 
+  String? _username;
+  String? _userIconUrl;
+  bool _isUserLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +70,7 @@ class _SingleBookViewState extends State<SingleBookView> {
     final favoriteRepo = FavoriteRepositoryImpl(remoteDataSource: favoriteDs);
     _favoriteService = FavoriteService(favoriteRepo);
     _loadFavoriteStatus();
+    _loadUserProfile();
   }
 
   Future<void> _handleAddToCart() async {
@@ -247,6 +257,36 @@ class _SingleBookViewState extends State<SingleBookView> {
     } finally {
       if (mounted) {
         setState(() => _isAddingToFavorites = false);
+      }
+    }
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final userId = await widget.authLocalDataSource.getUserId();
+      final token = await widget.authLocalDataSource.getToken();
+      if (userId != null && token != null) {
+        final UserModel user = await widget.authRemoteDataSource.getUserProfile(userId, token);
+        if (mounted) {
+          setState(() {
+            _username = user.username;
+            _userIconUrl = user.icon;
+            _isUserLoading = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isUserLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error al cargar perfil de usuario: $e');
+      if (mounted) {
+        setState(() {
+          _isUserLoading = false;
+        });
       }
     }
   }
@@ -456,6 +496,8 @@ class _SingleBookViewState extends State<SingleBookView> {
     final t = Theme.of(context).textTheme;
     final int bookId = widget.b.id;
 
+    final String defaultIcon = 'https://cdn-icons-png.flaticon.com/512/3447/3447354.png';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -575,7 +617,12 @@ class _SingleBookViewState extends State<SingleBookView> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: reviews.length,
               itemBuilder: (context, index) {
-                return ReviewCard(review: reviews[index]);
+                // Regla para el ícono: Si el post pertenece al usuario logueado, usar su ícono. Sino, usar el default.
+                final String iconToUse = (_username != null && reviews[index].username == _username)
+                    ? _userIconUrl ?? defaultIcon
+                    : defaultIcon;
+
+                return ReviewCard(review: reviews[index], userIconUrl: iconToUse,);
               },
             );
           },

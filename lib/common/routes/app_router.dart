@@ -117,7 +117,11 @@ final appRouter = GoRouter(
                       }
 
                       // Pasar el objeto Book real
-                      return BookPage(b: selectedBook);
+                      return BookPage(
+                        b: selectedBook,
+                        authLocalDataSource: authLocalDataSource,
+                        authRemoteDataSource: authRemoteDataSource,
+                      );
                     },
                   );
                 },
