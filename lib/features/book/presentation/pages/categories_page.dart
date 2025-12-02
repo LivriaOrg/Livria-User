@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:livria_user/features/book/presentation/pages/category_books_page.dart';
 
 import '../../../../common/theme/app_colors.dart';
 import '../../../book/application/services/book_service.dart';
@@ -73,7 +74,7 @@ class CategoriesPage extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Text(
-                                  genre.toUpperCase(),
+                                  getCategoryProperName(genre),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: text.bodyLarge?.copyWith(

@@ -9,6 +9,19 @@ import '../../infrastructure/datasource/book_remote_datasource.dart';
 import '../widgets/book_filters_sheet.dart';
 import '../widgets/horizontal_book_card.dart';
 
+String getCategoryProperName(String type) {
+  switch (type) {
+    case "literature": return 'LITERATURE';
+    case "non_fiction": return 'NON-FICTION';
+    case "fiction": return 'FICTION';
+    case "mangas_comics": return 'MANGAS & COMICS';
+    case "juvenile": return 'JUVENILE';
+    case "children": return 'CHILDREN';
+    case "ebooks_audiobooks": return 'EBOOKS & AUDIOBOOKS';
+    default: return 'GENERAL';
+  }
+}
+
 class CategoryBooksPage extends StatefulWidget {
   final String genre;
   const CategoryBooksPage({super.key, required this.genre});
@@ -54,7 +67,7 @@ class _CategoryBooksPageState extends State<CategoryBooksPage> {
               child: Row(
                 children: [
                   Text(
-                    widget.genre.toUpperCase(),
+                    getCategoryProperName(widget.genre),
                     style: t.headlineMedium?.copyWith(
                       color: AppColors.primaryOrange,
                       letterSpacing: 1.4,
