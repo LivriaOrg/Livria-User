@@ -317,10 +317,8 @@ class _BannerState extends State<_Banner> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-
-
                     Text(
-                      'COMMUNITY PLAN',
+                      !_hasCommunityPlan ? 'COMMUNITY PLAN' : 'COMMUNITIES FOR YOU',
                       style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         color: AppColors.secondaryYellow,
                         letterSpacing: 1.5,
@@ -329,7 +327,8 @@ class _BannerState extends State<_Banner> {
                     const SizedBox(height: 18),
 
                     Text(
-                      'Connect with other readers, share your thoughts and join spaces where reading come alive',
+                      !_hasCommunityPlan ? 'Connect with other readers, share your thoughts and join spaces where reading come alive' :
+                      'Discover and join communities based on your interests... Or create one!',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.white.withOpacity(0.9),
@@ -340,6 +339,7 @@ class _BannerState extends State<_Banner> {
 
                     ElevatedButton(
                       onPressed: () {
+                        GoRouter.of(context).go('/communities');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.white,
@@ -350,7 +350,7 @@ class _BannerState extends State<_Banner> {
                         ),
                       ),
                       child: Text(
-                        'GET IT HERE',
+                        !_hasCommunityPlan ? 'GET IT HERE' : 'GO NOW',
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                             color: AppColors.darkBlue
                         ),
