@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_local_datasource.dart';
+import 'package:livria_user/features/auth/infrastructure/datasource/auth_remote_datasource.dart';
+import 'package:livria_user/features/auth/infrastructure/model/user_model.dart';
 import 'package:livria_user/features/book/presentation/pages/category_books_page.dart';
 
 import '../../../book/presentation/widgets/horizontal_book_card.dart';
@@ -12,19 +15,24 @@ import '../../../book/infrastructure/datasource/book_remote_datasource.dart';
 import '../../application/services/home_service.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+
+  const HomePage({super.key, required this.authLocalDataSource, required this.authRemoteDataSource,});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.white,
-      body: _HomeView(),
+      body: _HomeView(authLocalDataSource: authLocalDataSource, authRemoteDataSource: authRemoteDataSource,),
     );
   }
 }
 
 class _HomeView extends StatefulWidget {
-  const _HomeView({super.key});
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+  const _HomeView({super.key, required this.authLocalDataSource, required this.authRemoteDataSource,});
 
   @override
   State<_HomeView> createState() => _HomeViewState();
@@ -170,6 +178,8 @@ class _HomeViewState extends State<_HomeView> {
               genres: genres,
               allBooks: allBooks,
               buildCategoryCarousel: _buildCategoryCarousel,
+              authRemoteDataSource: widget.authRemoteDataSource,
+              authLocalDataSource: widget.authLocalDataSource
             );
           },
         );
@@ -183,10 +193,15 @@ class _HomeContent extends StatelessWidget {
   final List<Book> allBooks;
   final Widget Function(BuildContext, String, List<Book>, int) buildCategoryCarousel;
 
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+
   const _HomeContent({
     required this.genres,
     required this.allBooks,
     required this.buildCategoryCarousel,
+    required this.authLocalDataSource,
+    required this.authRemoteDataSource,
   });
 
   @override
@@ -194,7 +209,7 @@ class _HomeContent extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const _CommunityPlanBanner(),
+          _Banner(authRemoteDataSource: authRemoteDataSource, authLocalDataSource: authLocalDataSource,),
 
           ...genres.toList().asMap().entries.map((entry) {
             final index = entry.key;
@@ -206,8 +221,68 @@ class _HomeContent extends StatelessWidget {
     );
   }
 }
-class _CommunityPlanBanner extends StatelessWidget {
-  const _CommunityPlanBanner();
+class _Banner extends StatefulWidget {
+  final AuthLocalDataSource authLocalDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
+
+  const _Banner({
+    super.key,
+    required this.authLocalDataSource,
+    required this.authRemoteDataSource,
+  });
+
+  @override
+  State<_Banner> createState() => _BannerState();
+}
+
+class _BannerState extends State<_Banner> {
+  bool _isCheckingAccess = true;
+  bool _hasCommunityPlan = false;
+  String _userAccessError = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSubscription();
+  }
+
+  Future<void> _checkSubscription() async {
+    setState(() {
+      _isCheckingAccess = true;
+      _userAccessError = '';
+    });
+
+    try {
+      final userId = await widget.authLocalDataSource.getUserId();
+      final token = await widget.authLocalDataSource.getToken();
+
+      if (userId == null || token == null) {
+        throw Exception('User is not logged in or token is missing.');
+      }
+
+      // obtener perfil
+      final UserModel user = await widget.authRemoteDataSource.getUserProfile(userId, token);
+
+      // verificar suscripción
+      const requiredPlan = 'communityplan';
+      final hasPlan = user.subscription == requiredPlan;
+
+      if (mounted) {
+        setState(() {
+          _isCheckingAccess = false;
+          _hasCommunityPlan = hasPlan;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isCheckingAccess = false;
+          _hasCommunityPlan = false;
+          _userAccessError = 'Error: could not verify user subscription status.';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,6 +317,8 @@ class _CommunityPlanBanner extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
+
+
                     Text(
                       'COMMUNITY PLAN',
                       style: Theme.of(context).textTheme.headlineLarge?.copyWith(

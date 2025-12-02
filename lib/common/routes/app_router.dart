@@ -74,7 +74,7 @@ final appRouter = GoRouter(
             },
             // 'routes' son las páginas que se inyectan en el child
             routes: [
-              GoRoute(path: '/home', builder: (_, __) => const HomePage()),
+              GoRoute(path: '/home', builder: (_, __) => HomePage(authLocalDataSource: authLocalDataSource, authRemoteDataSource: authRemoteDataSource,)),
               GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
               // ---------- NUEVA RUTA DETALLE POR CATEGORÍA ----------
               GoRoute(
@@ -128,7 +128,7 @@ final appRouter = GoRouter(
               ),
                 GoRoute(
                     path: '/home',
-                    builder: (context, state) => const HomePage()
+                    builder: (context, state) => HomePage(authLocalDataSource: authLocalDataSource, authRemoteDataSource: authRemoteDataSource,),
                 ),
                 GoRoute(
                     path: '/categories',
